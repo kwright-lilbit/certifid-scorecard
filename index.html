@@ -15,10 +15,18 @@ body{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#1a1f36;backgr
 .header-band{background:var(--blue);padding:22px 40px 20px;display:flex;justify-content:space-between;align-items:flex-start}
 .header-band h1{color:#fff;font-size:20px;font-weight:800}
 .header-band p{color:rgba(255,255,255,.7);font-size:11px;margin-top:3px}
-.header-actions{display:flex;gap:8px;flex-shrink:0;margin-top:4px}
+.header-actions{display:flex;gap:8px;flex-shrink:0;margin-top:4px;align-items:center}
 .btn{padding:7px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
 .btn-white{background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4)}
+.btn-white:hover{background:rgba(255,255,255,.35)}
 .btn-green{background:var(--green);color:#fff}
+.btn-green:hover{opacity:.88}
+.sync-status{font-size:10px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#aaa;flex-shrink:0}
+.sync-dot.synced{background:#00a878}
+.sync-dot.syncing{background:#f0a500;animation:pulse 1s infinite}
+.sync-dot.error{background:#e03a3a}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .body-wrap{padding:28px 40px 40px}
 .notice-bar{background:var(--blue-light);border:1px solid var(--border);border-radius:8px;padding:12px 18px;margin-bottom:26px;font-size:12px;color:#3a4260;line-height:1.6}
 .notice-bar strong{color:var(--blue)}
@@ -39,9 +47,10 @@ td{padding:10px 12px;border-bottom:1px solid #f0f2f8;vertical-align:top}
 tr:last-child td{border-bottom:none}
 .row-num{color:var(--blue);font-weight:800;font-size:12px;white-space:nowrap;width:28px}
 td textarea{resize:none;min-height:36px;line-height:1.6;color:#3a4260;border:none;outline:none;background:transparent;width:100%;font-family:inherit;font-size:13px}
-td input{color:#3a4260;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px}
+td input{color:#3a4260;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%}
 .timeline-cell{white-space:nowrap;width:110px}
 .add-row-btn{margin-top:10px;background:var(--bg);border:1.5px dashed var(--border);color:var(--muted);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%}
+.add-row-btn:hover{border-color:var(--blue);color:var(--blue)}
 .del-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:0 4px}
 .del-btn:hover{color:#e03a3a}
 .comp-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
@@ -57,37 +66,34 @@ td input{color:#3a4260;border:none;outline:none;background:transparent;font-fami
 .s-task{color:#be185d;background:#fdf2f8}
 .s-exec{color:#0369a1;background:#e0f2fe}
 .s-huddle{color:#00a878;background:#e6f7f3}
-.stage-owner{color:#3a4260;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%}
-.stage-focus{color:#3a4260;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;resize:none;line-height:1.5}
 .footer-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px;border-top:1px solid var(--border);padding-top:18px}
 .footer-item label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
 .footer-item input{font-size:13px;color:var(--navy);font-weight:600;width:100%;border:none;border-bottom:1.5px solid var(--border);padding:3px 0;outline:none;background:transparent}
 .footer-brand{text-align:center;padding:18px 40px;background:var(--navy);color:rgba(255,255,255,.4);font-size:10px;letter-spacing:.5px}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
-.toast.show{opacity:1}
-@media print{.btn,.add-row-btn,.del-btn,.header-actions{display:none!important}}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-size:14px;color:#0f1f3d;font-weight:600;gap:10px}
+.spinner{width:20px;height:20px;border:2px solid #dde2f0;border-top-color:#1a4fd6;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media print{.btn,.add-row-btn,.del-btn,.header-actions,.sync-status{display:none!important}}
 </style>
 </head>
 <body>
+<div class="loading-overlay" id="loading"><div class="spinner"></div> Loading shared scorecard...</div>
 <div class="page">
 <div class="top-bar">
 <img src="https://cdn.prod.website-files.com/60a41ae959fbb36bd6808d6e/60a420f7114a0b2dfd674bbb_certifid-logo.svg" alt="CertifID"/>
 <span class="top-bar-right">Confidential &middot; Internal Use Only</span>
 </div>
 <div class="header-band">
-<div>
-<h1>HIRING SCORECARD</h1>
-<p id="role-subtitle">Interviewer Reference &mdash; Strategic Customer Success Manager</p>
-</div>
+<div><h1>HIRING SCORECARD</h1><p id="role-subtitle">Interviewer Reference &mdash; Strategic Customer Success Manager</p></div>
 <div class="header-actions">
-<button class="btn btn-white" onclick="resetToTemplate()">Reset to Template</button>
+<div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting...</span></div>
 <button class="btn btn-white" onclick="window.print()">Print / Save PDF</button>
-<button class="btn btn-green" onclick="saveAll()">Save</button>
+<button class="btn btn-green" onclick="saveToCloud()">Save</button>
 </div>
 </div>
 <div class="body-wrap">
 <div class="notice-bar">
-<strong>How to use this document:</strong> Review before and during your interview. Submit ratings and notes in <strong>Lever</strong> after your session using the scale below.
+<strong>How to use this document:</strong> This scorecard is shared &mdash; edits are visible to everyone with the link. Submit ratings in <strong>Lever</strong> after your session.
 <div class="rating-scale">
 <div class="rating-scale-item"><span class="scale-dot" style="background:#e03a3a">1</span><span><strong>Strong No</strong> &mdash; Does not meet the bar</span></div>
 <div class="rating-scale-item"><span class="scale-dot" style="background:#f0a500">2</span><span><strong>No</strong> &mdash; Some gaps; leaning against</span></div>
@@ -121,62 +127,54 @@ td input{color:#3a4260;border:none;outline:none;background:transparent;font-fami
 </div>
 <div class="footer-brand">&copy; CertifID &middot; Confidential &middot; Internal Use Only</div>
 </div>
-<div class="toast" id="toast">Changes saved</div>
 <script>
-var K='certifid-scorecard-v1';
-var T={
+var SK='certifid-scsm-scorecard-shared-v1';
+var DEF={
 roleSubtitle:'Interviewer Reference — Strategic Customer Success Manager',
-mission:'Own a blended portfolio of enterprise and mid-market customers through the complete post-sale lifecycle — from onboarding and value realization through renewal and expansion. The SCSM serves as a long-term strategic partner who guides customers through the change management required to deeply adopt CertifID solutions, drives retention and growth, and connects product value to each customer’s broader business outcomes.',
+mission:"Own a blended portfolio of enterprise and mid-market customers through the complete post-sale lifecycle — from onboarding and value realization through renewal and expansion. The SCSM serves as a long-term strategic partner who guides customers through the change management required to deeply adopt CertifID’s solutions, drives retention and growth, and connects product value to each customer’s broader business outcomes.",
 outcomes:[
-{text:'Design and execute structured onboarding plans for all new accounts — delivering fast time-to-value with clear success metrics established from day one',timeline:'90 days'},
-{text:'Build multi-threaded relationships across all Enterprise and Mid-Market accounts, including C-suite stakeholders — and lead executive business reviews connecting CertifID value to each customer’s broader strategy',timeline:'120 days'},
-{text:'Drive measurable product adoption improvements across the BoB — embedding CertifID deeply into customer workflows and achieving usage growth targets through proactive change management',timeline:'180 days'},
-{text:'Proactively monitor account health using data and live touchpoints — identify and mitigate retention risks before escalation, achieving 90%+ GRR across the full BoB',timeline:'180 days'},
-{text:'Manage renewal cycles with commercial discipline — forecasting accurately, identifying expansion and competitive displacement opportunities, ensuring renewals are a natural outcome of ongoing value delivery',timeline:'Ongoing'},
-{text:'Contribute cross-functionally — surfacing roadmap feedback, informing process improvements, and enhancing customer experience beyond individual accounts',timeline:'Ongoing'}
+{text:"Own and manage a portfolio of enterprise and mid-market customers across the full post-sale lifecycle — acting as a strategic partner responsible for adoption, retention, and expansion.",timeline:"30 days"},
+{text:"Design and execute structured onboarding plans that deliver fast time-to-value, establish clear success metrics, and set customers up for long-term adoption.",timeline:"90 days"},
+{text:"Build multi-threaded relationships across all Enterprise and Mid-Market accounts, including C-suite stakeholders — and lead executive business reviews that connect CertifID’s value to each customer’s broader business strategy.",timeline:"120 days"},
+{text:"Leverage customer data and live touchpoints to monitor account health, identify adoption gaps, and proactively surface and mitigate retention risk — achieving 90%+ GRR across the full BoB.",timeline:"180 days"},
+{text:"Manage renewal cycles with commercial discipline — forecasting accurately, identifying expansion opportunities alongside renewals, and navigating competitive displacement scenarios with strategic confidence.",timeline:"Ongoing"},
+{text:"Engage in and occasionally lead cross-functional work that enhances customer experience, informs roadmap priorities, and improves internal collaboration.",timeline:"Ongoing"}
 ],
 competencies:[
-{title:'Priorities',sub:'Must-have qualities',items:['Strategic partner mindset','Change management in entrenched orgs','Commercial acumen and renewal discipline','Executive presence and credibility','Expansion and competitive displacement']},
-{title:'Who',sub:'Ideal traits for the role',items:['Self-starter with high urgency','Calm under pressure; handles difficult conversations','Sets high standards and follows through','Collaborative and cross-functional','Proactive — surfaces risk before it escalates']},
-{title:'Values',sub:'Culture and behavior alignment',items:['Integrity and honesty with customers','Exceptional written and verbal communication','Adaptable and organized across large BoB','Treats people with respect; active listener','Open to feedback; growth mindset']},
-{title:'Technical',sub:'Role-specific skills',items:['Gainsight / CSP proficiency','Salesforce / CRM proficiency','Data-driven health and usage reporting','AI fluency in daily workflow','Title industry familiarity (plus)']}
+{title:"Priorities",sub:"Must-have qualities",items:["Strategic partner mindset","Change management in established customer environments","Commercial acumen & renewal discipline","Executive presence & C-suite credibility","Expansion & competitive displacement confidence"]},
+{title:"Who",sub:"Ideal traits for the role",items:["Self-starter with high urgency & ownership","Calm under pressure; handles difficult conversations","Sets high standards and follows through","Collaborative cross-functionally","Proactive — surfaces risk before it escalates"]},
+{title:"Values",sub:"Culture & behavior alignment",items:["Integrity and honesty with customers","Exceptional written & verbal communication","Organized across a large, complex BoB","Treats people with respect; active listener","Open to feedback; continuous growth mindset"]},
+{title:"Technical",sub:"Role-specific skills",items:["Gainsight / CSP proficiency","Salesforce / CRM proficiency","Customer data & usage reporting","AI fluency to accelerate PM workflows","Title industry familiarity (plus)"]}
 ],
 stages:[
-{badge:'s-screen',label:'Screening',owner:'Kalyn',focus:'Initial fit, compensation expectations, AI fluency, Gainsight/SFDC experience, travel availability (~25%)'},
-{badge:'s-who',label:'Hiring Manager Interview',owner:'Christen Burke',focus:'Career history, strategic account ownership patterns, executive relationship building, change management experience, and commercial track record'},
-{badge:'s-collab',label:'Collaboration Interview',owner:'',focus:'Cross-functional collaboration style, how they partner with Sales, Product, and Support, and ability to contribute beyond their own book of business'},
-{badge:'s-task',label:'Assessment / Panel',owner:'',focus:'Structured scenario exercise — candidate presents a strategic account plan, EBR, or at-risk recovery approach; panel evaluates strategic thinking and commercial judgment'},
-{badge:'s-exec',label:'Executive Sponsor',owner:'Tyler',focus:'Senior leadership alignment — culture fit, long-term potential, and confirmation candidate can operate credibly at the executive level'},
-{badge:'s-huddle',label:'Huddle to Decide',owner:'All Interviewers',focus:'Collective debrief against scorecard — align on rating and Proceed / Reject recommendation in Lever'}
+{badge:"s-screen",label:"Screening",owner:"Kalyn",focus:"Initial fit, compensation expectations, AI fluency, Gainsight/SFDC experience, travel availability (~25%)"},
+{badge:"s-who",label:"Hiring Manager Interview",owner:"Christen Burke",focus:"Career history, strategic account ownership patterns, executive relationship building, change management experience, and commercial track record"},
+{badge:"s-collab",label:"Collaboration Interview",owner:"",focus:"Cross-functional collaboration style, how they partner with Sales, Product, and Support teams, and ability to contribute beyond their own book of business"},
+{badge:"s-task",label:"Assessment / Panel",owner:"",focus:"Structured scenario exercise — candidate presents a strategic account plan, EBR, or at-risk recovery approach; panel evaluates strategic thinking and commercial judgment"},
+{badge:"s-exec",label:"Executive Sponsor",owner:"Tyler",focus:"Senior leadership alignment — culture fit, long-term potential, and confirmation candidate can operate credibly at the executive level"},
+{badge:"s-huddle",label:"Huddle to Decide",owner:"All Interviewers",focus:"Collective debrief against scorecard — align on rating and Proceed / Reject recommendation in Lever"}
 ],
-footer:{hm:'Christen Burke',loc:'Remote — ATX / GR / SF',team:'Customer Success'}
+footer:{hm:"Christen Burke",loc:"Remote — ATX / GR / SF",team:"Customer Success"}
 };
-function getData(){try{var r=localStorage.getItem(K);return r?JSON.parse(r):null;}catch(e){return null;}}
+function setSync(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function renderOutcomes(list){
-var b=document.getElementById('outcomes-body');b.innerHTML='';
-list.forEach(function(o,i){var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2">'+esc(o.text)+'</textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value="'+esc(o.timeline)+'"></td><td><button class="del-btn" onclick="delO(this)">x</button></td>';b.appendChild(tr);});
-}
-function addOutcome(){var b=document.getElementById('outcomes-body');var i=b.rows.length;var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2"></textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value=""></td><td><button class="del-btn" onclick="delO(this)">x</button></td>';b.appendChild(tr);renum();}
+function renderOutcomes(list){var b=document.getElementById('outcomes-body');b.innerHTML='';list.forEach(function(o,i){var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2">'+esc(o.text)+'</textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value="'+esc(o.timeline)+'"></td><td><button class="del-btn" onclick="delO(this)">×</button></td>';b.appendChild(tr);});}
+function addOutcome(){var b=document.getElementById('outcomes-body');var i=b.rows.length;var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2"></textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value=""></td><td><button class="del-btn" onclick="delO(this)">×</button></td>';b.appendChild(tr);renum();}
 function delO(b){b.closest('tr').remove();renum();}
 function renum(){document.querySelectorAll('#outcomes-body tr').forEach(function(tr,i){tr.querySelector('.row-num').textContent=i+1;});}
-function renderCompetencies(list){
-var g=document.getElementById('comp-grid');g.innerHTML='';
-list.forEach(function(c){var card=document.createElement('div');card.className='comp-card';card.innerHTML='<input class="comp-card-title-input" value="'+esc(c.title)+'"><input class="comp-card-sub-input" value="'+esc(c.sub)+'"><div class="cil"></div><button class="add-row-btn" style="margin-top:8px;font-size:10px;padding:5px 10px;" onclick="addCI(this)">+ Add item</button>';var l=card.querySelector('.cil');c.items.forEach(function(it){l.appendChild(mkCI(it));});g.appendChild(card);});
-}
-function mkCI(t){var d=document.createElement('div');d.className='comp-item';d.innerHTML='<input value="'+esc(t)+'" style="flex:1;font-size:11.5px;border:none;outline:none;background:transparent;"><button class="del-btn" onclick="this.closest('.comp-item').remove()">x</button>';return d;}
+function renderCompetencies(list){var g=document.getElementById('comp-grid');g.innerHTML='';list.forEach(function(c){var card=document.createElement('div');card.className='comp-card';card.innerHTML='<input class="comp-card-title-input" value="'+esc(c.title)+'"><input class="comp-card-sub-input" value="'+esc(c.sub)+'"><div class="cil"></div><button class="add-row-btn" style="margin-top:8px;font-size:10px;padding:5px 10px;" onclick="addCI(this)">+ Add item</button>';var l=card.querySelector('.cil');c.items.forEach(function(it){l.appendChild(mkCI(it));});g.appendChild(card);});}
+function mkCI(t){var d=document.createElement('div');d.className='comp-item';d.innerHTML='<input value="'+esc(t)+'" style="flex:1;font-size:11.5px;border:none;outline:none;background:transparent;"><button class="del-btn" onclick="this.closest('.comp-item').remove()">×</button>';return d;}
 function addCI(b){b.previousElementSibling.appendChild(mkCI(''));}
-function renderStages(list){
-var b=document.getElementById('stages-body');b.innerHTML='';
-list.forEach(function(s){var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge '+s.badge+'">'+esc(s.label)+'</span></td><td style="width:140px"><input class="stage-owner" value="'+esc(s.owner)+'"></td><td><textarea class="stage-focus" rows="2">'+esc(s.focus)+'</textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">x</button></td>';b.appendChild(tr);});
-}
-function addStage(){var b=document.getElementById('stages-body');var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge s-screen">New Stage</span></td><td style="width:140px"><input class="stage-owner" value=""></td><td><textarea class="stage-focus" rows="2"></textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">x</button></td>';b.appendChild(tr);}
+function renderStages(list){var b=document.getElementById('stages-body');b.innerHTML='';list.forEach(function(s){var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge '+s.badge+'">'+esc(s.label)+'</span></td><td style="width:140px"><input class="stage-owner" value="'+esc(s.owner)+'" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;color:#3a4260;"></td><td><textarea class="stage-focus" rows="2" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;line-height:1.5;color:#3a4260;">'+esc(s.focus)+'</textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>';b.appendChild(tr);});}
+function addStage(){var b=document.getElementById('stages-body');var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge s-screen">New Stage</span></td><td style="width:140px"><input class="stage-owner" value="" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;color:#3a4260;"></td><td><textarea class="stage-focus" rows="2" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;line-height:1.5;color:#3a4260;"></textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>';b.appendChild(tr);}
 function collect(){return{roleSubtitle:document.getElementById('role-subtitle').textContent,mission:document.getElementById('mission').value,outcomes:Array.from(document.querySelectorAll('#outcomes-body tr')).map(function(tr){return{text:tr.querySelector('.outcome-text').value,timeline:tr.querySelector('.outcome-timeline').value};}),competencies:Array.from(document.querySelectorAll('#comp-grid .comp-card')).map(function(c){return{title:c.querySelector('.comp-card-title-input').value,sub:c.querySelector('.comp-card-sub-input').value,items:Array.from(c.querySelectorAll('.cil input')).map(function(i){return i.value;})};}),stages:Array.from(document.querySelectorAll('#stages-body tr')).map(function(tr){return{badge:tr.querySelector('.stage-badge').className.replace('stage-badge ','').trim(),label:tr.querySelector('.stage-badge').textContent,owner:tr.querySelector('.stage-owner').value,focus:tr.querySelector('.stage-focus').value};}),footer:{hm:document.getElementById('f-hm').value,loc:document.getElementById('f-loc').value,team:document.getElementById('f-team').value}};}
-function saveAll(){try{localStorage.setItem(K,JSON.stringify(collect()));var t=document.getElementById('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}catch(e){alert('Save failed: '+e.message);}}
-function resetToTemplate(){if(!confirm('Reset to template? Unsaved changes will be lost.'))return;localStorage.removeItem(K);load(T);}
 function load(d){document.getElementById('role-subtitle').textContent=d.roleSubtitle;document.getElementById('mission').value=d.mission;renderOutcomes(d.outcomes);renderCompetencies(d.competencies);renderStages(d.stages);document.getElementById('f-hm').value=d.footer.hm;document.getElementById('f-loc').value=d.footer.loc;document.getElementById('f-team').value=d.footer.team;}
-document.addEventListener('input',function(){clearTimeout(window._st);window._st=setTimeout(saveAll,1500);});
-load(getData()||T);
+async function saveToCloud(){setSync('syncing','Saving...');try{var r=await window.storage.set(SK,JSON.stringify(collect()),true);if(r){setSync('synced','Saved — shared ✓');setTimeout(function(){setSync('synced','All changes saved');},2000);}else{setSync('error','Save failed');}}catch(e){setSync('error','Error: '+e.message);}}
+async function loadFromCloud(){setSync('syncing','Loading...');try{var r=await window.storage.get(SK,true);if(r&&r.value){load(JSON.parse(r.value));setSync('synced','All changes saved');}else{load(DEF);setSync('synced','Loaded default');}}catch(e){load(DEF);setSync('synced','Loaded default');}document.getElementById('loading').style.display='none';}
+var _lastSeen=null;
+async function pollForChanges(){try{var r=await window.storage.get(SK,true);if(r&&r.value&&r.value!==_lastSeen){var remote=JSON.parse(r.value);var local=JSON.stringify(collect());if(JSON.stringify(remote)!==local){_lastSeen=r.value;load(remote);setSync('synced','Updated from collaborator');setTimeout(function(){setSync('synced','All changes saved');},3000);}}}catch(e){}}
+document.addEventListener('input',function(){setSync('syncing','Unsaved changes...');clearTimeout(window._st);window._st=setTimeout(saveToCloud,1500);});
+loadFromCloud().then(function(){setInterval(pollForChanges,15000);});
 </script>
 </body>
 </html>
