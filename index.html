@@ -583,6 +583,28 @@
             border-radius: 3px;
             opacity: 0.5;
         }
+        .btn-move-stage {
+            background: none;
+            border: none;
+            color: var(--text-low);
+            cursor: grab;
+            font-size: 16px;
+            padding: 0 3px;
+            line-height: 1;
+            opacity: 0.4;
+            vertical-align: middle;
+        }
+        .btn-move-stage:hover {
+            opacity: 1;
+            color: var(--blue);
+        }
+        .stage-actions {
+            display: inline-flex;
+            gap: 2px;
+            align-items: center;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
         .btn-remove-stage:hover {
             opacity: 1;
             color: var(--red);
@@ -1393,8 +1415,24 @@
             tr.innerHTML = '<td><div contenteditable="true" class="editable-cell stage-badge-edit" data-placeholder="Stage name" style="display:inline-block;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;color:white;background:var(--blue-medium);min-width:80px;"></div></td>' +
                 '<td><div contenteditable="true" id="ip-owner-' + rowCount + '" class="editable-cell" data-placeholder="Owner name"></div></td>' +
                 '<td><div contenteditable="true" id="ip-focus-' + rowCount + '" class="editable-cell" data-placeholder="Focus areas for this stage"></div>' +
-                '<button class="btn-remove-stage" onclick="removeInterviewStage(this)" title="Remove stage">&times;</button></td>';
+                '<span class="stage-actions">' +
+                '<button class="btn-move-stage" onclick="moveStageUp(this)" title="Move up">&uarr;</button>' +
+                '<button class="btn-move-stage" onclick="moveStageDown(this)" title="Move down">&darr;</button>' +
+                '<button class="btn-remove-stage" onclick="removeInterviewStage(this)" title="Remove stage">&times;</button>' +
+                '</span></td>';
             tbody.appendChild(tr);
+        }
+
+        function moveStageUp(btn) {
+            var tr = btn.closest('tr');
+            var prev = tr.previousElementSibling;
+            if (prev) tr.parentNode.insertBefore(tr, prev);
+        }
+
+        function moveStageDown(btn) {
+            var tr = btn.closest('tr');
+            var next = tr.nextElementSibling;
+            if (next) tr.parentNode.insertBefore(next, tr);
         }
 
         function removeInterviewStage(btn) {
