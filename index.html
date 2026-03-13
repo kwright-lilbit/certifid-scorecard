@@ -1,180 +1,782 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>CertifID Hiring Scorecard</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CertifID â Hiring Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Oxygen:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#1a1f36;background:#f7f8fc}
-:root{--navy:#0f1f3d;--blue:#1a4fd6;--blue-light:#e8eefb;--green:#00a878;--amber:#f0a500;--red:#e03a3a;--border:#dde2f0;--muted:#8590ab;--bg:#f7f8fc}
-.page{max-width:960px;margin:auto;background:#fff;box-shadow:0 2px 24px rgba(15,31,61,.08)}
-.top-bar{background:var(--navy);padding:18px 40px;display:flex;align-items:center;justify-content:space-between}
-.top-bar img{height:28px}
-.top-bar-right{color:rgba(255,255,255,.45);font-size:10px;text-transform:uppercase;letter-spacing:1px}
-.header-band{background:var(--blue);padding:22px 40px 20px;display:flex;justify-content:space-between;align-items:flex-start}
-.header-band h1{color:#fff;font-size:20px;font-weight:800}
-.header-band p{color:rgba(255,255,255,.7);font-size:11px;margin-top:3px}
-.header-actions{display:flex;gap:8px;flex-shrink:0;margin-top:4px;align-items:center}
-.btn{padding:7px 14px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
-.btn-white{background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4)}
-.btn-white:hover{background:rgba(255,255,255,.35)}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{opacity:.88}
-.sync-status{font-size:10px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:5px}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#aaa;flex-shrink:0}
-.sync-dot.synced{background:#00a878}
-.sync-dot.syncing{background:#f0a500;animation:pulse 1s infinite}
-.sync-dot.error{background:#e03a3a}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.body-wrap{padding:28px 40px 40px}
-.notice-bar{background:var(--blue-light);border:1px solid var(--border);border-radius:8px;padding:12px 18px;margin-bottom:26px;font-size:12px;color:#3a4260;line-height:1.6}
-.notice-bar strong{color:var(--blue)}
-.rating-scale{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
-.rating-scale-item{display:flex;align-items:center;gap:8px}
-.scale-dot{width:26px;height:26px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
-section{margin-bottom:30px}
-.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--blue-light)}
-.section-num{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.section-title{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--navy)}
-.section-sub{font-size:11px;color:var(--muted)}
-.editable{border:none;outline:none;font-family:inherit;font-size:inherit;color:inherit;background:transparent;width:100%}
-.editable:focus{background:#fffbe6;border-radius:3px}
-.mission-box{border:1px solid var(--border);border-radius:8px;padding:16px 18px;color:#3a4260;font-size:13px;line-height:1.7;background:var(--bg)}
-table{width:100%;border-collapse:collapse}
-th{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;text-align:left;padding:7px 12px;background:var(--bg);border-bottom:1px solid var(--border)}
-td{padding:10px 12px;border-bottom:1px solid #f0f2f8;vertical-align:top}
-tr:last-child td{border-bottom:none}
-.row-num{color:var(--blue);font-weight:800;font-size:12px;white-space:nowrap;width:28px}
-td textarea{resize:none;min-height:36px;line-height:1.6;color:#3a4260;border:none;outline:none;background:transparent;width:100%;font-family:inherit;font-size:13px}
-td input{color:#3a4260;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%}
-.timeline-cell{white-space:nowrap;width:110px}
-.add-row-btn{margin-top:10px;background:var(--bg);border:1.5px dashed var(--border);color:var(--muted);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%}
-.add-row-btn:hover{border-color:var(--blue);color:var(--blue)}
-.del-btn{background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:0 4px}
-.del-btn:hover{color:#e03a3a}
-.comp-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
-.comp-card{border:1px solid var(--border);border-radius:8px;padding:14px;background:#fff}
-.comp-card-title-input{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--blue);width:100%;border:none;outline:none;background:transparent;font-family:inherit;display:block;margin-bottom:2px}
-.comp-card-sub-input{font-size:10px;color:var(--muted);width:100%;border:none;outline:none;background:transparent;font-family:inherit;display:block;margin-bottom:12px}
-.comp-item{padding:7px 0;border-bottom:1px solid #f0f2f8;font-size:11.5px;color:#3a4260;display:flex;align-items:center;gap:4px}
-.comp-item input{flex:1;font-size:11.5px;border:none;outline:none;background:transparent;font-family:inherit}
-.stage-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block;white-space:nowrap}
-.s-screen{color:#b45309;background:#fef3e2}
-.s-who{color:#1a4fd6;background:#e8eefb}
-.s-collab{color:#5b21b6;background:#f5f0ff}
-.s-task{color:#be185d;background:#fdf2f8}
-.s-exec{color:#0369a1;background:#e0f2fe}
-.s-huddle{color:#00a878;background:#e6f7f3}
-.footer-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px;border-top:1px solid var(--border);padding-top:18px}
-.footer-item label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
-.footer-item input{font-size:13px;color:var(--navy);font-weight:600;width:100%;border:none;border-bottom:1.5px solid var(--border);padding:3px 0;outline:none;background:transparent}
-.footer-brand{text-align:center;padding:18px 40px;background:var(--navy);color:rgba(255,255,255,.4);font-size:10px;letter-spacing:.5px}
-.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-size:14px;color:#0f1f3d;font-weight:600;gap:10px}
-.spinner{width:20px;height:20px;border:2px solid #dde2f0;border-top-color:#1a4fd6;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media print{.btn,.add-row-btn,.del-btn,.header-actions,.sync-status{display:none!important}}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Oxygen', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #2B3034; background: #F7F7F7; padding: 0; }
+  :root {
+    --navy: #102754;
+    --blue: #166EBE;
+    --blue-medium: #2E6DA4;
+    --blue-light: #B7DEFF;
+    --blue-ice: #F4F6FA;
+    --green: #61D690;
+    --amber: #FFA624;
+    --red: #DB132C;
+    --border: #DDDDDD;
+    --border-light: #EEEEEE;
+    --muted: #555555;
+    --bg: #F7F7F7;
+    --bg-alt: #F9F9F9;
+    --text-high: #2B3034;
+    --text-medium: #555555;
+  }
+
+  /* ââ Action Bar ââ */
+  .action-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--navy);
+    padding: 10px 40px;
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    box-shadow: 0 2px 12px rgba(16,39,84,.25);
+  }
+  .action-bar button {
+    font-family: 'Oxygen', sans-serif;
+    font-size: 12px; font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 6px; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all .15s ease;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .btn-pdf { background: var(--blue); color: #fff; }
+  .btn-pdf:hover { background: #1258a0; }
+  .btn-jd { background: var(--green); color: #fff; }
+  .btn-jd:hover { background: #4cc47d; }
+  .btn-clear { background: transparent; color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.2) !important; }
+  .btn-clear:hover { color: #fff; border-color: rgba(255,255,255,.5) !important; }
+  .btn-icon { font-size: 14px; }
+  .progress-indicator {
+    margin-right: auto;
+    color: rgba(255,255,255,.7);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .5px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .progress-bar-bg { width: 140px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.15); }
+  .progress-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(to right, #61D690, #2E76B5); transition: width .3s ease; }
+
+  /* ââ Page ââ */
+  .page { max-width: 960px; margin: auto; background: #fff; box-shadow: 0 2px 24px rgba(16,39,84,.08); }
+  .top-bar { background: var(--navy); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .top-bar img { height: 28px; }
+  .top-bar-right { color: rgba(255,255,255,.45); font-family: 'Oxygen', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .header-band { background: var(--blue); padding: 22px 40px 20px; }
+  .header-band h1 { color: #fff; font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; }
+  .header-band p { color: rgba(255,255,255,.7); font-size: 11px; margin-top: 3px; }
+  .header-band p span[contenteditable] { color: #fff; border-bottom: 1px dashed rgba(255,255,255,.4); padding-bottom: 1px; outline: none; }
+  .body-wrap { padding: 28px 40px 40px; }
+
+  /* ââ Interviewer Info ââ */
+  .interviewer-info {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+    margin-bottom: 26px;
+    background: var(--blue-ice); border: 1px solid var(--border-light);
+    border-radius: 8px; padding: 16px 18px;
+  }
+  .info-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
+  .info-field input, .info-field select {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: 5px;
+    font-family: 'Oxygen', sans-serif; font-size: 13px;
+    color: var(--text-high); background: #fff; transition: border-color .15s;
+  }
+  .info-field input:focus, .info-field select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+
+  /* ââ Notice Bar ââ */
+  .notice-bar {
+    background: var(--blue-ice); border: 1px solid var(--border-light);
+    border-radius: 8px; padding: 14px 18px; margin-bottom: 26px;
+    font-size: 12px; color: var(--text-medium); line-height: 1.6;
+  }
+  .notice-bar strong { color: var(--blue); }
+  .rating-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .legend-circle { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* ââ Sections ââ */
+  section { margin-bottom: 30px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--blue-ice); }
+  .section-num { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-family: 'Oxygen', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--navy); }
+  .section-sub { font-size: 11px; color: var(--muted); font-weight: 400; }
+
+  /* ââ Mission ââ */
+  .mission-box {
+    border: 1px solid var(--border-light); border-radius: 8px;
+    padding: 16px 18px; color: var(--text-medium);
+    font-size: 13px; line-height: 1.7; background: var(--bg-alt);
+    min-height: 60px;
+  }
+  .mission-box[contenteditable]:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+
+  /* ââ Tables ââ */
+  table { width: 100%; border-collapse: collapse; }
+  th { font-size: 9px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); font-weight: 700; text-align: left; padding: 7px 12px; background: var(--bg); border-bottom: 1px solid var(--border); }
+  td { padding: 11px 12px; border-bottom: 1px solid #f0f2f8; vertical-align: top; line-height: 1.6; color: var(--text-medium); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  .row-num { color: var(--blue); font-weight: 800; font-size: 12px; white-space: nowrap; width: 28px; }
+  .timeline-cell { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; width: 110px; }
+  td[contenteditable]:focus { outline: none; background: var(--blue-ice); border-radius: 4px; }
+
+  /* ââ Rating Controls ââ */
+  .rating-group { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
+  .rating-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 2px solid var(--border); background: #fff; cursor: pointer;
+    font-size: 12px; font-weight: 800; color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s ease; font-family: 'Oxygen', sans-serif;
+  }
+  .rating-btn:hover { border-color: var(--blue); color: var(--blue); transform: scale(1.1); }
+  .rating-btn.active-1 { background: var(--red); color: #fff; border-color: var(--red); }
+  .rating-btn.active-2 { background: var(--amber); color: #fff; border-color: var(--amber); }
+  .rating-btn.active-3 { background: var(--green); color: #fff; border-color: var(--green); }
+  .rating-btn.active-4 { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  /* ââ Competencies ââ */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .comp-card { border: 1px solid var(--border-light); border-radius: 8px; padding: 14px; background: #fff; }
+  .comp-card-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--blue); margin-bottom: 2px; }
+  .comp-card-sub { font-size: 10px; color: var(--muted); margin-bottom: 10px; }
+  .comp-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f0f2f8; gap: 8px; }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-label { font-size: 11.5px; color: var(--text-medium); line-height: 1.4; flex: 1; }
+  .comp-label[contenteditable]:focus { outline: none; background: var(--blue-ice); border-radius: 3px; padding: 2px 4px; margin: -2px -4px; }
+
+  /* ââ Stage badges ââ */
+  .stage-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; display: inline-block; white-space: nowrap; }
+  .s-screen { color: #b45309; background: #fef3e2; }
+  .s-who    { color: var(--blue); background: var(--blue-ice); }
+  .s-focus  { color: #5b21b6; background: #f5f0ff; }
+  .s-task   { color: #be185d; background: #fdf2f8; }
+  .s-exec   { color: #0369a1; background: #e0f2fe; }
+  .s-huddle { color: #0d7a57; background: #e6f7f3; }
+
+  /* ââ Notes ââ */
+  .notes-area {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'Oxygen', sans-serif; font-size: 12px; color: var(--text-high);
+    resize: vertical; min-height: 60px; transition: border-color .15s; background: #fff;
+  }
+  .notes-area:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+  .notes-area::placeholder { color: #aab3c5; }
+  .notes-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; display: block; }
+  .notes-block { margin-top: 14px; }
+
+  /* ââ Overall Decision ââ */
+  .decision-section { background: var(--blue-ice); border: 2px solid var(--blue-light); border-radius: 10px; padding: 22px; margin-top: 10px; }
+  .decision-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .decision-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
+  .decision-field select, .decision-field input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: 'Oxygen', sans-serif; font-size: 13px; color: var(--text-high); background: #fff;
+  }
+  .decision-field select:focus, .decision-field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+
+  /* ââ Footer ââ */
+  .footer-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 22px; border-top: 1px solid var(--border); padding-top: 18px; }
+  .footer-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 4px; }
+  .footer-item span { font-size: 13px; color: var(--navy); font-weight: 600; }
+  .footer-item input { width: 100%; padding: 4px 0; border: none; border-bottom: 1px dashed var(--border); font-family: 'Oxygen', sans-serif; font-size: 13px; color: var(--navy); font-weight: 600; background: transparent; }
+  .footer-item input:focus { outline: none; border-bottom-color: var(--blue); }
+  .footer-brand { text-align: center; padding: 18px 40px; background: var(--navy); color: rgba(255,255,255,.4); font-size: 10px; letter-spacing: .5px; }
+
+  /* ââ JD Loader Modal ââ */
+  .jd-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(16,39,84,.6);
+    justify-content: center; align-items: center;
+  }
+  .jd-overlay.show { display: flex; }
+  .jd-modal {
+    background: #fff; border-radius: 14px;
+    width: 90%; max-width: 720px; max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 16px 60px rgba(16,39,84,.3);
+    overflow: hidden;
+  }
+  .jd-modal-header {
+    background: var(--navy); padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .jd-modal-header h2 { color: #fff; font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; }
+  .jd-close { background: none; border: none; color: rgba(255,255,255,.5); font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+  .jd-close:hover { color: #fff; background: rgba(255,255,255,.1); }
+  .jd-modal-body { padding: 24px; flex: 1; overflow-y: auto; }
+  .jd-instructions {
+    background: var(--blue-ice); border: 1px solid var(--border-light);
+    border-radius: 8px; padding: 14px 16px; margin-bottom: 18px;
+    font-size: 12px; color: var(--text-medium); line-height: 1.6;
+  }
+  .jd-instructions strong { color: var(--blue); }
+  .jd-textarea {
+    width: 100%; min-height: 280px; padding: 16px;
+    border: 2px solid var(--border); border-radius: 8px;
+    font-family: 'Oxygen', sans-serif; font-size: 13px;
+    color: var(--text-high); line-height: 1.7; resize: vertical;
+    transition: border-color .15s;
+  }
+  .jd-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+  .jd-textarea::placeholder { color: #aab3c5; }
+  .jd-modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border-light);
+    display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-alt);
+  }
+  .jd-modal-footer button {
+    font-family: 'Oxygen', sans-serif; font-size: 12px; font-weight: 700;
+    padding: 10px 24px; border-radius: 6px; border: none; cursor: pointer;
+    text-transform: uppercase; letter-spacing: .5px;
+  }
+  .jd-btn-cancel { background: var(--border-light); color: var(--text-medium); }
+  .jd-btn-cancel:hover { background: var(--border); }
+  .jd-btn-parse { background: var(--blue); color: #fff; }
+  .jd-btn-parse:hover { background: #1258a0; }
+  .jd-status { padding: 12px 24px; background: #e6f7f3; color: #0d7a57; font-size: 12px; font-weight: 700; display: none; }
+  .jd-status.show { display: block; }
+
+  /* ââ Confirmation dialog ââ */
+  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(16,39,84,.5); justify-content: center; align-items: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: #fff; border-radius: 12px; padding: 28px 32px; max-width: 400px; width: 90%; box-shadow: 0 12px 40px rgba(16,39,84,.2); text-align: center; }
+  .modal-box h3 { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--navy); margin-bottom: 8px; }
+  .modal-box p { font-size: 13px; color: var(--text-medium); margin-bottom: 20px; line-height: 1.6; }
+  .modal-btns { display: flex; gap: 10px; justify-content: center; }
+  .modal-btns button { font-family: 'Oxygen', sans-serif; font-size: 12px; font-weight: 700; padding: 9px 22px; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: .5px; }
+  .modal-cancel { background: var(--border-light); color: var(--text-medium); }
+  .modal-cancel:hover { background: var(--border); }
+  .modal-confirm { background: var(--red); color: #fff; }
+  .modal-confirm:hover { background: #c52020; }
+
+  /* ââ Toast ââ */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 20px rgba(16,39,84,.3); opacity: 0; transition: opacity .3s; z-index: 1000; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  /* ââ Print / PDF ââ */
+  @media print { body { background: #fff; } .page { box-shadow: none; } .action-bar { display: none !important; } }
+  .pdf-mode .action-bar { display: none !important; }
+  .pdf-mode .rating-btn { border-width: 1px; }
+  .pdf-mode .notes-area { border-width: 1px; min-height: auto; }
+  .pdf-mode .info-field input, .pdf-mode .info-field select, .pdf-mode .decision-field input, .pdf-mode .decision-field select { border-width: 1px; box-shadow: none; }
+  .pdf-mode [contenteditable] { border-color: transparent !important; box-shadow: none !important; }
 </style>
 </head>
 <body>
-<div class="loading-overlay" id="loading"><div class="spinner"></div> Loading shared scorecard...</div>
-<div class="page">
-<div class="top-bar">
-<img src="https://cdn.prod.website-files.com/60a41ae959fbb36bd6808d6e/60a420f7114a0b2dfd674bbb_certifid-logo.svg" alt="CertifID"/>
-<span class="top-bar-right">Confidential &middot; Internal Use Only</span>
+
+<!-- Action Bar -->
+<div class="action-bar" id="actionBar">
+  <div class="progress-indicator">
+    <span id="progressText">0 / 26 rated</span>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <button class="btn-jd" onclick="openJDLoader()">
+    <span class="btn-icon">&#9997;</span> Load JD
+  </button>
+  <button class="btn-clear" onclick="confirmClear()">
+    <span class="btn-icon">&#8634;</span> Clear &amp; Reset
+  </button>
+  <button class="btn-pdf" onclick="downloadPDF()">
+    <span class="btn-icon">&#8595;</span> Download PDF
+  </button>
 </div>
-<div class="header-band">
-<div><h1>HIRING SCORECARD</h1><p id="role-subtitle">Interviewer Reference &mdash; Strategic Customer Success Manager</p></div>
-<div class="header-actions">
-<div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting...</span></div>
-<button class="btn btn-white" onclick="window.print()">Print / Save PDF</button>
-<button class="btn btn-green" onclick="saveToCloud()">Save</button>
+
+<!-- Page -->
+<div class="page" id="scorecard">
+  <div class="top-bar">
+    <img src="https://cdn.prod.website-files.com/60a41ae959fbb36bd6808d6e/60a420f7114a0b2dfd674bbb_certifid-logo.svg" alt="CertifID" />
+    <span class="top-bar-right">Confidential &middot; Internal Use Only</span>
+  </div>
+
+  <div class="header-band">
+    <h1>Hiring Scorecard</h1>
+    <p>Interviewer Reference &mdash; <span id="roleTitleDisplay" contenteditable="true">Strategic Customer Success Manager</span></p>
+  </div>
+
+  <div class="body-wrap">
+
+    <!-- Interviewer Info -->
+    <div class="interviewer-info">
+      <div class="info-field"><label>Interviewer Name</label><input type="text" id="interviewerName" placeholder="Your full name" /></div>
+      <div class="info-field"><label>Candidate Name</label><input type="text" id="candidateName" placeholder="Candidate's full name" /></div>
+      <div class="info-field"><label>Interview Date</label><input type="date" id="interviewDate" /></div>
+    </div>
+
+    <!-- Rating Legend -->
+    <div class="notice-bar">
+      <strong>How to use this scorecard:</strong> Rate each area using the 1&ndash;4 scale below. Add notes to support your ratings. When finished, download as PDF and upload to <strong>Lever</strong>. Use <strong>Load JD</strong> to auto-populate from a job description.
+      <div class="rating-legend">
+        <div class="legend-item"><span class="legend-circle" style="background:var(--red);">1</span><span><strong>Strong No</strong> &mdash; Does not meet the bar</span></div>
+        <div class="legend-item"><span class="legend-circle" style="background:var(--amber);">2</span><span><strong>No</strong> &mdash; Some gaps; leaning against</span></div>
+        <div class="legend-item"><span class="legend-circle" style="background:var(--green);">3</span><span><strong>Yes</strong> &mdash; Meets the bar; leaning for</span></div>
+        <div class="legend-item"><span class="legend-circle" style="background:var(--navy);">4</span><span><strong>Strong Yes</strong> &mdash; Exceeds the bar</span></div>
+      </div>
+    </div>
+
+    <!-- 1. Mission -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">1</span>
+        <span class="section-title">Mission</span>
+        <span class="section-sub">&mdash; Why this role exists</span>
+      </div>
+      <div class="mission-box" id="missionBox" contenteditable="true">
+        Own a blended portfolio of enterprise and mid-market customers through the complete post-sale lifecycle &mdash; from onboarding and value realization through renewal and expansion. The SCSM serves as a long-term strategic partner who guides customers through the change management required to deeply adopt CertifID's solutions, drives retention and growth, and connects product value to each customer's broader business outcomes.
+      </div>
+    </section>
+
+    <!-- 2. Outcomes -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">2</span>
+        <span class="section-title">Outcomes</span>
+        <span class="section-sub">&mdash; Rate candidate's ability to deliver each outcome</span>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Key Outcome</th><th>Timeline</th><th style="width:130px;text-align:center;">Rating</th></tr></thead>
+        <tbody id="outcomesBody">
+          <tr>
+            <td class="row-num">1</td>
+            <td contenteditable="true">Design and execute structured onboarding plans &mdash; delivering fast time-to-value with clear success metrics from day one</td>
+            <td class="timeline-cell" contenteditable="true">90 days</td>
+            <td><div class="rating-group" data-name="outcome-1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-num">2</td>
+            <td contenteditable="true">Build multi-threaded relationships including C-suite &mdash; lead EBRs that connect CertifID's value to customer strategy</td>
+            <td class="timeline-cell" contenteditable="true">120 days</td>
+            <td><div class="rating-group" data-name="outcome-2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-num">3</td>
+            <td contenteditable="true">Drive measurable product adoption &mdash; embed CertifID into workflows via proactive change management</td>
+            <td class="timeline-cell" contenteditable="true">180 days</td>
+            <td><div class="rating-group" data-name="outcome-3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-num">4</td>
+            <td contenteditable="true">Proactively monitor account health &mdash; mitigate retention risks before escalation, achieve 90%+ GRR</td>
+            <td class="timeline-cell" contenteditable="true">180 days</td>
+            <td><div class="rating-group" data-name="outcome-4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-num">5</td>
+            <td contenteditable="true">Manage renewal cycles with commercial discipline &mdash; forecast accurately, identify expansion opportunities</td>
+            <td class="timeline-cell" contenteditable="true">Ongoing</td>
+            <td><div class="rating-group" data-name="outcome-5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+          <tr>
+            <td class="row-num">6</td>
+            <td contenteditable="true">Contribute cross-functionally &mdash; surface roadmap feedback and inform process improvements</td>
+            <td class="timeline-cell" contenteditable="true">Ongoing</td>
+            <td><div class="rating-group" data-name="outcome-6"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notes-block">
+        <label class="notes-label">Outcomes &mdash; Notes &amp; Evidence</label>
+        <textarea class="notes-area" placeholder="What evidence did the candidate share about delivering these types of outcomes? Any concerns?"></textarea>
+      </div>
+    </section>
+
+    <!-- 3. Competencies -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">3</span>
+        <span class="section-title">Competencies</span>
+        <span class="section-sub">&mdash; Rate each competency</span>
+      </div>
+      <div class="comp-grid">
+        <!-- Priorities -->
+        <div class="comp-card" id="compPriorities">
+          <div class="comp-card-title">Priorities</div>
+          <div class="comp-card-sub">Must-have qualities</div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Strategic partner mindset</span><div class="rating-group" data-name="comp-p1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Change mgmt in entrenched orgs</span><div class="rating-group" data-name="comp-p2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Commercial acumen &amp; renewal discipline</span><div class="rating-group" data-name="comp-p3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Executive presence &amp; credibility</span><div class="rating-group" data-name="comp-p4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Expansion &amp; competitive displacement</span><div class="rating-group" data-name="comp-p5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+        </div>
+        <!-- Who -->
+        <div class="comp-card" id="compWho">
+          <div class="comp-card-title">Who</div>
+          <div class="comp-card-sub">Ideal traits for the role</div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Self-starter with high urgency</span><div class="rating-group" data-name="comp-w1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Calm under pressure; handles difficult conversations</span><div class="rating-group" data-name="comp-w2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Sets high standards &amp; follows through</span><div class="rating-group" data-name="comp-w3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Collaborative &amp; cross-functional</span><div class="rating-group" data-name="comp-w4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Proactive &mdash; surfaces risk early</span><div class="rating-group" data-name="comp-w5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+        </div>
+        <!-- Values -->
+        <div class="comp-card" id="compValues">
+          <div class="comp-card-title">Values</div>
+          <div class="comp-card-sub">Culture &amp; behavior alignment</div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Integrity &amp; honesty with customers</span><div class="rating-group" data-name="comp-v1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Exceptional communication (written &amp; verbal)</span><div class="rating-group" data-name="comp-v2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Adaptable &amp; organized across large BoB</span><div class="rating-group" data-name="comp-v3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Treats people with respect; active listener</span><div class="rating-group" data-name="comp-v4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Open to feedback; growth mindset</span><div class="rating-group" data-name="comp-v5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+        </div>
+        <!-- Technical -->
+        <div class="comp-card" id="compTechnical">
+          <div class="comp-card-title">Technical</div>
+          <div class="comp-card-sub">Role-specific skills</div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Gainsight / CSP proficiency</span><div class="rating-group" data-name="comp-t1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Salesforce / CRM proficiency</span><div class="rating-group" data-name="comp-t2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Data-driven health &amp; usage reporting</span><div class="rating-group" data-name="comp-t3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">AI fluency in daily workflow</span><div class="rating-group" data-name="comp-t4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+          <div class="comp-row"><span class="comp-label" contenteditable="true">Title industry familiarity (plus)</span><div class="rating-group" data-name="comp-t5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+        </div>
+      </div>
+      <div class="notes-block">
+        <label class="notes-label">Competencies &mdash; Notes &amp; Evidence</label>
+        <textarea class="notes-area" placeholder="What stood out about their competencies? Any red flags or highlights?"></textarea>
+      </div>
+    </section>
+
+    <!-- 4. Interview Plan -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">4</span>
+        <span class="section-title">Interview Plan</span>
+        <span class="section-sub">&mdash; Evaluation stages &amp; focus areas</span>
+      </div>
+      <table>
+        <thead><tr><th>Stage</th><th>Owner</th><th>Focus Area</th></tr></thead>
+        <tbody id="interviewPlanBody">
+          <tr><td><span class="stage-badge s-screen">Screening</span></td><td contenteditable="true" style="white-space:nowrap;">Kalyn</td><td contenteditable="true">Initial fit, compensation expectations, AI fluency, Gainsight/SFDC experience, travel availability (~25%)</td></tr>
+          <tr><td><span class="stage-badge s-who">Hiring Manager</span></td><td contenteditable="true" style="white-space:nowrap;">Christen Burke</td><td contenteditable="true">Career history, strategic account ownership, executive relationships, change management, commercial track record</td></tr>
+          <tr><td><span class="stage-badge s-focus">Collaboration</span></td><td contenteditable="true" style="white-space:nowrap;"></td><td contenteditable="true">Cross-functional style, internal communication, partnering with Sales / Product / Support</td></tr>
+          <tr><td><span class="stage-badge s-task">Assessment / Panel</span></td><td contenteditable="true" style="white-space:nowrap;"></td><td contenteditable="true">Scenario exercise &mdash; strategic account plan, EBR, or at-risk recovery; panel evaluates thinking &amp; judgment</td></tr>
+          <tr><td><span class="stage-badge s-exec">Executive Sponsor</span></td><td contenteditable="true" style="white-space:nowrap;">Tyler</td><td contenteditable="true">Culture fit, long-term potential, executive-level credibility</td></tr>
+          <tr><td><span class="stage-badge s-huddle">Huddle to Decide</span></td><td contenteditable="true" style="white-space:nowrap;">All Interviewers</td><td contenteditable="true">Collective debrief &mdash; align on A/B/C rating and Proceed / Reject in Lever</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. Overall Decision -->
+    <section>
+      <div class="section-header">
+        <span class="section-num">5</span>
+        <span class="section-title">Overall Decision</span>
+        <span class="section-sub">&mdash; Your recommendation</span>
+      </div>
+      <div class="decision-section">
+        <div class="decision-row">
+          <div class="decision-field"><label>Overall Rating</label>
+            <select id="overallRating"><option value="">&mdash; Select &mdash;</option><option value="1">1 &mdash; Strong No</option><option value="2">2 &mdash; No</option><option value="3">3 &mdash; Yes</option><option value="4">4 &mdash; Strong Yes</option></select>
+          </div>
+          <div class="decision-field"><label>Recommendation</label>
+            <select id="recommendation"><option value="">&mdash; Select &mdash;</option><option value="Proceed">Proceed</option><option value="Hold">Hold &mdash; Need more info</option><option value="Reject">Reject</option></select>
+          </div>
+        </div>
+        <div class="notes-block" style="margin-top:0;">
+          <label class="notes-label">Summary &amp; Key Takeaways</label>
+          <textarea class="notes-area" style="min-height:90px;" placeholder="Summarize your overall impression. Top strengths? Any dealbreakers? Confidence level?"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer meta -->
+    <div class="footer-meta">
+      <div class="footer-item"><label>Hiring Manager</label><input type="text" id="footerHM" value="Christen Burke" /></div>
+      <div class="footer-item"><label>Location</label><input type="text" id="footerLoc" value="Remote â ATX / GR / SF" /></div>
+      <div class="footer-item"><label>Team</label><input type="text" id="footerTeam" value="Customer Success" /></div>
+    </div>
+  </div>
+
+  <div class="footer-brand">CertifID &middot; Confidential &middot; Internal Use Only</div>
 </div>
-</div>
-<div class="body-wrap">
-<div class="notice-bar">
-<strong>How to use this document:</strong> This scorecard is shared &mdash; edits are visible to everyone with the link. Submit ratings in <strong>Lever</strong> after your session.
-<div class="rating-scale">
-<div class="rating-scale-item"><span class="scale-dot" style="background:#e03a3a">1</span><span><strong>Strong No</strong> &mdash; Does not meet the bar</span></div>
-<div class="rating-scale-item"><span class="scale-dot" style="background:#f0a500">2</span><span><strong>No</strong> &mdash; Some gaps; leaning against</span></div>
-<div class="rating-scale-item"><span class="scale-dot" style="background:#00a878">3</span><span><strong>Yes</strong> &mdash; Meets the bar; leaning for</span></div>
-<div class="rating-scale-item"><span class="scale-dot" style="background:#0f1f3d">4</span><span><strong>Strong Yes</strong> &mdash; Exceeds the bar</span></div>
-</div>
-</div>
-<section>
-<div class="section-header"><span class="section-num">1</span><span class="section-title">Mission</span><span class="section-sub">&mdash; Why this role exists</span></div>
-<div class="mission-box"><textarea id="mission" class="editable" style="width:100%;resize:vertical;min-height:70px;line-height:1.7"></textarea></div>
-</section>
-<section>
-<div class="section-header"><span class="section-num">2</span><span class="section-title">Outcomes</span><span class="section-sub">&mdash; What this person must deliver</span></div>
-<table><thead><tr><th>#</th><th>Key Outcome</th><th style="width:120px">Target Timeline</th><th style="width:30px"></th></tr></thead><tbody id="outcomes-body"></tbody></table>
-<button class="add-row-btn" onclick="addOutcome()">+ Add Outcome</button>
-</section>
-<section>
-<div class="section-header"><span class="section-num">3</span><span class="section-title">Competencies</span><span class="section-sub">&mdash; How the job should be done</span></div>
-<div class="comp-grid" id="comp-grid"></div>
-</section>
-<section>
-<div class="section-header"><span class="section-num">4</span><span class="section-title">Interview Plan</span><span class="section-sub">&mdash; Evaluation stages and focus areas</span></div>
-<table><thead><tr><th>Stage</th><th>Owner</th><th>Focus Area</th><th style="width:30px"></th></tr></thead><tbody id="stages-body"></tbody></table>
-<button class="add-row-btn" onclick="addStage()">+ Add Stage</button>
-</section>
-<div class="footer-meta">
-<div class="footer-item"><label>Hiring Manager</label><input id="f-hm"/></div>
-<div class="footer-item"><label>Location</label><input id="f-loc"/></div>
-<div class="footer-item"><label>Team</label><input id="f-team"/></div>
-</div>
-</div>
-<div class="footer-brand">&copy; CertifID &middot; Confidential &middot; Internal Use Only</div>
-</div>
-<script>
-var SK='certifid-scsm-scorecard-shared-v1';
-var DEF={
-roleSubtitle:'Interviewer Reference — Strategic Customer Success Manager',
-mission:"Own a blended portfolio of enterprise and mid-market customers through the complete post-sale lifecycle — from onboarding and value realization through renewal and expansion. The SCSM serves as a long-term strategic partner who guides customers through the change management required to deeply adopt CertifID’s solutions, drives retention and growth, and connects product value to each customer’s broader business outcomes.",
-outcomes:[
-{text:"Own and manage a portfolio of enterprise and mid-market customers across the full post-sale lifecycle — acting as a strategic partner responsible for adoption, retention, and expansion.",timeline:"30 days"},
-{text:"Design and execute structured onboarding plans that deliver fast time-to-value, establish clear success metrics, and set customers up for long-term adoption.",timeline:"90 days"},
-{text:"Build multi-threaded relationships across all Enterprise and Mid-Market accounts, including C-suite stakeholders — and lead executive business reviews that connect CertifID’s value to each customer’s broader business strategy.",timeline:"120 days"},
-{text:"Leverage customer data and live touchpoints to monitor account health, identify adoption gaps, and proactively surface and mitigate retention risk — achieving 90%+ GRR across the full BoB.",timeline:"180 days"},
-{text:"Manage renewal cycles with commercial discipline — forecasting accurately, identifying expansion opportunities alongside renewals, and navigating competitive displacement scenarios with strategic confidence.",timeline:"Ongoing"},
-{text:"Engage in and occasionally lead cross-functional work that enhances customer experience, informs roadmap priorities, and improves internal collaboration.",timeline:"Ongoing"}
-],
-competencies:[
-{title:"Priorities",sub:"Must-have qualities",items:["Strategic partner mindset","Change management in established customer environments","Commercial acumen & renewal discipline","Executive presence & C-suite credibility","Expansion & competitive displacement confidence"]},
-{title:"Who",sub:"Ideal traits for the role",items:["Self-starter with high urgency & ownership","Calm under pressure; handles difficult conversations","Sets high standards and follows through","Collaborative cross-functionally","Proactive — surfaces risk before it escalates"]},
-{title:"Values",sub:"Culture & behavior alignment",items:["Integrity and honesty with customers","Exceptional written & verbal communication","Organized across a large, complex BoB","Treats people with respect; active listener","Open to feedback; continuous growth mindset"]},
-{title:"Technical",sub:"Role-specific skills",items:["Gainsight / CSP proficiency","Salesforce / CRM proficiency","Customer data & usage reporting","AI fluency to accelerate PM workflows","Title industry familiarity (plus)"]}
-],
-stages:[
-{badge:"s-screen",label:"Screening",owner:"Kalyn",focus:"Initial fit, compensation expectations, AI fluency, Gainsight/SFDC experience, travel availability (~25%)"},
-{badge:"s-who",label:"Hiring Manager Interview",owner:"Christen Burke",focus:"Career history, strategic account ownership patterns, executive relationship building, change management experience, and commercial track record"},
-{badge:"s-collab",label:"Collaboration Interview",owner:"",focus:"Cross-functional collaboration style, how they partner with Sales, Product, and Support teams, and ability to contribute beyond their own book of business"},
-{badge:"s-task",label:"Assessment / Panel",owner:"",focus:"Structured scenario exercise — candidate presents a strategic account plan, EBR, or at-risk recovery approach; panel evaluates strategic thinking and commercial judgment"},
-{badge:"s-exec",label:"Executive Sponsor",owner:"Tyler",focus:"Senior leadership alignment — culture fit, long-term potential, and confirmation candidate can operate credibly at the executive level"},
-{badge:"s-huddle",label:"Huddle to Decide",owner:"All Interviewers",focus:"Collective debrief against scorecard — align on rating and Proceed / Reject recommendation in Lever"}
-],
-footer:{hm:"Christen Burke",loc:"Remote — ATX / GR / SF",team:"Customer Success"}
-};
-function setSync(s,l){document.getElementById('sync-dot').className='sync-dot '+s;document.getElementById('sync-label').textContent=l;}
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function renderOutcomes(list){var b=document.getElementById('outcomes-body');b.innerHTML='';list.forEach(function(o,i){var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2">'+esc(o.text)+'</textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value="'+esc(o.timeline)+'"></td><td><button class="del-btn" onclick="delO(this)">×</button></td>';b.appendChild(tr);});}
-function addOutcome(){var b=document.getElementById('outcomes-body');var i=b.rows.length;var tr=document.createElement('tr');tr.innerHTML='<td class="row-num">'+(i+1)+'</td><td><textarea class="editable outcome-text" rows="2"></textarea></td><td class="timeline-cell"><input class="editable outcome-timeline" value=""></td><td><button class="del-btn" onclick="delO(this)">×</button></td>';b.appendChild(tr);renum();}
-function delO(b){b.closest('tr').remove();renum();}
-function renum(){document.querySelectorAll('#outcomes-body tr').forEach(function(tr,i){tr.querySelector('.row-num').textContent=i+1;});}
-function renderCompetencies(list){var g=document.getElementById('comp-grid');g.innerHTML='';list.forEach(function(c){var card=document.createElement('div');card.className='comp-card';card.innerHTML='<input class="comp-card-title-input" value="'+esc(c.title)+'"><input class="comp-card-sub-input" value="'+esc(c.sub)+'"><div class="cil"></div><button class="add-row-btn" style="margin-top:8px;font-size:10px;padding:5px 10px;" onclick="addCI(this)">+ Add item</button>';var l=card.querySelector('.cil');c.items.forEach(function(it){l.appendChild(mkCI(it));});g.appendChild(card);});}
-function mkCI(t){var d=document.createElement('div');d.className='comp-item';d.innerHTML='<input value="'+esc(t)+'" style="flex:1;font-size:11.5px;border:none;outline:none;background:transparent;"><button class="del-btn" onclick="this.closest('.comp-item').remove()">×</button>';return d;}
-function addCI(b){b.previousElementSibling.appendChild(mkCI(''));}
-function renderStages(list){var b=document.getElementById('stages-body');b.innerHTML='';list.forEach(function(s){var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge '+s.badge+'">'+esc(s.label)+'</span></td><td style="width:140px"><input class="stage-owner" value="'+esc(s.owner)+'" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;color:#3a4260;"></td><td><textarea class="stage-focus" rows="2" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;line-height:1.5;color:#3a4260;">'+esc(s.focus)+'</textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>';b.appendChild(tr);});}
-function addStage(){var b=document.getElementById('stages-body');var tr=document.createElement('tr');tr.innerHTML='<td><span class="stage-badge s-screen">New Stage</span></td><td style="width:140px"><input class="stage-owner" value="" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;color:#3a4260;"></td><td><textarea class="stage-focus" rows="2" style="border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;width:100%;line-height:1.5;color:#3a4260;"></textarea></td><td><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>';b.appendChild(tr);}
-function collect(){return{roleSubtitle:document.getElementById('role-subtitle').textContent,mission:document.getElementById('mission').value,outcomes:Array.from(document.querySelectorAll('#outcomes-body tr')).map(function(tr){return{text:tr.querySelector('.outcome-text').value,timeline:tr.querySelector('.outcome-timeline').value};}),competencies:Array.from(document.querySelectorAll('#comp-grid .comp-card')).map(function(c){return{title:c.querySelector('.comp-card-title-input').value,sub:c.querySelector('.comp-card-sub-input').value,items:Array.from(c.querySelectorAll('.cil input')).map(function(i){return i.value;})};}),stages:Array.from(document.querySelectorAll('#stages-body tr')).map(function(tr){return{badge:tr.querySelector('.stage-badge').className.replace('stage-badge ','').trim(),label:tr.querySelector('.stage-badge').textContent,owner:tr.querySelector('.stage-owner').value,focus:tr.querySelector('.stage-focus').value};}),footer:{hm:document.getElementById('f-hm').value,loc:document.getElementById('f-loc').value,team:document.getElementById('f-team').value}};}
-function load(d){document.getElementById('role-subtitle').textContent=d.roleSubtitle;document.getElementById('mission').value=d.mission;renderOutcomes(d.outcomes);renderCompetencies(d.competencies);renderStages(d.stages);document.getElementById('f-hm').value=d.footer.hm;document.getElementById('f-loc').value=d.footer.loc;document.getElementById('f-team').value=d.footer.team;}
-async function saveToCloud(){setSync('syncing','Saving...');try{var r=await window.storage.set(SK,JSON.stringify(collect()),true);if(r){setSync('synced','Saved — shared ✓');setTimeout(function(){setSync('synced','All changes saved');},2000);}else{setSync('error','Save failed');}}catch(e){setSync('error','Error: '+e.message);}}
-async function loadFromCloud(){setSync('syncing','Loading...');try{var r=await window.storage.get(SK,true);if(r&&r.value){load(JSON.parse(r.value));setSync('synced','All changes saved');}else{load(DEF);setSync('synced','Loaded default');}}catch(e){load(DEF);setSync('synced','Loaded default');}document.getElementById('loading').style.display='none';}
-var _lastSeen=null;
-async function pollForChanges(){try{var r=await window.storage.get(SK,true);if(r&&r.value&&r.value!==_lastSeen){var remote=JSON.parse(r.value);var local=JSON.stringify(collect());if(JSON.stringify(remote)!==local){_lastSeen=r.value;load(remote);setSync('synced','Updated from collaborator');setTimeout(function(){setSync('synced','All changes saved');},3000);}}}catch(e){}}
-document.addEventListener('input',function(){setSync('syncing','Unsaved changes...');clearTimeout(window._st);window._st=setTimeout(saveToCloud,1500);});
-loadFromCloud().then(function(){setInterval(pollForChanges,15000);});
-</script>
-</body>
-</html>
+
+<!-- JD Loader Modal -->
+<div class="jd-overlay" id="jdOverlay">
+  <div class="jd-modal">
+    <div class="jd-modal-header">
+      <h2>Load Job Description</h2>
+      <button class="jd-close" onclick="closeJDLoader()">&times;</button>
+    </div>
+    <div class="jd-status" id="jdStatus"></div>
+    <div class="jd-modal-body">
+      <div class="jd-instructions">
+        <strong>Paste a full job description below.</strong> The parser will extract the role title, mission/purpose, key responsibilities (mapped to Outcomes), and required skills/qualifications
+X\YÈÛÛ\][ÚY\ÊK[ÝHØ[Y][HY[Y\\Ú[ËÙ]^\XHÛ\ÜÏH]^\XHYH[]XÙZÛ\H\ÝHH[Ø\ØÜ\[Û\K^[\HÙXÝ[ÛÈH\Ù\ÛÚÜÈÜ¸ (Ø]HÈÛB¸ (XÝ]HÛHÈ\ÜÙHÈZ\ÜÚ[Û¸ (\ÜÛÚX[]Y\ÈÈÙ^HÝ]ÛÛY\ÈÈÚ][ÝIÛÂ¸ (\]Z\[Y[ÈÈ]X[YXØ][ÛÈÈÚÚ[Â¸ (XÙHÈ]\ÈÈY\YÈÛ\ÈÝ^\XOÙ]]Û\ÜÏH[[Ù[YÛÝ\]ÛÛ\ÜÏHXXØ[Ù[ÛÛXÚÏHÛÜÙRØY\
+HØ[Ù[Ø]Û]ÛÛ\ÜÏHX\\ÙHÛÛXÚÏH\ÙR
+
+H\ÙH	[\ÈÜ[]OØ]ÛÙ]Ù]Ù]KKHÛX\ÛÛ\X][Û[Ù[KO]Û\ÜÏH[Ù[[Ý\^HYHÛX\[Ù[]Û\ÜÏH[Ù[XÞÏÛX\ØÛÜXØ\ÏÚÏ\ÈÚ[\\ÙH[][ÜËÝ\Ë[ÜHY[È[\Ù]HØÛÜXØ\È]ÈY][Ý]K\ÈØ[ÝH[ÛKÜ]Û\ÜÏH[Ù[XÈ]ÛÛ\ÜÏH[Ù[XØ[Ù[ÛÛXÚÏHÛÜÙPÛX\[Ù[
+
+HØ[Ù[Ø]Û]ÛÛ\ÜÏH[Ù[XÛÛ\HÛÛXÚÏHÛX\[
+
+HÛX\]\][ÏØ]ÛÙ]Ù]Ù]KKHØ\ÝKO]Û\ÜÏHØ\ÝYHØ\ÝÙ]ØÜ\ËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈUSÈUÓÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û[]][Ð]ÛÊ
+HÂØÝ[Y[]Y\TÙ[XÝÜ[
+	Ë][ËYÜÝ\	ÊKÜXXÚ
+ÜÝ\OÂÜÝ\]Y\TÙ[XÝÜ[
+	Ë][ËXÊKÜXXÚ
+OÂY][\Ý[\	ØÛXÚÉË
+
+HOÂÛÛÝ[H]\Ù][ÂÛÛÝØ\ÐXÝ]HHÛ\ÜÓ\ÝÛÛZ[Ê	ØXÝ]KIÈ
+È[
+NÂÜÝ\]Y\TÙ[XÝÜ[
+	Ë][ËXÊKÜXXÚ
+OÛ\ÜÓ[YHH	Ü][ËXÊNÂY
+]Ø\ÐXÝ]JHÛ\ÜÓ\ÝY
+	ØXÝ]KIÈ
+È[
+NÂ\]TÙÜ\ÜÊ
+NÂJNÂJNÂJNÂB[]][Ð]ÛÊ
+NÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÑÔTÔÈPÒÒSÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û\]TÙÜ\ÜÊ
+HÂÛÛÝÜÝ\ÈHØÝ[Y[]Y\TÙ[XÝÜ[
+	Ë][ËYÜÝ\	ÊNÂ]]YHÂÜÝ\ËÜXXÚ
+ÈOÈY
+Ë]Y\TÙ[XÝÜ	Ë][ËXØÛ\ÜÊHXÝ]KHIÊJH]Y
+ÊÎÈJNÂÛÛÝÝ[HÜÝ\Ë[ÝÂÛÛÝÝHX]Ý[
+
+]YÈÝ[
+H
+L
+NÂØÝ[Y[Ù][[Y[RY
+	ÜÙÜ\ÜÕ^	ÊK^ÛÛ[H]Y
+È	ÈÈ	È
+ÈÝ[
+È	È]Y	ÎÂØÝ[Y[Ù][[Y[RY
+	ÜÙÜ\ÜÑ[	ÊKÝ[KÚYHÝ
+È	ÉIÎÂBËÈÙ]Ù^IÜÈ]BØÝ[Y[Ù][[Y[RY
+	Ú[\Y]Ñ]IÊK[YP\Ñ]HH]È]J
+NÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÕÓÐQËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÝÛØY
+HÂÛÛÝ[HØÝ[Y[Ù][[Y[RY
+	ÜØÛÜXØ\	ÊNÂÛÛÝØ[HØÝ[Y[Ù][[Y[RY
+	ØØ[Y]S[YIÊK[YK[J
+NÂÛÛÝ[\Y]Ù\HØÝ[Y[Ù][[Y[RY
+	Ú[\Y]Ù\[YIÊK[YK[J
+NÂÛÛÝ]U[HØÝ[Y[Ù][[Y[RY
+	Ú[\Y]Ñ]IÊK[YNÂÛÛÝÛHHØÝ[Y[Ù][[Y[RY
+	ÜÛU]Q\Ü^IÊK^ÛÛ[[J
+K\XÙJ×ÊËÙË	ËIÊNÂ][[[YHHÛH	ÔØÛÜXØ\	ÎÂY
+Ø[
+H[[[YH
+ÏH	×ÉÈ
+ÈØ[\XÙJ×ÊËÙË	ËIÊNÂY
+[\Y]Ù\H[[[YH
+ÏH	×ÉÈ
+È[\Y]Ù\\XÙJ×ÊËÙË	ËIÊNÂY
+]U[
+H[[[YH
+ÏH	×ÉÈ
+È]U[Â[[[YH
+ÏH	ËÎÂØÝ[Y[ÙKÛ\ÜÓ\ÝY
+	Ü[[ÙIÊNÂ[
+KÙ]
+ÂX\Ú[ÌKKKWK[[[YN[[[YK[XYÙNÈ\N	ÚYÉË]X[]NNK[Ø[\ÎÈØØ[N\ÙPÓÔÎYK]\[\[ÎYHKÔÈ[]	Ú[ËÜX]	Û]\ËÜY[][Û	ÜÜZ]	ÈKYÙXXZÎÈ[ÙNÉØ]ÚYX[	Ë	ØÜÜÉË	ÛYØXÞI×HBJKÛJ[
+KØ]J
+K[
+
+HOÂØÝ[Y[ÙKÛ\ÜÓ\Ý[[ÝJ	Ü[[ÙIÊNÂÚÝÕØ\Ý
+	ÔÝÛØYYÝXØÙ\ÜÙ[IÊNÂJNÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÓPTÈTÑUËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÛÛ\PÛX\
+HÈØÝ[Y[Ù][[Y[RY
+	ØÛX\[Ù[	ÊKÛ\ÜÓ\ÝY
+	ÜÚÝÉÊNÈB[Ý[ÛÛÜÙPÛX\[Ù[
+
+HÈØÝ[Y[Ù][[Y[RY
+	ØÛX\[Ù[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÈB[Ý[ÛÛX\[
+
+HÂØÝ[Y[]Y\TÙ[XÝÜ[
+	Ë][ËXÊKÜXXÚ
+OÛ\ÜÓ[YHH	Ü][ËXÊNÂØÝ[Y[]Y\TÙ[XÝÜ[
+	ËÝ\ËX\XIÊKÜXXÚ
+HOK[YHH	ÉÊNÂØÝ[Y[Ù][[Y[RY
+	Ú[\Y]Ù\[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ØØ[Y]S[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	Ú[\Y]Ñ]IÊK[YP\Ñ]HH]È]J
+NÂØÝ[Y[Ù][[Y[RY
+	ÛÝ\[][ÉÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
+	ÜXÛÛ[Y[][ÛÊK[YHH	ÉÎÂ\]TÙÜ\ÜÊ
+NÂÛÜÙPÛX\[Ù[
+
+NÂÚÝÕØ\Ý
+	ÔØÛÜXØ\ÛX\Y8 %XYHÜH^Ø[Y]IÊNÂÚ[ÝËØÜÛÊÈÜZ][Ü	ÜÛ[ÛÝ	ÈJNÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÐTÕËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÚÝÕØ\Ý
+\ÙÊHÂÛÛÝHØÝ[Y[Ù][[Y[RY
+	ÝØ\Ý	ÊNÂ^ÛÛ[H\ÙÎÂÛ\ÜÓ\ÝY
+	ÜÚÝÉÊNÂÙ][Y[Ý]
+
+
+HOÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊKÌ
+NÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÐQTÈTÑTËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÜ[ØY\
+HÈØÝ[Y[Ù][[Y[RY
+	ÚÝ\^IÊKÛ\ÜÓ\ÝY
+	ÜÚÝÉÊNÈB[Ý[ÛÛÜÙRØY\
+HÂØÝ[Y[Ù][[Y[RY
+	ÚÝ\^IÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÂØÝ[Y[Ù][[Y[RY
+	ÚÝ]\ÉÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÂB[Ý[Û\ÙR
+
+HÂÛÛÝ]ÈHØÝ[Y[Ù][[Y[RY
+	Ú[]	ÊK[YK[J
+NÂY
+\]ÊHÈÚÝÕØ\Ý
+	ÔX\ÙH\ÝHHØ\ØÜ\[Û\Ý	ÊNÈ]\ÈBÛÛÝ[\ÈH]ËÜ]
+	×ÊKX\
+O[J
+JK[\O[Ý
+NÂÛÛÝ^H]ÎÂËÈ8¥ 8¥ ^XÝÛH]H8¥ 8¥ ÛÛÝ]T]\ÈHÂÊÎØÊ]_Û_ÜÚ][ÛWÊÎ»ï&WÊÊKÚK×Ê×ÊÊKÛKNÂ]ÛU]HH	ÉÎÂÜ
+ÛÛÝÙ]T]\ÊHÂÛÛÝHH^X]Ú
+
+NÂY
+JHÈÛU]HHVÌWK[J
+K\XÙJ×
+ËÙË	ÉÊNÈXZÎÈBBY
+\ÛU]H	[\Ë[Ý
+HÂÛÛÝ\ÝH[\ÖÌK\XÙJ×Ê×ÊË	ÉÊK\XÙJ×
+ËÙË	ÉÊK[J
+NÂY
+\Ý[Ý	Y\Ý[ÛY\Ê	ËÊJHÛU]HH\ÝÂBËÈ8¥ 8¥ ÙXÝ[ÛÜ]\8¥ 8¥ [Ý[Û[ÙXÝ[ÛXY[ÜÊHÂÛÛÝ]\ÈHXY[ÜËX\
+O]ÈYÑ^
+	ÊÎWÊÎÊ×Ê
+ÊOÊ	È
+È
+È	ÊWÊÎ
+ÊO×ÊÎ»ï&O×ÊË	Ú[IÊJNÂÜ
+ÛÛÝÙ]\ÊHÂÛÛÝHH^X]Ú
+
+NÂY
+JHÂÛÛÝÝ\HK[^
+ÈVÌK[ÝÂÛÛÝ^ÙXÝ[ÛH^ÛXÙJÝ\
+KX]Ú
+×ÊÎÊ×ÊËJWÊ
+
+VÐKVKÊNÂÛÛÝ[H^ÙXÝ[ÛÈÝ\
+È^ÙXÝ[Û[^^[ÝÂ]\^ÛXÙJÝ\[
+K[J
+NÂBB]\	ÉÎÂB[Ý[Û^XÝ[]ÊÙXÝ[Û^
+HÂY
+\ÙXÝ[Û^
+H]\×NÂÛÛÝ[]ÈH×NÂÛÛÝ[\ÈHÙXÝ[Û^Ü]
+	×ÊNÂÜ
+ÛÛÝ[HÙ[\ÊHÂÛÛÝÛX[YH[K\XÙJ××ø (W
+JËË	ÉÊK[J
+NÂY
+ÛX[Y[ÝL	ÛX[Y[ÝÌ
+HÂ[]Ë\Ú
+ÛX[Y
+NÂBB]\[]ÎÂBËÈ8¥ 8¥ ^XÝZ\ÜÚ[ÛÈXÝ]8¥ 8¥ ÛÛÝZ\ÜÚ[Û^H[ÙXÝ[ÛÂ	ØXÝ]ÊÝWÊÜÛIË	ØXÝ]ÊÝ\×ÊÜÛIË	ÜÛWÊÛÝ\Y]ÉË	Ü\ÜÙIË	ÛZ\ÜÚ[ÛË	ÛÝ\Y]ÉË	ÜÝ[[X\IË	ØXÝ]ÊÝWÊÜÜÚ][ÛË	ÝWÊÛÜÜ[]IË	ÜÛWÊÜÝ[[X\IË	ÜÜÚ][ÛÊÜÝ[[X\IË	Ù\ØÜ\[ÛÂJNÂËÈ8¥ 8¥ ^XÝÝ]ÛÛY\ÈÈ\ÜÛÚX[]Y\È8¥ 8¥ ÛÛÝ\Ü^H[ÙXÝ[ÛÂ	ÝÚ]ÊÞ[ÝKÛÊÙÉË	Ü\ÜÛÚX[]Y\ÉË	ÚÙ^WÊÜ\ÜÛÚX[]Y\ÉË	ÚÙ^WÊÛÝ]ÛÛY\ÉË	ÛÝ]ÛÛY\ÉË	ÝÚ]ÊÞ[ÝKÛÊÛÝÛË	Þ[Ý\ÊÜ\ÜÛÚX[]Y\ÉË	Ú[ÊÝ\×ÊÜÛIË	Ù]Y\ÉË	ØXØÛÝ[X[]Y\ÉË	Ù^XÝ][ÛÉË	ÝWÊÜÛIÂJNÂÛÛÝÝ]ÛÛY\ÈH^XÝ[]Ê\Ü^
+NÂËÈ8¥ 8¥ ^XÝ\]Z\YÚÚ[È8¥ 8¥ ÛÛÝ\U^H[ÙXÝ[ÛÂ	ÝÚ]ÊÞ[ÝKÛÊØ[ÉË	Ü\]Z\[Y[ÉË	Ü]X[YXØ][ÛÉË	Ü\]Z\YÊÜÚÚ[ÉË	ÝÚ]ÊÝÙKÜWÊÛÛÚÚ[×ÊÙÜË	Û]\ÝÊÚ]IË	Ü\]Z\YÊÙ^\Y[ÙIË	ÜÚÚ[×ÊÉÊÙ^\Y[ÙIË	ØXÝ]ÊÞ[ÝIË	ÝÚ×ÊÞ[ÝWÊØ\IË	Þ[ÝWÊÚ]IË	Ù^\Y[ÙIÂJNÂÛÛÝ\]Z\YÚÚ[ÈH^XÝ[]Ê\U^
+NÂËÈ8¥ 8¥ ^XÝXÙK]ËR]\È8¥ 8¥ ÛÛÝXÙU^H[ÙXÝ[ÛÂ	ÛXÙWÊÝ×ÊÚ]IË	ÜY\Y	Ë	ØÛ\ÉË	Ü\ÉË	ØY][Û[ÊÜÚÚ[ÉË	Ù\Ú\Y	Ë	Ú]Ü×ÊØWÊÜ\ÉÂJNÂÛÛÝXÙUÒ]\ÈH^XÝ[]ÊXÙU^
+NÂËÈ8¥ 8¥ \H\ÙY]H8¥ 8¥ ]Ü[]YHÂËÈÛH]BY
+ÛU]JHÂØÝ[Y[Ù][[Y[RY
+	ÜÛU]Q\Ü^IÊK^ÛÛ[HÛU]NÂÜ[]Y
+ÊÎÂBËÈZ\ÜÚ[ÛY
+Z\ÜÚ[Û^
+HÂÛÛÝÛX[YHZ\ÜÚ[Û^Ü]
+	×ÊK[\O[J
+JKÛXÙJ
+KÚ[	È	ÊK[J
+NÂY
+ÛX[Y[ÝÌ
+HÂØÝ[Y[Ù][[Y[RY
+	ÛZ\ÜÚ[ÛÞ	ÊK^ÛÛ[HÛX[YÂÜ[]Y
+ÊÎÂBBËÈÝ]ÛÛY\ÂY
+Ý]ÛÛY\Ë[Ý
+HÂÛÛÝÙHHØÝ[Y[Ù][[Y[RY
+	ÛÝ]ÛÛY\ÐÙIÊNÂÛÛÝX^ÝÜÈHX]Z[Ý]ÛÛY\Ë[Ý
+NÂ][H	ÉÎÂÜ
+]HHÈHX^ÝÜÎÈJÊÊHÂ[
+ÏH	ÏÈ
+Â	ÏÛ\ÜÏHÝË[[HÈ
+È
+H
+ÈJH
+È	ÏÝÈ
+Â	ÏÛÛ[Y]XOHYHÈ
+È\ØØ\R[
+Ý]ÛÛY\ÖÚWJH
+È	ÏÝÈ
+Â	ÏÛ\ÜÏH[Y[[KXÙ[ÛÛ[Y]XOHYHÈ
+È
+HÈ	ÎL^\ÉÈH
+È	ÌN^\ÉÈ	ÓÛÛÚ[ÉÊH
+È	ÏÝÈ
+Â	Ï]Û\ÜÏH][ËYÜÝ\]K[[YOHÝ]ÛÛYKIÈ
+È
+H
+ÈJH
+È	ÈÈ
+Â	Ï]ÛÛ\ÜÏH][ËX]K][HHOØ]ÛÈ
+Â	Ï]ÛÛ\ÜÏH][ËX]K][HØ]ÛÈ
+Â	Ï]ÛÛ\ÜÏH][ËX]K][HÈÏØ]ÛÈ
+Â	Ï]ÛÛ\ÜÏH][ËX]K][HØ]ÛÈ
+Â	ÏÙ]ÝÝÎÂBÙK[\SH[ÂÜ[]Y
+ÊÎÂBËÈÛÛ\][ÚY\È8 %Ü]\]Z\YÚÚ[È[È[Ü]Y\È	XÚXØ[Y
+\]Z\YÚÚ[Ë[Ý
+HÂÛÛÝXÚÙ^]ÛÜÈH×ÛÙØ\_ÛÛ]Ü_ÙXÚY[^\Y[ÙHÚ]Ø[\ÙÜÙ_XÜÝØZ[ÚYÚ\_Ü[^Ù[Ü_\_ØX\ßXÚÞ\Ý[_]_[[]Xß\Ü\ÚØ\Z_]]ÛX]
+WÚNÂÛÛÝXÚÚÚ[ÈH×NÂÛÛÝÛÜTÚÚ[ÈH×NÂ\]Z\YÚÚ[ËÜXXÚ
+ÈOÂY
+XÚÙ^]ÛÜË\Ý
+ÊJHXÚÚÚ[Ë\Ú
+ÊNÂ[ÙHÛÜTÚÚ[Ë\Ú
+ÊNÂJNÂ[Ý[Û\]PÛÛ\Ø\
+Ø\YY^][\ËX^
+HÂÛÛÝØ\HØÝ[Y[Ù][[Y[RY
+Ø\Y
+NÂY
+XØ\][\Ë[ÝOOH
+H]\ÂÛÛÝ^\Ý[ÈHØ\]Y\TÙ[XÝÜ[
+	ËÛÛ\\ÝÉÊNÂÛÛÝÛÝ[HX]Z[][\Ë[ÝX^
+JNÂÜ
+]HHÈHÛÝ[	H^\Ý[Ë[ÝÈJÊÊHÂÛÛÝX[H^\Ý[ÖÚWK]Y\TÙ[XÝÜ	ËÛÛ\[X[	ÊNÂY
+X[
+HX[^ÛÛ[H][\ÖÚWK[Ý
+È][\ÖÚWKÝXÝ[Ê
+MÊH
+È	ËÈ][\ÖÚWNÂBBY
+ÛÜTÚÚ[Ë[Ý
+HÈ\]PÛÛ\Ø\
+	ØÛÛ\[Ü]Y\ÉË	ØÛÛ\\	ËÛÜTÚÚ[Ë
+JNÈÜ[]Y
+ÊÎÈBY
+XÚÚÚ[Ë[Ý
+HÈ\]PÛÛ\Ø\
+	ØÛÛ\XÚXØ[	Ë	ØÛÛ\]	ËXÚÚÚ[Ë
+JNÈÜ[]Y
+ÊÎÈBBËÈXÙK]ËZ]\È8¡¤[Y\ÈØ\
+ÛÙÚÚ[ÈÙ[\JBY
+XÙUÒ]\Ë[Ý
+HÂÛÛÝØ\HØÝ[Y[Ù][[Y[RY
+	ØÛÛ\[Y\ÉÊNÂY
+Ø\
+HÂÛÛÝÝÜÈHØ\]Y\TÙ[XÝÜ[
+	ËÛÛ\\ÝÉÊNÂÛÛÝÛÝ[HX]Z[XÙUÒ]\Ë[Ý
+JNÂÜ
+]HHÈHÛÝ[	HÝÜË[ÝÈJÊÊHÂÛÛÝX[HÝÜÖÚWK]Y\TÙ[XÝÜ	ËÛÛ\[X[	ÊNÂY
+X[
+HX[^ÛÛ[HXÙUÒ]\ÖÚWK[Ý
+ÈXÙUÒ]\ÖÚWKÝXÝ[Ê
+MÊH
+È	ËÈXÙUÒ]\ÖÚWNÂBÜ[]Y
+ÊÎÂBBËÈKZ[]][È]ÛÈÛ]ÈÓB[]][Ð]ÛÊ
+NÂ\]TÙÜ\ÜÊ
+NÂËÈÚÝÈÝ]\ÂÛÛÝÝ]\ÈHØÝ[Y[Ù][[Y[RY
+	ÚÝ]\ÉÊNÂY
+Ü[]Y
+HÂÝ]\Ë^ÛÛ[H	ÔÜ[]Y	È
+ÈÜ[]Y
+È	ÈÙXÝ[ÛÈ
+È
+Ü[]YHÈ	ÜÉÈ	ÉÊH
+È	ÈÛHH[Y[È\HY]XH8 %]Y]È[Y\Ý\ÈYYYÎÂÝ]\ËÛ\ÜÓ\ÝY
+	ÜÚÝÉÊNÂÙ][Y[Ý]
+
+
+HOÂÛÜÙRØY\
+NÂÚÝÕØ\Ý
+	ÔØÛÜXØ\Ü[]YÛH8 %	È
+ÈÜ[]Y
+È	ÈÙXÝ[ÛÈ\]Y	ÊNÂKML
+NÂH[ÙHÂÝ]\Ë^ÛÛ[H	ÐÛÝ[Ý\ÙHÛX\ÙXÝ[ÛËH\Ý[ÈHÚ]X[YÙXÝ[ÛÈ
+KË\ÜÛÚX[]Y\Î\]Z\[Y[ÎKÎÂÝ]\ËÝ[KXÚÙÜÝ[H	ÈÙYÙLÎÂÝ]\ËÝ[KÛÛÜH	ÈØ
+LÌIÎÂÝ]\ËÛ\ÜÓ\ÝY
+	ÜÚÝÉÊNÂBB[Ý[Û\ØØ\R[
+ÝHÂÛÛÝ]HØÝ[Y[ÜX]Q[[Y[
+	Ù]ÊNÂ]^ÛÛ[HÝÂ]\][\SÂBÜØÜ\ØÙOÚ[
