@@ -556,6 +556,39 @@
         .interview-table th:first-child { width: 160px; }
         .interview-table th:nth-child(2) { width: 140px; }
 
+        .btn-add-stage {
+            margin-top: 10px;
+            padding: 6px 16px;
+            background: white;
+            color: var(--blue);
+            border: 1px dashed var(--blue);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-add-stage:hover {
+            background: var(--blue-ice);
+            border-style: solid;
+        }
+        .btn-remove-stage {
+            background: none;
+            border: none;
+            color: var(--text-low);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            opacity: 0.5;
+        }
+        .btn-remove-stage:hover {
+            opacity: 1;
+            color: var(--red);
+            background: #ffeaea;
+        }
+
         /* Footer */
         .footer {
             display: grid;
@@ -1148,6 +1181,7 @@
                 </tr>
             </tbody>
         </table>
+        <button class="btn-add-stage" onclick="addInterviewStage()">+ Add Stage</button>
 
         <!-- Footer -->
         <div class="footer">
@@ -1198,7 +1232,7 @@
 
         function serializeScorecard() {
             var data = {};
-            document.querySelectorAll('[contenteditable]').forEach(function(el, i) {
+            document.querySelectorAll('[contenteditable]:not(.editable-cell)').forEach(function(el, i) {
                 var id = el.id || 'ce_' + i;
                 data['ce_' + id] = el.innerHTML;
             });
@@ -1227,7 +1261,7 @@
 
         function populateScorecard(data) {
             if (!data || Object.keys(data).length === 0) return;
-            document.querySelectorAll('[contenteditable]').forEach(function(el, i) {
+            document.querySelectorAll('[contenteditable]:not(.editable-cell)').forEach(function(el, i) {
                 var id = el.id || 'ce_' + i;
                 var key = 'ce_' + id;
                 if (data[key] !== undefined) el.innerHTML = data[key];
@@ -1333,6 +1367,24 @@
                     debouncedSave();
                 });
             });
+        }
+
+        function addInterviewStage() {
+            var tbody = document.querySelector('.interview-table tbody');
+            var rowCount = tbody.querySelectorAll('tr').length + 1;
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><div contenteditable="true" class="editable-cell stage-badge-edit" data-placeholder="Stage name" style="display:inline-block;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;color:white;background:var(--blue-medium);min-width:80px;"></div></td>' +
+                '<td><div contenteditable="true" id="ip-owner-' + rowCount + '" class="editable-cell" data-placeholder="Owner name"></div></td>' +
+                '<td><div contenteditable="true" id="ip-focus-' + rowCount + '" class="editable-cell" data-placeholder="Focus areas for this stage"></div>' +
+                '<button class="btn-remove-stage" onclick="removeInterviewStage(this)" title="Remove stage">&times;</button></td>';
+            tbody.appendChild(tr);
+        }
+
+        function removeInterviewStage(btn) {
+            var tr = btn.closest('tr');
+            if (tr && confirm('Remove this interview stage?')) {
+                tr.remove();
+            }
         }
 
         function downloadPDF() {
