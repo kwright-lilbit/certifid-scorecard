@@ -1299,6 +1299,7 @@
             if (idx === currentTab) return;
             saveCurrentTab();
             silentReset();
+            restoreInterviewDefaults();
             currentTab = idx;
             var s = getTabStore();
             if (s[idx] && Object.keys(s[idx]).length > 0) {
@@ -1366,6 +1367,22 @@
                     updateProgress();
                     debouncedSave();
                 });
+            });
+        }
+
+        var INTERVIEW_DEFAULTS = {
+            'ip-focus-1': 'Baseline &amp; Logistics: Alignment on comp, remote/hybrid needs, career motivation, and high-level culture add.',
+            'ip-focus-2': 'Technical/Role Fit: Deep dive into \u201Ccan they do the job?\u201D\u2014reviewing past wins, specific hard skills, and day-to-day execution.',
+            'ip-focus-3': 'Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific \u201Chard skill\u201D validation.',
+            'ip-focus-4': 'Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific \u201Chard skill\u201D validation.',
+            'ip-focus-5': 'Strategic Vision &amp; Values: Long-term trajectory, leadership potential, and alignment with the company\u2019s 12-month scaling goals.',
+            'ip-focus-6': 'Synthesis: Collecting all feedback scorecards to make a data-driven \u201CGo/No-Go\u201D decision and defining offer levers.'
+        };
+
+        function restoreInterviewDefaults() {
+            Object.keys(INTERVIEW_DEFAULTS).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.innerHTML = INTERVIEW_DEFAULTS[id];
             });
         }
 
@@ -1453,6 +1470,7 @@
                 return;
             }
             silentReset();
+            restoreInterviewDefaults();
             var s = getTabStore();
             s[currentTab] = {};
             saveTabStore(s);
