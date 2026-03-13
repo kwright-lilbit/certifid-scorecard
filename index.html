@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CertifID - Hiring Scorecard</title>
     <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -702,6 +701,27 @@
                 flex-wrap: wrap;
             }
         }
+    
+
+        /* Print Styles */
+        @media print {
+            .tab-bar, .action-bar { display: none !important; }
+            .page-container { box-shadow: none; margin: 0; max-width: 100%; }
+            body { background: white; padding: 0; }
+            .header-band { break-inside: avoid; }
+            .section-header { break-inside: avoid; }
+            .outcome-row { break-inside: avoid; }
+            .comp-card { break-inside: avoid; }
+            .interview-table tr { break-inside: avoid; }
+            .footer { break-inside: avoid; }
+            [contenteditable]:empty:before { color: transparent !important; }
+            .editable-cell:empty:before { color: transparent !important; }
+            .rating-btn { border: 1px solid #ccc !important; }
+            .rating-btn.selected { background: var(--navy) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .stage-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .brand-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .section-number { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
@@ -1088,7 +1108,7 @@
             <div class="section-number">4</div>
             <div>
                 <div class="section-title">Interview Plan</div>
-                <div class="section-subtitle">Notes & observations</div>
+                <div class="section-subtitle">Evaluation stages & focus areas</div>
             </div>
         </div>
         <table class="interview-table">
@@ -1316,36 +1336,7 @@
         }
 
         function downloadPDF() {
-            var element = document.querySelector('.page-container');
-            var actionBar = document.querySelector('.action-bar');
-            var tabBar = document.querySelector('.tab-bar');
-            var jdModal = document.getElementById('jdModal');
-            actionBar.style.display = 'none';
-            tabBar.style.display = 'none';
-            if (jdModal) jdModal.style.display = 'none';
-            var roleEl = document.getElementById('roleTitle');
-            var roleName = (roleEl && roleEl.innerText.trim()) || 'Scorecard';
-            var safeName = roleName.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\\s+/g, '-');
-            var filename = 'CertifID-Scorecard-' + safeName + '.pdf';
-            var opt = {
-                margin: [8, 8, 8, 8],
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
-                jsPDF: { format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-            };
-            html2pdf().set(opt).from(element).save().then(function() {
-                actionBar.style.display = '';
-                tabBar.style.display = '';
-                if (jdModal) jdModal.style.display = '';
-            }).catch(function(err) {
-                console.error('PDF generation error:', err);
-                actionBar.style.display = '';
-                tabBar.style.display = '';
-                if (jdModal) jdModal.style.display = '';
-                alert('PDF download failed. Please try again.');
-            });
+            window.print();
         }
 
         function openJDModal() {
