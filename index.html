@@ -259,6 +259,23 @@
             outline: none;
         }
 
+        .header-field select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 14px;
+            background: white;
+            color: var(--text-high);
+            cursor: pointer;
+            appearance: auto;
+        }
+
+        .header-field select:focus {
+            border-color: var(--blue);
+            outline: none;
+        }
+
         .header-field [contenteditable]:focus {
             border-color: var(--blue);
             background: white;
@@ -715,7 +732,16 @@
                 </div>
                 <div class="header-field">
                     <label>Department</label>
-                    <div contenteditable="true" id="department" class="header-field-input"></div>
+                    <select id="department" class="header-field-input">
+                        <option value="">Select department...</option>
+                        <option value="Customer Success">Customer Success</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Partnerships">Partnerships</option>
+                        <option value="Product">Product</option>
+                        <option value="Sales">Sales</option>
+                    </select>
                 </div>
             </div>
             <div class="legend">
@@ -1105,6 +1131,15 @@
             document.querySelectorAll('.rating-group').forEach(function(g) {
                 var active = g.querySelector('.rating-btn.active');
                 data['rating_' + g.dataset.name] = active ? active.dataset.val : '';
+            });
+            document.querySelectorAll('select').forEach(function(sel, i) {
+                var id = sel.id || 'select_' + i;
+                data['select_' + id] = sel.value;
+            });
+            document.querySelectorAll('select').forEach(function(sel, i) {
+                var id = sel.id || 'select_' + i;
+                var key = 'select_' + id;
+                if (data[key] !== undefined) sel.value = data[key];
             });
             document.querySelectorAll('input').forEach(function(inp, i) {
                 var id = inp.id || 'input_' + i;
