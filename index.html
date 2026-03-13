@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CertifID â Hiring Scorecard</title>
+<title>CertifID - Hiring Scorecard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Oxygen:wght@400;700&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -72,13 +72,6 @@
   .header-band p span[contenteditable] { color: #fff; border-bottom: 1px dashed rgba(255,255,255,.4); padding-bottom: 1px; outline: none; }
   .body-wrap { padding: 28px 40px 40px; }
 
-  /* ââ Interviewer Info ââ */
-  .interviewer-info {
-    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
-    margin-bottom: 26px;
-    background: var(--blue-ice); border: 1px solid var(--border-light);
-    border-radius: 8px; padding: 16px 18px;
-  }
   .info-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
   .info-field input, .info-field select {
     width: 100%; padding: 8px 10px;
@@ -302,11 +295,6 @@
   <div class="body-wrap">
 
     <!-- Interviewer Info -->
-    <div class="interviewer-info">
-      <div class="info-field"><label>Interviewer Name</label><input type="text" id="interviewerName" placeholder="Your full name" /></div>
-      <div class="info-field"><label>Candidate Name</label><input type="text" id="candidateName" placeholder="Candidate's full name" /></div>
-      <div class="info-field"><label>Interview Date</label><input type="date" id="interviewDate" /></div>
-    </div>
 
     <!-- Rating Legend -->
     <div class="notice-bar">
@@ -486,7 +474,7 @@
     <!-- Footer meta -->
     <div class="footer-meta">
       <div class="footer-item"><label>Hiring Manager</label><input type="text" id="footerHM" value="Christen Burke" /></div>
-      <div class="footer-item"><label>Location</label><input type="text" id="footerLoc" value="Remote â ATX / GR / SF" /></div>
+      <div class="footer-item"><label>Location</label><input type="text" id="footerLoc" value="Remote - ATX / GR / SF" /></div>
       <div class="footer-item"><label>Team</label><input type="text" id="footerTeam" value="Customer Success" /></div>
     </div>
   </div>
