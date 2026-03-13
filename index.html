@@ -1,770 +1,1345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CertifID - Hiring Scorecard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Oxygen:wght@400;700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Oxygen', 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #2B3034; background: #F7F7F7; padding: 0; }
-  :root {
-    --navy: #102754;
-    --blue: #166EBE;
-    --blue-medium: #2E6DA4;
-    --blue-light: #B7DEFF;
-    --blue-ice: #F4F6FA;
-    --green: #61D690;
-    --amber: #FFA624;
-    --red: #DB132C;
-    --border: #DDDDDD;
-    --border-light: #EEEEEE;
-    --muted: #555555;
-    --bg: #F7F7F7;
-    --bg-alt: #F9F9F9;
-    --text-high: #2B3034;
-    --text-medium: #555555;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertifID - Hiring Scorecard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* ââ Action Bar ââ */
-  .action-bar {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--navy);
-    padding: 10px 40px;
-    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-    box-shadow: 0 2px 12px rgba(16,39,84,.25);
-  }
-  .action-bar button {
-    font-family: 'Oxygen', sans-serif;
-    font-size: 12px; font-weight: 700;
-    padding: 8px 20px;
-    border-radius: 6px; border: none; cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-    transition: all .15s ease;
-    text-transform: uppercase; letter-spacing: .5px;
-  }
-  .btn-pdf { background: var(--blue); color: #fff; }
-  .btn-pdf:hover { background: #1258a0; }
-  .btn-jd { background: var(--green); color: #fff; }
-  .btn-jd:hover { background: #4cc47d; }
-  .btn-clear { background: transparent; color: rgba(255,255,255,.6); border: 1px solid rgba(255,255,255,.2) !important; }
-  .btn-clear:hover { color: #fff; border-color: rgba(255,255,255,.5) !important; }
-  .btn-icon { font-size: 14px; }
-  .progress-indicator {
-    margin-right: auto;
-    color: rgba(255,255,255,.7);
-    font-size: 11px; font-weight: 700;
-    letter-spacing: .5px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .progress-bar-bg { width: 140px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.15); }
-  .progress-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(to right, #61D690, #2E76B5); transition: width .3s ease; }
+        :root {
+            --navy: #102754;
+            --blue: #166EBE;
+            --blue-medium: #2E6DA4;
+            --blue-light: #B7DEFF;
+            --blue-ice: #F4F6FA;
+            --green: #61D690;
+            --amber: #FFA624;
+            --red: #DB132C;
+            --border: #DDDDDD;
+            --border-light: #EEEEEE;
+            --muted: #555555;
+            --bg: #F7F7F7;
+            --bg-alt: #F9F9F9;
+            --text-high: #2B3034;
+            --text-medium: #555555;
+        }
 
-  /* ââ Page ââ */
-  .page { max-width: 960px; margin: auto; background: #fff; box-shadow: 0 2px 24px rgba(16,39,84,.08); }
-  .top-bar { background: var(--navy); padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; }
-  .top-bar img { height: 28px; }
-  .top-bar-right { color: rgba(255,255,255,.45); font-family: 'Oxygen', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-  .header-band { background: var(--blue); padding: 22px 40px 20px; }
-  .header-band h1 { color: #fff; font-family: 'DM Serif Display', serif; font-size: 24px; font-weight: 400; }
-  .header-band p { color: rgba(255,255,255,.7); font-size: 11px; margin-top: 3px; }
-  .header-band p span[contenteditable] { color: #fff; border-bottom: 1px dashed rgba(255,255,255,.4); padding-bottom: 1px; outline: none; }
-  .body-wrap { padding: 28px 40px 40px; }
+        body {
+            font-family: Oxygen, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-high);
+            line-height: 1.5;
+        }
 
-  .info-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
-  .info-field input, .info-field select {
-    width: 100%; padding: 8px 10px;
-    border: 1px solid var(--border); border-radius: 5px;
-    font-family: 'Oxygen', sans-serif; font-size: 13px;
-    color: var(--text-high); background: #fff; transition: border-color .15s;
-  }
-  .info-field input:focus, .info-field select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            background: var(--navy);
+            padding: 8px 40px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-  /* ââ Notice Bar ââ */
-  .notice-bar {
-    background: var(--blue-ice); border: 1px solid var(--border-light);
-    border-radius: 8px; padding: 14px 18px; margin-bottom: 26px;
-    font-size: 12px; color: var(--text-medium); line-height: 1.6;
-  }
-  .notice-bar strong { color: var(--blue); }
-  .rating-legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-  .legend-circle { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .tab-bar .tab {
+            padding: 10px 24px 8px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            transition: all 0.15s ease;
+        }
 
-  /* ââ Sections ââ */
-  section { margin-bottom: 30px; }
-  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--blue-ice); }
-  .section-num { width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .section-title { font-family: 'Oxygen', sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--navy); }
-  .section-sub { font-size: 11px; color: var(--muted); font-weight: 400; }
+        .tab-bar .tab:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.22);
+        }
 
-  /* ââ Mission ââ */
-  .mission-box {
-    border: 1px solid var(--border-light); border-radius: 8px;
-    padding: 16px 18px; color: var(--text-medium);
-    font-size: 13px; line-height: 1.7; background: var(--bg-alt);
-    min-height: 60px;
-  }
-  .mission-box[contenteditable]:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+        .tab-bar .tab.active {
+            color: #fff;
+            background: #1a3a6b;
+        }
 
-  /* ââ Tables ââ */
-  table { width: 100%; border-collapse: collapse; }
-  th { font-size: 9px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); font-weight: 700; text-align: left; padding: 7px 12px; background: var(--bg); border-bottom: 1px solid var(--border); }
-  td { padding: 11px 12px; border-bottom: 1px solid #f0f2f8; vertical-align: top; line-height: 1.6; color: var(--text-medium); font-size: 13px; }
-  tr:last-child td { border-bottom: none; }
-  .row-num { color: var(--blue); font-weight: 800; font-size: 12px; white-space: nowrap; width: 28px; }
-  .timeline-cell { white-space: nowrap; color: var(--muted); font-size: 11px; font-weight: 600; width: 110px; }
-  td[contenteditable]:focus { outline: none; background: var(--blue-ice); border-radius: 4px; }
+        .tab-bar .tab .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background: rgba(255, 255, 255, 0.4);
+        }
 
-  /* ââ Rating Controls ââ */
-  .rating-group { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
-  .rating-btn {
-    width: 30px; height: 30px; border-radius: 50%;
-    border: 2px solid var(--border); background: #fff; cursor: pointer;
-    font-size: 12px; font-weight: 800; color: var(--muted);
-    display: flex; align-items: center; justify-content: center;
-    transition: all .15s ease; font-family: 'Oxygen', sans-serif;
-  }
-  .rating-btn:hover { border-color: var(--blue); color: var(--blue); transform: scale(1.1); }
-  .rating-btn.active-1 { background: var(--red); color: #fff; border-color: var(--red); }
-  .rating-btn.active-2 { background: var(--amber); color: #fff; border-color: var(--amber); }
-  .rating-btn.active-3 { background: var(--green); color: #fff; border-color: var(--green); }
-  .rating-btn.active-4 { background: var(--navy); color: #fff; border-color: var(--navy); }
+        .tab-bar .tab.active .dot {
+            background: var(--green);
+        }
 
-  /* ââ Competencies ââ */
-  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .comp-card { border: 1px solid var(--border-light); border-radius: 8px; padding: 14px; background: #fff; }
-  .comp-card-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--blue); margin-bottom: 2px; }
-  .comp-card-sub { font-size: 10px; color: var(--muted); margin-bottom: 10px; }
-  .comp-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #f0f2f8; gap: 8px; }
-  .comp-row:last-child { border-bottom: none; }
-  .comp-label { font-size: 11.5px; color: var(--text-medium); line-height: 1.4; flex: 1; }
-  .comp-label[contenteditable]:focus { outline: none; background: var(--blue-ice); border-radius: 3px; padding: 2px 4px; margin: -2px -4px; }
+        .tab-bar .tab.has-data .dot {
+            background: var(--amber);
+        }
 
-  /* ââ Stage badges ââ */
-  .stage-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; display: inline-block; white-space: nowrap; }
-  .s-screen { color: #b45309; background: #fef3e2; }
-  .s-who    { color: var(--blue); background: var(--blue-ice); }
-  .s-focus  { color: #5b21b6; background: #f5f0ff; }
-  .s-task   { color: #be185d; background: #fdf2f8; }
-  .s-exec   { color: #0369a1; background: #e0f2fe; }
-  .s-huddle { color: #0d7a57; background: #e6f7f3; }
+        .tab-bar .tab.active.has-data .dot {
+            background: var(--green);
+        }
 
-  /* ââ Notes ââ */
-  .notes-area {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--border); border-radius: 6px;
-    font-family: 'Oxygen', sans-serif; font-size: 12px; color: var(--text-high);
-    resize: vertical; min-height: 60px; transition: border-color .15s; background: #fff;
-  }
-  .notes-area:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
-  .notes-area::placeholder { color: #aab3c5; }
-  .notes-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; display: block; }
-  .notes-block { margin-top: 14px; }
+        /* Action Bar */
+        .action-bar {
+            position: sticky;
+            top: 44px;
+            z-index: 99;
+            background: white;
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
 
-  /* ââ Overall Decision ââ */
-  .decision-section { background: var(--blue-ice); border: 2px solid var(--blue-light); border-radius: 10px; padding: 22px; margin-top: 10px; }
-  .decision-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .decision-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 5px; }
-  .decision-field select, .decision-field input {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--border); border-radius: 6px;
-    font-family: 'Oxygen', sans-serif; font-size: 13px; color: var(--text-high); background: #fff;
-  }
-  .decision-field select:focus, .decision-field input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
+        .action-bar.pdf-mode {
+            display: none;
+        }
 
-  /* ââ Footer ââ */
-  .footer-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 22px; border-top: 1px solid var(--border); padding-top: 18px; }
-  .footer-item label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 4px; }
-  .footer-item span { font-size: 13px; color: var(--navy); font-weight: 600; }
-  .footer-item input { width: 100%; padding: 4px 0; border: none; border-bottom: 1px dashed var(--border); font-family: 'Oxygen', sans-serif; font-size: 13px; color: var(--navy); font-weight: 600; background: transparent; }
-  .footer-item input:focus { outline: none; border-bottom-color: var(--blue); }
-  .footer-brand { text-align: center; padding: 18px 40px; background: var(--navy); color: rgba(255,255,255,.4); font-size: 10px; letter-spacing: .5px; }
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
 
-  /* ââ JD Loader Modal ââ */
-  .jd-overlay {
-    display: none; position: fixed; inset: 0; z-index: 999;
-    background: rgba(16,39,84,.6);
-    justify-content: center; align-items: center;
-  }
-  .jd-overlay.show { display: flex; }
-  .jd-modal {
-    background: #fff; border-radius: 14px;
-    width: 90%; max-width: 720px; max-height: 90vh;
-    display: flex; flex-direction: column;
-    box-shadow: 0 16px 60px rgba(16,39,84,.3);
-    overflow: hidden;
-  }
-  .jd-modal-header {
-    background: var(--navy); padding: 18px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .jd-modal-header h2 { color: #fff; font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; }
-  .jd-close { background: none; border: none; color: rgba(255,255,255,.5); font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-  .jd-close:hover { color: #fff; background: rgba(255,255,255,.1); }
-  .jd-modal-body { padding: 24px; flex: 1; overflow-y: auto; }
-  .jd-instructions {
-    background: var(--blue-ice); border: 1px solid var(--border-light);
-    border-radius: 8px; padding: 14px 16px; margin-bottom: 18px;
-    font-size: 12px; color: var(--text-medium); line-height: 1.6;
-  }
-  .jd-instructions strong { color: var(--blue); }
-  .jd-textarea {
-    width: 100%; min-height: 280px; padding: 16px;
-    border: 2px solid var(--border); border-radius: 8px;
-    font-family: 'Oxygen', sans-serif; font-size: 13px;
-    color: var(--text-high); line-height: 1.7; resize: vertical;
-    transition: border-color .15s;
-  }
-  .jd-textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22,110,190,.12); }
-  .jd-textarea::placeholder { color: #aab3c5; }
-  .jd-modal-footer {
-    padding: 16px 24px; border-top: 1px solid var(--border-light);
-    display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-alt);
-  }
-  .jd-modal-footer button {
-    font-family: 'Oxygen', sans-serif; font-size: 12px; font-weight: 700;
-    padding: 10px 24px; border-radius: 6px; border: none; cursor: pointer;
-    text-transform: uppercase; letter-spacing: .5px;
-  }
-  .jd-btn-cancel { background: var(--border-light); color: var(--text-medium); }
-  .jd-btn-cancel:hover { background: var(--border); }
-  .jd-btn-parse { background: var(--blue); color: #fff; }
-  .jd-btn-parse:hover { background: #1258a0; }
-  .jd-status { padding: 12px 24px; background: #e6f7f3; color: #0d7a57; font-size: 12px; font-weight: 700; display: none; }
-  .jd-status.show { display: block; }
+        .progress-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-high);
+            white-space: nowrap;
+        }
 
-  /* ââ Confirmation dialog ââ */
-  .modal-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(16,39,84,.5); justify-content: center; align-items: center; }
-  .modal-overlay.show { display: flex; }
-  .modal-box { background: #fff; border-radius: 12px; padding: 28px 32px; max-width: 400px; width: 90%; box-shadow: 0 12px 40px rgba(16,39,84,.2); text-align: center; }
-  .modal-box h3 { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--navy); margin-bottom: 8px; }
-  .modal-box p { font-size: 13px; color: var(--text-medium); margin-bottom: 20px; line-height: 1.6; }
-  .modal-btns { display: flex; gap: 10px; justify-content: center; }
-  .modal-btns button { font-family: 'Oxygen', sans-serif; font-size: 12px; font-weight: 700; padding: 9px 22px; border-radius: 6px; border: none; cursor: pointer; text-transform: uppercase; letter-spacing: .5px; }
-  .modal-cancel { background: var(--border-light); color: var(--text-medium); }
-  .modal-cancel:hover { background: var(--border); }
-  .modal-confirm { background: var(--red); color: #fff; }
-  .modal-confirm:hover { background: #c52020; }
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
 
-  /* ââ Toast ââ */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 20px rgba(16,39,84,.3); opacity: 0; transition: opacity .3s; z-index: 1000; pointer-events: none; }
-  .toast.show { opacity: 1; }
+        .progress-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
 
-  /* ââ Print / PDF ââ */
-  @media print { body { background: #fff; } .page { box-shadow: none; } .action-bar { display: none !important; } }
-  .pdf-mode .action-bar { display: none !important; }
-  .pdf-mode .rating-btn { border-width: 1px; }
-  .pdf-mode .notes-area { border-width: 1px; min-height: auto; }
-  .pdf-mode .info-field input, .pdf-mode .info-field select, .pdf-mode .decision-field input, .pdf-mode .decision-field select { border-width: 1px; box-shadow: none; }
-  .pdf-mode [contenteditable] { border-color: transparent !important; box-shadow: none !important; }
-</style>
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: white;
+            color: var(--text-high);
+        }
+
+        .btn:hover {
+            background: var(--bg-alt);
+            border-color: var(--blue);
+        }
+
+        .btn.primary {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        .btn.primary:hover {
+            background: var(--blue-medium);
+            border-color: var(--blue-medium);
+        }
+
+        /* Page Container */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+        }
+
+        .page.pdf-mode {
+            margin: 0;
+            max-width: 100%;
+            padding: 20px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--navy);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .top-bar .logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .top-bar .subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Header Band */
+        .header-band {
+            background: var(--blue-ice);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-light);
+        }
+
+        .header-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .header-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .header-field input[type="text"],
+        .header-field [contenteditable] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 14px;
+            background: white;
+        }
+
+        .header-field [contenteditable] {
+            min-height: 32px;
+            outline: none;
+        }
+
+        .header-field [contenteditable]:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        .legend {
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-dot.red { background: var(--red); }
+        .legend-dot.amber { background: var(--amber); }
+        .legend-dot.green { background: var(--green); }
+        .legend-dot.navy { background: var(--navy); }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-high);
+            flex: 1;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-medium);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* Mission Section */
+        .mission-box {
+            background: var(--blue-ice);
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 80px;
+            outline: none;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .mission-box:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        /* Outcomes Section */
+        .outcomes-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .outcome-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 140px;
+            gap: 16px;
+            align-items: start;
+            padding: 16px;
+            background: var(--bg-alt);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .outcome-number {
+            font-weight: 700;
+            color: var(--blue);
+            font-size: 14px;
+            padding-top: 6px;
+        }
+
+        .outcome-text {
+            font-size: 14px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+            min-height: 32px;
+        }
+
+        .outcome-text:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        .outcome-notes {
+            font-size: 12px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+            min-height: 32px;
+            display: none;
+        }
+
+        .outcome-notes:focus {
+            border-color: var(--blue);
+        }
+
+        /* Competencies Section */
+        .competencies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .competency-card {
+            background: var(--blue-ice);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .competency-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-high);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .competency-item {
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .competency-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .competency-label {
+            font-size: 13px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+        }
+
+        .competency-label:focus {
+            border-color: var(--blue);
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .rating-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-medium);
+            transition: all 0.15s ease;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .rating-btn:hover {
+            border-color: var(--blue);
+        }
+
+        .rating-btn.active {
+            color: white;
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        .rating-btn[data-val="1"].active {
+            background: var(--red);
+        }
+
+        .rating-btn[data-val="2"].active {
+            background: var(--amber);
+        }
+
+        .rating-btn[data-val="3"].active {
+            background: var(--green);
+        }
+
+        .rating-btn[data-val="4"].active {
+            background: var(--navy);
+        }
+
+        /* Interview Plan Section */
+        .notes-block {
+            background: var(--blue-ice);
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 100px;
+            outline: none;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .notes-block:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        /* Footer */
+        .footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .footer-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .footer-field input[type="text"],
+        .footer-field input[type="date"],
+        .footer-field [contenteditable] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            background: white;
+        }
+
+        .footer-field [contenteditable] {
+            outline: none;
+        }
+
+        .footer-field [contenteditable]:focus {
+            border-color: var(--blue);
+        }
+
+        .footer-label-only {
+            padding: 8px 12px;
+            color: var(--text-medium);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-high);
+        }
+
+        .modal-text {
+            font-size: 13px;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media print {
+            .tab-bar, .action-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 20px;
+            }
+
+            .header-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .legend-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .competencies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
-
-<!-- Action Bar -->
-<div class="action-bar" id="actionBar">
-  <div class="progress-indicator">
-    <span id="progressText">0 / 26 rated</span>
-    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
-  </div>
-  <button class="btn-jd" onclick="openJDLoader()">
-    <span class="btn-icon">&#9997;</span> Load JD
-  </button>
-  <button class="btn-clear" onclick="confirmClear()">
-    <span class="btn-icon">&#8634;</span> Clear &amp; Reset
-  </button>
-  <button class="btn-pdf" onclick="downloadPDF()">
-    <span class="btn-icon">&#8595;</span> Download PDF
-  </button>
-</div>
-
-<!-- Page -->
-<div class="page" id="scorecard">
-  <div class="top-bar">
-    <img src="https://cdn.prod.website-files.com/60a41ae959fbb36bd6808d6e/60a420f7114a0b2dfd674bbb_certifid-logo.svg" alt="CertifID" />
-    <span class="top-bar-right">Confidential &middot; Internal Use Only</span>
-  </div>
-
-  <div class="header-band">
-    <h1>Hiring Scorecard</h1>
-    <p>Interviewer Reference &mdash; <span id="roleTitleDisplay" contenteditable="true">Strategic Customer Success Manager</span></p>
-  </div>
-
-  <div class="body-wrap">
-
-    <!-- Interviewer Info -->
-
-    <!-- Rating Legend -->
-    <div class="notice-bar">
-      <strong>How to use this scorecard:</strong> Rate each area using the 1&ndash;4 scale below. Add notes to support your ratings. When finished, download as PDF and upload to <strong>Lever</strong>. Use <strong>Load JD</strong> to auto-populate from a job description.
-      <div class="rating-legend">
-        <div class="legend-item"><span class="legend-circle" style="background:var(--red);">1</span><span><strong>Strong No</strong> &mdash; Does not meet the bar</span></div>
-        <div class="legend-item"><span class="legend-circle" style="background:var(--amber);">2</span><span><strong>No</strong> &mdash; Some gaps; leaning against</span></div>
-        <div class="legend-item"><span class="legend-circle" style="background:var(--green);">3</span><span><strong>Yes</strong> &mdash; Meets the bar; leaning for</span></div>
-        <div class="legend-item"><span class="legend-circle" style="background:var(--navy);">4</span><span><strong>Strong Yes</strong> &mdash; Exceeds the bar</span></div>
-      </div>
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <button class="tab active" onclick="switchTab(0)">
+            <span class="dot"></span>Scorecard 1
+        </button>
+        <button class="tab" onclick="switchTab(1)">
+            <span class="dot"></span>Scorecard 2
+        </button>
+        <button class="tab" onclick="switchTab(2)">
+            <span class="dot"></span>Scorecard 3
+        </button>
     </div>
 
-    <!-- 1. Mission -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">1</span>
-        <span class="section-title">Mission</span>
-        <span class="section-sub">&mdash; Why this role exists</span>
-      </div>
-      <div class="mission-box" id="missionBox" contenteditable="true">
-        Own a blended portfolio of enterprise and mid-market customers through the complete post-sale lifecycle &mdash; from onboarding and value realization through renewal and expansion. The SCSM serves as a long-term strategic partner who guides customers through the change management required to deeply adopt CertifID's solutions, drives retention and growth, and connects product value to each customer's broader business outcomes.
-      </div>
-    </section>
-
-    <!-- 2. Outcomes -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">2</span>
-        <span class="section-title">Outcomes</span>
-        <span class="section-sub">&mdash; Rate candidate's ability to deliver each outcome</span>
-      </div>
-      <table>
-        <thead><tr><th>#</th><th>Key Outcome</th><th>Timeline</th><th style="width:130px;text-align:center;">Rating</th></tr></thead>
-        <tbody id="outcomesBody">
-          <tr>
-            <td class="row-num">1</td>
-            <td contenteditable="true">Design and execute structured onboarding plans &mdash; delivering fast time-to-value with clear success metrics from day one</td>
-            <td class="timeline-cell" contenteditable="true">90 days</td>
-            <td><div class="rating-group" data-name="outcome-1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-          <tr>
-            <td class="row-num">2</td>
-            <td contenteditable="true">Build multi-threaded relationships including C-suite &mdash; lead EBRs that connect CertifID's value to customer strategy</td>
-            <td class="timeline-cell" contenteditable="true">120 days</td>
-            <td><div class="rating-group" data-name="outcome-2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-          <tr>
-            <td class="row-num">3</td>
-            <td contenteditable="true">Drive measurable product adoption &mdash; embed CertifID into workflows via proactive change management</td>
-            <td class="timeline-cell" contenteditable="true">180 days</td>
-            <td><div class="rating-group" data-name="outcome-3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-          <tr>
-            <td class="row-num">4</td>
-            <td contenteditable="true">Proactively monitor account health &mdash; mitigate retention risks before escalation, achieve 90%+ GRR</td>
-            <td class="timeline-cell" contenteditable="true">180 days</td>
-            <td><div class="rating-group" data-name="outcome-4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-          <tr>
-            <td class="row-num">5</td>
-            <td contenteditable="true">Manage renewal cycles with commercial discipline &mdash; forecast accurately, identify expansion opportunities</td>
-            <td class="timeline-cell" contenteditable="true">Ongoing</td>
-            <td><div class="rating-group" data-name="outcome-5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-          <tr>
-            <td class="row-num">6</td>
-            <td contenteditable="true">Contribute cross-functionally &mdash; surface roadmap feedback and inform process improvements</td>
-            <td class="timeline-cell" contenteditable="true">Ongoing</td>
-            <td><div class="rating-group" data-name="outcome-6"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="notes-block">
-        <label class="notes-label">Outcomes &mdash; Notes &amp; Evidence</label>
-        <textarea class="notes-area" placeholder="What evidence did the candidate share about delivering these types of outcomes? Any concerns?"></textarea>
-      </div>
-    </section>
-
-    <!-- 3. Competencies -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">3</span>
-        <span class="section-title">Competencies</span>
-        <span class="section-sub">&mdash; Rate each competency</span>
-      </div>
-      <div class="comp-grid">
-        <!-- Priorities -->
-        <div class="comp-card" id="compPriorities">
-          <div class="comp-card-title">Priorities</div>
-          <div class="comp-card-sub">Must-have qualities</div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Strategic partner mindset</span><div class="rating-group" data-name="comp-p1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Change mgmt in entrenched orgs</span><div class="rating-group" data-name="comp-p2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Commercial acumen &amp; renewal discipline</span><div class="rating-group" data-name="comp-p3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Executive presence &amp; credibility</span><div class="rating-group" data-name="comp-p4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Expansion &amp; competitive displacement</span><div class="rating-group" data-name="comp-p5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <div class="progress-section">
+            <span class="progress-text"><span id="progress-count">0</span> / 26 rated</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
         </div>
-        <!-- Who -->
-        <div class="comp-card" id="compWho">
-          <div class="comp-card-title">Who</div>
-          <div class="comp-card-sub">Ideal traits for the role</div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Self-starter with high urgency</span><div class="rating-group" data-name="comp-w1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Calm under pressure; handles difficult conversations</span><div class="rating-group" data-name="comp-w2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Sets high standards &amp; follows through</span><div class="rating-group" data-name="comp-w3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Collaborative &amp; cross-functional</span><div class="rating-group" data-name="comp-w4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Proactive &mdash; surfaces risk early</span><div class="rating-group" data-name="comp-w5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
+        <div class="action-buttons">
+            <button class="btn" onclick="openJDModal()">Load JD</button>
+            <button class="btn" onclick="clearAndReset()">Clear & Reset</button>
+            <button class="btn primary" onclick="downloadPDF()">Download PDF</button>
         </div>
-        <!-- Values -->
-        <div class="comp-card" id="compValues">
-          <div class="comp-card-title">Values</div>
-          <div class="comp-card-sub">Culture &amp; behavior alignment</div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Integrity &amp; honesty with customers</span><div class="rating-group" data-name="comp-v1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Exceptional communication (written &amp; verbal)</span><div class="rating-group" data-name="comp-v2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Adaptable &amp; organized across large BoB</span><div class="rating-group" data-name="comp-v3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Treats people with respect; active listener</span><div class="rating-group" data-name="comp-v4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Open to feedback; growth mindset</span><div class="rating-group" data-name="comp-v5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-        </div>
-        <!-- Technical -->
-        <div class="comp-card" id="compTechnical">
-          <div class="comp-card-title">Technical</div>
-          <div class="comp-card-sub">Role-specific skills</div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Gainsight / CSP proficiency</span><div class="rating-group" data-name="comp-t1"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Salesforce / CRM proficiency</span><div class="rating-group" data-name="comp-t2"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Data-driven health &amp; usage reporting</span><div class="rating-group" data-name="comp-t3"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">AI fluency in daily workflow</span><div class="rating-group" data-name="comp-t4"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-          <div class="comp-row"><span class="comp-label" contenteditable="true">Title industry familiarity (plus)</span><div class="rating-group" data-name="comp-t5"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button></div></div>
-        </div>
-      </div>
-      <div class="notes-block">
-        <label class="notes-label">Competencies &mdash; Notes &amp; Evidence</label>
-        <textarea class="notes-area" placeholder="What stood out about their competencies? Any red flags or highlights?"></textarea>
-      </div>
-    </section>
-
-    <!-- 4. Interview Plan -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">4</span>
-        <span class="section-title">Interview Plan</span>
-        <span class="section-sub">&mdash; Evaluation stages &amp; focus areas</span>
-      </div>
-      <table>
-        <thead><tr><th>Stage</th><th>Owner</th><th>Focus Area</th></tr></thead>
-        <tbody id="interviewPlanBody">
-          <tr><td><span class="stage-badge s-screen">Screening</span></td><td contenteditable="true" style="white-space:nowrap;">Kalyn</td><td contenteditable="true">Initial fit, compensation expectations, AI fluency, Gainsight/SFDC experience, travel availability (~25%)</td></tr>
-          <tr><td><span class="stage-badge s-who">Hiring Manager</span></td><td contenteditable="true" style="white-space:nowrap;">Christen Burke</td><td contenteditable="true">Career history, strategic account ownership, executive relationships, change management, commercial track record</td></tr>
-          <tr><td><span class="stage-badge s-focus">Collaboration</span></td><td contenteditable="true" style="white-space:nowrap;"></td><td contenteditable="true">Cross-functional style, internal communication, partnering with Sales / Product / Support</td></tr>
-          <tr><td><span class="stage-badge s-task">Assessment / Panel</span></td><td contenteditable="true" style="white-space:nowrap;"></td><td contenteditable="true">Scenario exercise &mdash; strategic account plan, EBR, or at-risk recovery; panel evaluates thinking &amp; judgment</td></tr>
-          <tr><td><span class="stage-badge s-exec">Executive Sponsor</span></td><td contenteditable="true" style="white-space:nowrap;">Tyler</td><td contenteditable="true">Culture fit, long-term potential, executive-level credibility</td></tr>
-          <tr><td><span class="stage-badge s-huddle">Huddle to Decide</span></td><td contenteditable="true" style="white-space:nowrap;">All Interviewers</td><td contenteditable="true">Collective debrief &mdash; align on A/B/C rating and Proceed / Reject in Lever</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- 5. Overall Decision -->
-    <section>
-      <div class="section-header">
-        <span class="section-num">5</span>
-        <span class="section-title">Overall Decision</span>
-        <span class="section-sub">&mdash; Your recommendation</span>
-      </div>
-      <div class="decision-section">
-        <div class="decision-row">
-          <div class="decision-field"><label>Overall Rating</label>
-            <select id="overallRating"><option value="">&mdash; Select &mdash;</option><option value="1">1 &mdash; Strong No</option><option value="2">2 &mdash; No</option><option value="3">3 &mdash; Yes</option><option value="4">4 &mdash; Strong Yes</option></select>
-          </div>
-          <div class="decision-field"><label>Recommendation</label>
-            <select id="recommendation"><option value="">&mdash; Select &mdash;</option><option value="Proceed">Proceed</option><option value="Hold">Hold &mdash; Need more info</option><option value="Reject">Reject</option></select>
-          </div>
-        </div>
-        <div class="notes-block" style="margin-top:0;">
-          <label class="notes-label">Summary &amp; Key Takeaways</label>
-          <textarea class="notes-area" style="min-height:90px;" placeholder="Summarize your overall impression. Top strengths? Any dealbreakers? Confidence level?"></textarea>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer meta -->
-    <div class="footer-meta">
-      <div class="footer-item"><label>Hiring Manager</label><input type="text" id="footerHM" value="Christen Burke" /></div>
-      <div class="footer-item"><label>Location</label><input type="text" id="footerLoc" value="Remote - ATX / GR / SF" /></div>
-      <div class="footer-item"><label>Team</label><input type="text" id="footerTeam" value="Customer Success" /></div>
     </div>
-  </div>
 
-  <div class="footer-brand">CertifID &middot; Confidential &middot; Internal Use Only</div>
-</div>
+    <!-- Main Page -->
+    <div class="page">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <span class="logo">CertifID</span>
+            <span class="subtitle">Hiring Scorecard</span>
+        </div>
 
-<!-- JD Loader Modal -->
-<div class="jd-overlay" id="jdOverlay">
-  <div class="jd-modal">
-    <div class="jd-modal-header">
-      <h2>Load Job Description</h2>
-      <button class="jd-close" onclick="closeJDLoader()">&times;</button>
+        <!-- Header Band -->
+        <div class="header-band">
+            <div class="header-fields">
+                <div class="header-field">
+                    <label>Role Title</label>
+                    <div contenteditable="true" id="roleTitle" class="header-field-input"></div>
+                </div>
+                <div class="header-field">
+                    <label>Department</label>
+                    <div contenteditable="true" id="department" class="header-field-input"></div>
+                </div>
+            </div>
+            <div class="legend">
+                <strong>Rating Legend:</strong>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-dot red"></div>
+                        <span>1 = Strong No</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot amber"></div>
+                        <span>2 = No</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot green"></div>
+                        <span>3 = Yes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot navy"></div>
+                        <span>4 = Strong Yes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Mission -->
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <div>
+                <div class="section-title">Mission</div>
+                <div class="section-subtitle">Role purpose & strategic alignment</div>
+            </div>
+        </div>
+        <div contenteditable="true" id="mission" class="mission-box"></div>
+
+        <!-- Section 2: Outcomes -->
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <div>
+                <div class="section-title">Outcomes</div>
+                <div class="section-subtitle">Key responsibilities & success metrics</div>
+            </div>
+        </div>
+
+        <div class="outcomes-table">
+            <div class="outcome-row">
+                <div class="outcome-number">1</div>
+                <div contenteditable="true" id="outcome-text-1" class="outcome-text">Design and execute structured onboarding plans - delivering fast time-to-value with clear success metrics from day one</div>
+                <div class="rating-group" data-name="outcome-1">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">2</div>
+                <div contenteditable="true" id="outcome-text-2" class="outcome-text">Build multi-threaded relationships including C-suite - lead EBRs that connect CertifID's value to customer strategy</div>
+                <div class="rating-group" data-name="outcome-2">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">3</div>
+                <div contenteditable="true" id="outcome-text-3" class="outcome-text">Drive measurable product adoption - embed CertifID into workflows via proactive change management</div>
+                <div class="rating-group" data-name="outcome-3">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">4</div>
+                <div contenteditable="true" id="outcome-text-4" class="outcome-text">Proactively monitor account health - mitigate retention risks before escalation, achieve 90%+ GRR</div>
+                <div class="rating-group" data-name="outcome-4">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">5</div>
+                <div contenteditable="true" id="outcome-text-5" class="outcome-text">Manage renewal cycles with commercial discipline - forecast accurately, identify expansion opportunities</div>
+                <div class="rating-group" data-name="outcome-5">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">6</div>
+                <div contenteditable="true" id="outcome-text-6" class="outcome-text">Contribute cross-functionally - surface roadmap feedback and inform process improvements</div>
+                <div class="rating-group" data-name="outcome-6">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Competencies -->
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <div>
+                <div class="section-title">Competencies</div>
+                <div class="section-subtitle">Required capabilities across 4 dimensions</div>
+            </div>
+        </div>
+
+        <div class="competencies-grid">
+            <!-- Priorities -->
+            <div class="competency-card" id="compPriorities">
+                <div class="competency-title">Priorities</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p1-label" class="competency-label">Strategic partner mindset</div>
+                    <div class="rating-group" data-name="comp-p1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p2-label" class="competency-label">Change mgmt in entrenched orgs</div>
+                    <div class="rating-group" data-name="comp-p2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p3-label" class="competency-label">Commercial acumen & renewal discipline</div>
+                    <div class="rating-group" data-name="comp-p3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p4-label" class="competency-label">Executive presence & credibility</div>
+                    <div class="rating-group" data-name="comp-p4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p5-label" class="competency-label">Expansion & competitive displacement</div>
+                    <div class="rating-group" data-name="comp-p5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Who -->
+            <div class="competency-card" id="compWho">
+                <div class="competency-title">Who</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w1-label" class="competency-label">Self-starter with high urgency</div>
+                    <div class="rating-group" data-name="comp-w1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w2-label" class="competency-label">Calm under pressure; handles difficult conversations</div>
+                    <div class="rating-group" data-name="comp-w2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w3-label" class="competency-label">Sets high standards & follows through</div>
+                    <div class="rating-group" data-name="comp-w3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w4-label" class="competency-label">Collaborative & cross-functional</div>
+                    <div class="rating-group" data-name="comp-w4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w5-label" class="competency-label">Proactive - surfaces risk early</div>
+                    <div class="rating-group" data-name="comp-w5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Values -->
+            <div class="competency-card" id="compValues">
+                <div class="competency-title">Values</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v1-label" class="competency-label">Integrity & honesty with customers</div>
+                    <div class="rating-group" data-name="comp-v1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v2-label" class="competency-label">Exceptional communication (written & verbal)</div>
+                    <div class="rating-group" data-name="comp-v2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v3-label" class="competency-label">Adaptable & organized across large BoB</div>
+                    <div class="rating-group" data-name="comp-v3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v4-label" class="competency-label">Treats people with respect; active listener</div>
+                    <div class="rating-group" data-name="comp-v4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v5-label" class="competency-label">Open to feedback; growth mindset</div>
+                    <div class="rating-group" data-name="comp-v5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical -->
+            <div class="competency-card" id="compTechnical">
+                <div class="competency-title">Technical</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t1-label" class="competency-label">Gainsight / CSP proficiency</div>
+                    <div class="rating-group" data-name="comp-t1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t2-label" class="competency-label">Salesforce / CRM proficiency</div>
+                    <div class="rating-group" data-name="comp-t2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t3-label" class="competency-label">Data-driven health & usage reporting</div>
+                    <div class="rating-group" data-name="comp-t3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t4-label" class="competency-label">AI fluency in daily workflow</div>
+                    <div class="rating-group" data-name="comp-t4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t5-label" class="competency-label">Title industry familiarity (plus)</div>
+                    <div class="rating-group" data-name="comp-t5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Interview Plan -->
+        <div class="section-header">
+            <div class="section-number">4</div>
+            <div>
+                <div class="section-title">Interview Plan</div>
+                <div class="section-subtitle">Notes & observations</div>
+            </div>
+        </div>
+        <div contenteditable="true" id="interviewNotes" class="notes-block"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-field">
+                <label>Hiring Manager</label>
+                <div contenteditable="true" id="hiringManager" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; background: white; min-height: 32px;"></div>
+            </div>
+            <div class="footer-field">
+                <label>Date</label>
+                <input type="date" id="scoreDate">
+            </div>
+            <div class="footer-field">
+                <label>&nbsp;</label>
+                <div class="footer-label-only">Confidential</div>
+            </div>
+        </div>
     </div>
-    <div class="jd-status" id="jdStatus"></div>
-    <div class="jd-modal-body">
-      <div class="jd-instructions">
-        <strong>Paste a full job description below.</strong> The parser will extract the role title, mission/purpose, key responsibilities (mapped to Outcomes), and required skills/qualifications
-X\YÈÛÛ\][ÚY\ÊK[ÝHØ[Y][HY[Y\\Ú[ËÙ]^\XHÛ\ÜÏH]^\XHYH[]XÙZÛ\H\ÝHH[Ø\ØÜ\[Û\K^[\HÙXÝ[ÛÈH\Ù\ÛÚÜÈÜ¸ (Ø]HÈÛB¸ (XÝ]HÛHÈ\ÜÙHÈZ\ÜÚ[Û¸ (\ÜÛÚX[]Y\ÈÈÙ^HÝ]ÛÛY\ÈÈÚ][ÝIÛÂ¸ (\]Z\[Y[ÈÈ]X[YXØ][ÛÈÈÚÚ[Â¸ (XÙHÈ]\ÈÈY\YÈÛ\ÈÝ^\XOÙ]]Û\ÜÏH[[Ù[YÛÝ\]ÛÛ\ÜÏHXXØ[Ù[ÛÛXÚÏHÛÜÙRØY\
-HØ[Ù[Ø]Û]ÛÛ\ÜÏHX\\ÙHÛÛXÚÏH\ÙR
 
-H\ÙH	[\ÈÜ[]OØ]ÛÙ]Ù]Ù]KKHÛX\ÛÛ\X][Û[Ù[KO]Û\ÜÏH[Ù[[Ý\^HYHÛX\[Ù[]Û\ÜÏH[Ù[XÞÏÛX\ØÛÜXØ\ÏÚÏ\ÈÚ[\\ÙH[][ÜËÝ\Ë[ÜHY[È[\Ù]HØÛÜXØ\È]ÈY][Ý]K\ÈØ[ÝH[ÛKÜ]Û\ÜÏH[Ù[XÈ]ÛÛ\ÜÏH[Ù[XØ[Ù[ÛÛXÚÏHÛÜÙPÛX\[Ù[
+    <!-- JD Modal -->
+    <div id="jdModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Load Job Description</div>
+            <div class="modal-text">Paste the job description below. We'll extract the role title, mission, and outcomes to get you started.</div>
+            <textarea id="jdTextarea" class="modal-textarea" placeholder="Paste job description here..."></textarea>
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeJDModal()">Cancel</button>
+                <button class="btn primary" onclick="parseAndLoadJD()">Parse & Load</button>
+            </div>
+        </div>
+    </div>
 
-HØ[Ù[Ø]Û]ÛÛ\ÜÏH[Ù[XÛÛ\HÛÛXÚÏHÛX\[
+    <script>
+        var currentTab = 0;
+        var TAB_KEY = 'certifid_scorecard_tabs';
+        var saveDebounceTimer = null;
 
-HÛX\]\][ÏØ]ÛÙ]Ù]Ù]KKHØ\ÝKO]Û\ÜÏHØ\ÝYHØ\ÝÙ]ØÜ\ËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈUSÈUÓÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û[]][Ð]ÛÊ
-HÂØÝ[Y[]Y\TÙ[XÝÜ[
-	Ë][ËYÜÝ\	ÊKÜXXÚ
-ÜÝ\OÂÜÝ\]Y\TÙ[XÝÜ[
-	Ë][ËXÊKÜXXÚ
-OÂY][\Ý[\	ØÛXÚÉË
+        function getTabStore() {
+            try {
+                return JSON.parse(localStorage.getItem(TAB_KEY)) || [{}, {}, {}];
+            } catch (e) {
+                return [{}, {}, {}];
+            }
+        }
 
-HOÂÛÛÝ[H]\Ù][ÂÛÛÝØ\ÐXÝ]HHÛ\ÜÓ\ÝÛÛZ[Ê	ØXÝ]KIÈ
-È[
-NÂÜÝ\]Y\TÙ[XÝÜ[
-	Ë][ËXÊKÜXXÚ
-OÛ\ÜÓ[YHH	Ü][ËXÊNÂY
-]Ø\ÐXÝ]JHÛ\ÜÓ\ÝY
-	ØXÝ]KIÈ
-È[
-NÂ\]TÙÜ\ÜÊ
-NÂJNÂJNÂJNÂB[]][Ð]ÛÊ
-NÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÑÔTÔÈPÒÒSÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[Û\]TÙÜ\ÜÊ
-HÂÛÛÝÜÝ\ÈHØÝ[Y[]Y\TÙ[XÝÜ[
-	Ë][ËYÜÝ\	ÊNÂ]]YHÂÜÝ\ËÜXXÚ
-ÈOÈY
-Ë]Y\TÙ[XÝÜ	Ë][ËXØÛ\ÜÊHXÝ]KHIÊJH]Y
-ÊÎÈJNÂÛÛÝÝ[HÜÝ\Ë[ÝÂÛÛÝÝHX]Ý[
+        function saveTabStore(s) {
+            localStorage.setItem(TAB_KEY, JSON.stringify(s));
+        }
 
-]YÈÝ[
-H
-L
-NÂØÝ[Y[Ù][[Y[RY
-	ÜÙÜ\ÜÕ^	ÊK^ÛÛ[H]Y
-È	ÈÈ	È
-ÈÝ[
-È	È]Y	ÎÂØÝ[Y[Ù][[Y[RY
-	ÜÙÜ\ÜÑ[	ÊKÝ[KÚYHÝ
-È	ÉIÎÂBËÈÙ]Ù^IÜÈ]BØÝ[Y[Ù][[Y[RY
-	Ú[\Y]Ñ]IÊK[YP\Ñ]HH]È]J
-NÂËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÕÓÐQËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÝÛØY
-HÂÛÛÝ[HØÝ[Y[Ù][[Y[RY
-	ÜØÛÜXØ\	ÊNÂÛÛÝØ[HØÝ[Y[Ù][[Y[RY
-	ØØ[Y]S[YIÊK[YK[J
-NÂÛÛÝ[\Y]Ù\HØÝ[Y[Ù][[Y[RY
-	Ú[\Y]Ù\[YIÊK[YK[J
-NÂÛÛÝ]U[HØÝ[Y[Ù][[Y[RY
-	Ú[\Y]Ñ]IÊK[YNÂÛÛÝÛHHØÝ[Y[Ù][[Y[RY
-	ÜÛU]Q\Ü^IÊK^ÛÛ[[J
-K\XÙJ×ÊËÙË	ËIÊNÂ][[[YHHÛH	ÔØÛÜXØ\	ÎÂY
-Ø[
-H[[[YH
-ÏH	×ÉÈ
-ÈØ[\XÙJ×ÊËÙË	ËIÊNÂY
-[\Y]Ù\H[[[YH
-ÏH	×ÉÈ
-È[\Y]Ù\\XÙJ×ÊËÙË	ËIÊNÂY
-]U[
-H[[[YH
-ÏH	×ÉÈ
-È]U[Â[[[YH
-ÏH	ËÎÂØÝ[Y[ÙKÛ\ÜÓ\ÝY
-	Ü[[ÙIÊNÂ[
-KÙ]
-ÂX\Ú[ÌKKKWK[[[YN[[[YK[XYÙNÈ\N	ÚYÉË]X[]NNK[Ø[\ÎÈØØ[N\ÙPÓÔÎYK]\[\[ÎYHKÔÈ[]	Ú[ËÜX]	Û]\ËÜY[][Û	ÜÜZ]	ÈKYÙXXZÎÈ[ÙNÉØ]ÚYX[	Ë	ØÜÜÉË	ÛYØXÞI×HBJKÛJ[
-KØ]J
-K[
+        function serializeScorecard() {
+            var data = {};
+            document.querySelectorAll('[contenteditable]').forEach(function(el, i) {
+                var id = el.id || 'ce_' + i;
+                data['ce_' + id] = el.innerHTML;
+            });
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                var active = g.querySelector('.rating-btn.active');
+                data['rating_' + g.dataset.name] = active ? active.dataset.val : '';
+            });
+            document.querySelectorAll('input').forEach(function(inp, i) {
+                var id = inp.id || 'input_' + i;
+                data['input_' + id] = inp.value;
+            });
+            return data;
+        }
 
-HOÂØÝ[Y[ÙKÛ\ÜÓ\Ý[[ÝJ	Ü[[ÙIÊNÂÚÝÕØ\Ý
-	ÔÝÛØYYÝXØÙ\ÜÙ[IÊNÂJNÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÓPTÈTÑUËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÛÛ\PÛX\
-HÈØÝ[Y[Ù][[Y[RY
-	ØÛX\[Ù[	ÊKÛ\ÜÓ\ÝY
-	ÜÚÝÉÊNÈB[Ý[ÛÛÜÙPÛX\[Ù[
+        function populateScorecard(data) {
+            if (!data || Object.keys(data).length === 0) return;
+            document.querySelectorAll('[contenteditable]').forEach(function(el, i) {
+                var id = el.id || 'ce_' + i;
+                var key = 'ce_' + id;
+                if (data[key] !== undefined) el.innerHTML = data[key];
+            });
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                var key = 'rating_' + g.dataset.name;
+                if (data[key]) {
+                    g.querySelectorAll('.rating-btn').forEach(function(btn) {
+                        btn.classList.toggle('active', btn.dataset.val === data[key]);
+                    });
+                }
+            });
+            document.querySelectorAll('input').forEach(function(inp, i) {
+                var id = inp.id || 'input_' + i;
+                var key = 'input_' + id;
+                if (data[key] !== undefined) inp.value = data[key];
+            });
+            updateProgress();
+        }
 
-HÈØÝ[Y[Ù][[Y[RY
-	ØÛX\[Ù[	ÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÈB[Ý[ÛÛX\[
+        function saveCurrentTab() {
+            var s = getTabStore();
+            s[currentTab] = serializeScorecard();
+            saveTabStore(s);
+            updateTabIndicators();
+        }
 
-HÂØÝ[Y[]Y\TÙ[XÝÜ[
-	Ë][ËXÊKÜXXÚ
-OÛ\ÜÓ[YHH	Ü][ËXÊNÂØÝ[Y[]Y\TÙ[XÝÜ[
-	ËÝ\ËX\XIÊKÜXXÚ
-HOK[YHH	ÉÊNÂØÝ[Y[Ù][[Y[RY
-	Ú[\Y]Ù\[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ØØ[Y]S[YIÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	Ú[\Y]Ñ]IÊK[YP\Ñ]HH]È]J
-NÂØÝ[Y[Ù][[Y[RY
-	ÛÝ\[][ÉÊK[YHH	ÉÎÂØÝ[Y[Ù][[Y[RY
-	ÜXÛÛ[Y[][ÛÊK[YHH	ÉÎÂ\]TÙÜ\ÜÊ
-NÂÛÜÙPÛX\[Ù[
+        function switchTab(idx) {
+            if (idx === currentTab) return;
+            saveCurrentTab();
+            silentReset();
+            currentTab = idx;
+            var s = getTabStore();
+            if (s[idx] && Object.keys(s[idx]).length > 0) {
+                populateScorecard(s[idx]);
+            }
+            document.querySelectorAll('.tab-bar .tab').forEach(function(t, i) {
+                t.classList.toggle('active', i === idx);
+            });
+            updateTabIndicators();
+            localStorage.setItem('certifid_scorecard_activeTab', idx);
+        }
 
-NÂÚÝÕØ\Ý
-	ÔØÛÜXØ\ÛX\Y8 %XYHÜH^Ø[Y]IÊNÂÚ[ÝËØÜÛÊÈÜZ][Ü	ÜÛ[ÛÝ	ÈJNÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÐTÕËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÚÝÕØ\Ý
-\ÙÊHÂÛÛÝHØÝ[Y[Ù][[Y[RY
-	ÝØ\Ý	ÊNÂ^ÛÛ[H\ÙÎÂÛ\ÜÓ\ÝY
-	ÜÚÝÉÊNÂÙ][Y[Ý]
+        function updateTabIndicators() {
+            var s = getTabStore();
+            document.querySelectorAll('.tab-bar .tab').forEach(function(t, i) {
+                var d = s[i] || {};
+                var has = Object.values(d).some(function(v) {
+                    return v && v.toString().trim().length > 0;
+                });
+                t.classList.toggle('has-data', has);
+            });
+        }
 
+        function silentReset() {
+            document.querySelectorAll('[contenteditable]').forEach(function(el) {
+                el.innerHTML = '';
+            });
+            document.querySelectorAll('.rating-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('input').forEach(function(inp) {
+                inp.value = '';
+            });
+            updateProgress();
+        }
 
-HOÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊKÌ
-NÂBËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥dËÈÐQTÈTÑTËÈ8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d8¥d[Ý[ÛÜ[ØY\
-HÈØÝ[Y[Ù][[Y[RY
-	ÚÝ\^IÊKÛ\ÜÓ\ÝY
-	ÜÚÝÉÊNÈB[Ý[ÛÛÜÙRØY\
-HÂØÝ[Y[Ù][[Y[RY
-	ÚÝ\^IÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÂØÝ[Y[Ù][[Y[RY
-	ÚÝ]\ÉÊKÛ\ÜÓ\Ý[[ÝJ	ÜÚÝÉÊNÂB[Ý[Û\ÙR
+        function debouncedSave() {
+            clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(function() {
+                saveCurrentTab();
+            }, 500);
+        }
 
-HÂÛÛÝ]ÈHØÝ[Y[Ù][[Y[RY
-	Ú[]	ÊK[YK[J
-NÂY
-\]ÊHÈÚÝÕØ\Ý
-	ÔX\ÙH\ÝHHØ\ØÜ\[Û\Ý	ÊNÈ]\ÈBÛÛÝ[\ÈH]ËÜ]
-	×ÊKX\
-O[J
-JK[\O[Ý
-NÂÛÛÝ^H]ÎÂËÈ8¥ 8¥ ^XÝÛH]H8¥ 8¥ ÛÛÝ]T]\ÈHÂÊÎØÊ]_Û_ÜÚ][ÛWÊÎ»ï&WÊÊKÚK×Ê×ÊÊKÛKNÂ]ÛU]HH	ÉÎÂÜ
-ÛÛÝÙ]T]\ÊHÂÛÛÝHH^X]Ú
-
-NÂY
-JHÈÛU]HHVÌWK[J
-K\XÙJ×
-ËÙË	ÉÊNÈXZÎÈBBY
-\ÛU]H	[\Ë[Ý
-HÂÛÛÝ\ÝH[\ÖÌK\XÙJ×Ê×ÊË	ÉÊK\XÙJ×
-ËÙË	ÉÊK[J
-NÂY
-\Ý[Ý	Y\Ý[ÛY\Ê	ËÊJHÛU]HH\ÝÂBËÈ8¥ 8¥ ÙXÝ[ÛÜ]\8¥ 8¥ [Ý[Û[ÙXÝ[ÛXY[ÜÊHÂÛÛÝ]\ÈHXY[ÜËX\
-O]ÈYÑ^
-	ÊÎWÊÎÊ×Ê
-ÊOÊ	È
-È
-È	ÊWÊÎ
-ÊO×ÊÎ»ï&O×ÊË	Ú[IÊJNÂÜ
-ÛÛÝÙ]\ÊHÂÛÛÝHH^X]Ú
-
-NÂY
-JHÂÛÛÝÝ\HK[^
-ÈVÌK[ÝÂÛÛÝ^ÙXÝ[ÛH^ÛXÙJÝ\
-KX]Ú
-×ÊÎÊ×ÊËJWÊ
-
-VÐKVKÊNÂÛÛÝ[H^ÙXÝ[ÛÈÝ\
-È^ÙXÝ[Û[^^[ÝÂ]\^ÛXÙJÝ\[
-K[J
-NÂBB]\	ÉÎÂB[Ý[Û^XÝ[]ÊÙXÝ[Û^
-HÂY
-\ÙXÝ[Û^
-H]\×NÂÛÛÝ[]ÈH×NÂÛÛÝ[\ÈHÙXÝ[Û^Ü]
-	×ÊNÂÜ
-ÛÛÝ[HÙ[\ÊHÂÛÛÝÛX[YH[K\XÙJ××ø (W
-JËË	ÉÊK[J
-NÂY
-ÛX[Y[ÝL	ÛX[Y[ÝÌ
-HÂ[]Ë\Ú
-ÛX[Y
-NÂBB]\[]ÎÂBËÈ8¥ 8¥ ^XÝZ\ÜÚ[ÛÈXÝ]8¥ 8¥ ÛÛÝZ\ÜÚ[Û^H[ÙXÝ[ÛÂ	ØXÝ]ÊÝWÊÜÛIË	ØXÝ]ÊÝ\×ÊÜÛIË	ÜÛWÊÛÝ\Y]ÉË	Ü\ÜÙIË	ÛZ\ÜÚ[ÛË	ÛÝ\Y]ÉË	ÜÝ[[X\IË	ØXÝ]ÊÝWÊÜÜÚ][ÛË	ÝWÊÛÜÜ[]IË	ÜÛWÊÜÝ[[X\IË	ÜÜÚ][ÛÊÜÝ[[X\IË	Ù\ØÜ\[ÛÂJNÂËÈ8¥ 8¥ ^XÝÝ]ÛÛY\ÈÈ\ÜÛÚX[]Y\È8¥ 8¥ ÛÛÝ\Ü^H[ÙXÝ[ÛÂ	ÝÚ]ÊÞ[ÝKÛÊÙÉË	Ü\ÜÛÚX[]Y\ÉË	ÚÙ^WÊÜ\ÜÛÚX[]Y\ÉË	ÚÙ^WÊÛÝ]ÛÛY\ÉË	ÛÝ]ÛÛY\ÉË	ÝÚ]ÊÞ[ÝKÛÊÛÝÛË	Þ[Ý\ÊÜ\ÜÛÚX[]Y\ÉË	Ú[ÊÝ\×ÊÜÛIË	Ù]Y\ÉË	ØXØÛÝ[X[]Y\ÉË	Ù^XÝ][ÛÉË	ÝWÊÜÛIÂJNÂÛÛÝÝ]ÛÛY\ÈH^XÝ[]Ê\Ü^
-NÂËÈ8¥ 8¥ ^XÝ\]Z\YÚÚ[È8¥ 8¥ ÛÛÝ\U^H[ÙXÝ[ÛÂ	ÝÚ]ÊÞ[ÝKÛÊØ[ÉË	Ü\]Z\[Y[ÉË	Ü]X[YXØ][ÛÉË	Ü\]Z\YÊÜÚÚ[ÉË	ÝÚ]ÊÝÙKÜWÊÛÛÚÚ[×ÊÙÜË	Û]\ÝÊÚ]IË	Ü\]Z\YÊÙ^\Y[ÙIË	ÜÚÚ[×ÊÉÊÙ^\Y[ÙIË	ØXÝ]ÊÞ[ÝIË	ÝÚ×ÊÞ[ÝWÊØ\IË	Þ[ÝWÊÚ]IË	Ù^\Y[ÙIÂJNÂÛÛÝ\]Z\YÚÚ[ÈH^XÝ[]Ê\U^
-NÂËÈ8¥ 8¥ ^XÝXÙK]ËR]\È8¥ 8¥ ÛÛÝXÙU^H[ÙXÝ[ÛÂ	ÛXÙWÊÝ×ÊÚ]IË	ÜY\Y	Ë	ØÛ\ÉË	Ü\ÉË	ØY][Û[ÊÜÚÚ[ÉË	Ù\Ú\Y	Ë	Ú]Ü×ÊØWÊÜ\ÉÂJNÂÛÛÝXÙUÒ]\ÈH^XÝ[]ÊXÙU^
-NÂËÈ8¥ 8¥ \H\ÙY]H8¥ 8¥ ]Ü[]YHÂËÈÛH]BY
-ÛU]JHÂØÝ[Y[Ù][[Y[RY
-	ÜÛU]Q\Ü^IÊK^ÛÛ[HÛU]NÂÜ[]Y
-ÊÎÂBËÈZ\ÜÚ[ÛY
-Z\ÜÚ[Û^
-HÂÛÛÝÛX[YHZ\ÜÚ[Û^Ü]
-	×ÊK[\O[J
-JKÛXÙJ
-KÚ[	È	ÊK[J
-NÂY
-ÛX[Y[ÝÌ
-HÂØÝ[Y[Ù][[Y[RY
-	ÛZ\ÜÚ[ÛÞ	ÊK^ÛÛ[HÛX[YÂÜ[]Y
-ÊÎÂBBËÈÝ]ÛÛY\ÂY
-Ý]ÛÛY\Ë[Ý
-HÂÛÛÝÙHHØÝ[Y[Ù][[Y[RY
-	ÛÝ]ÛÛY\ÐÙIÊNÂÛÛÝX^ÝÜÈHX]Z[Ý]ÛÛY\Ë[Ý
-NÂ][H	ÉÎÂÜ
-]HHÈHX^ÝÜÎÈJÊÊHÂ[
-ÏH	ÏÈ
-Â	ÏÛ\ÜÏHÝË[[HÈ
-È
-H
-ÈJH
-È	ÏÝÈ
-Â	ÏÛÛ[Y]XOHYHÈ
-È\ØØ\R[
-Ý]ÛÛY\ÖÚWJH
-È	ÏÝÈ
-Â	ÏÛ\ÜÏH[Y[[KXÙ[ÛÛ[Y]XOHYHÈ
-È
-HÈ	ÎL^\ÉÈH
-È	ÌN^\ÉÈ	ÓÛÛÚ[ÉÊH
-È	ÏÝÈ
-Â	Ï]Û\ÜÏH][ËYÜÝ\]K[[YOHÝ]ÛÛYKIÈ
-È
-H
-ÈJH
-È	ÈÈ
-Â	Ï]ÛÛ\ÜÏH][ËX]K][HHOØ]ÛÈ
-Â	Ï]ÛÛ\ÜÏH][ËX]K][HØ]ÛÈ
-Â	Ï]ÛÛ\ÜÏH][ËX]K][HÈÏØ]ÛÈ
-Â	Ï]ÛÛ\ÜÏH][ËX]K][HØ]ÛÈ
-Â	ÏÙ]ÝÝÎÂBÙK[\SH[ÂÜ[]Y
-ÊÎÂBËÈÛÛ\][ÚY\È8 %Ü]\]Z\YÚÚ[È[È[Ü]Y\È	XÚXØ[Y
-\]Z\YÚÚ[Ë[Ý
-HÂÛÛÝXÚÙ^]ÛÜÈH×ÛÙØ\_ÛÛ]Ü_ÙXÚY[^\Y[ÙHÚ]Ø[\ÙÜÙ_XÜÝØZ[ÚYÚ\_Ü[^Ù[Ü_\_ØX\ßXÚÞ\Ý[_]_[[]Xß\Ü\ÚØ\Z_]]ÛX]
-WÚNÂÛÛÝXÚÚÚ[ÈH×NÂÛÛÝÛÜTÚÚ[ÈH×NÂ\]Z\YÚÚ[ËÜXXÚ
-ÈOÂY
-XÚÙ^]ÛÜË\Ý
-ÊJHXÚÚÚ[Ë\Ú
-ÊNÂ[ÙHÛÜTÚÚ[Ë\Ú
-ÊNÂJNÂ[Ý[Û\]PÛÛ\Ø\
-Ø\YY^][\ËX^
-HÂÛÛÝØ\HØÝ[Y[Ù][[Y[RY
-Ø\Y
-NÂY
-XØ\][\Ë[ÝOOH
-H]\ÂÛÛÝ^\Ý[ÈHØ\]Y\TÙ[XÝÜ[
-	ËÛÛ\\ÝÉÊNÂÛÛÝÛÝ[HX]Z[][\Ë[ÝX^
-JNÂÜ
-]HHÈHÛÝ[	H^\Ý[Ë[ÝÈJÊÊHÂÛÛÝX[H^\Ý[ÖÚWK]Y\TÙ[XÝÜ	ËÛÛ\[X[	ÊNÂY
-X[
-HX[^ÛÛ[H][\ÖÚWK[Ý
-È][\ÖÚWKÝXÝ[Ê
-MÊH
-È	ËÈ][\ÖÚWNÂBBY
-ÛÜTÚÚ[Ë[Ý
-HÈ\]PÛÛ\Ø\
-	ØÛÛ\[Ü]Y\ÉË	ØÛÛ\\	ËÛÜTÚÚ[Ë
-JNÈÜ[]Y
-ÊÎÈBY
-XÚÚÚ[Ë[Ý
-HÈ\]PÛÛ\Ø\
-	ØÛÛ\XÚXØ[	Ë	ØÛÛ\]	ËXÚÚÚ[Ë
-JNÈÜ[]Y
-ÊÎÈBBËÈXÙK]ËZ]\È8¡¤[Y\ÈØ\
-ÛÙÚÚ[ÈÙ[\JBY
-XÙUÒ]\Ë[Ý
-HÂÛÛÝØ\HØÝ[Y[Ù][[Y[RY
-	ØÛÛ\[Y\ÉÊNÂY
-Ø\
-HÂÛÛÝÝÜÈHØ\]Y\TÙ[XÝÜ[
-	ËÛÛ\\ÝÉÊNÂÛÛÝÛÝ[HX]Z[XÙUÒ]\Ë[Ý
-JNÂÜ
-]HHÈHÛÝ[	HÝÜË[ÝÈJÊÊHÂÛÛÝX[HÝÜÖÚWK]Y\TÙ[XÝÜ	ËÛÛ\[X[	ÊNÂY
-X[
-HX[^ÛÛ[HXÙUÒ]\ÖÚWK[Ý
-ÈXÙUÒ]\ÖÚWKÝXÝ[Ê
-MÊH
-È	ËÈXÙUÒ]\ÖÚWNÂBÜ[]Y
-ÊÎÂBBËÈKZ[]][È]ÛÈÛ]ÈÓB[]][Ð]ÛÊ
-NÂ\]TÙÜ\ÜÊ
-NÂËÈÚÝÈÝ]\ÂÛÛÝÝ]\ÈHØÝ[Y[Ù][[Y[RY
-	ÚÝ]\ÉÊNÂY
-Ü[]Y
-HÂÝ]\Ë^ÛÛ[H	ÔÜ[]Y	È
-ÈÜ[]Y
-È	ÈÙXÝ[ÛÈ
-È
-Ü[]YHÈ	ÜÉÈ	ÉÊH
-È	ÈÛHH[Y[È\HY]XH8 %]Y]È[Y\Ý\ÈYYYÎÂÝ]\ËÛ\ÜÓ\ÝY
-	ÜÚÝÉÊNÂÙ][Y[Ý]
+        function updateProgress() {
+            var count = 0;
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                if (g.querySelector('.rating-btn.active')) {
+                    count++;
+                }
+            });
+            document.getElementById('progress-count').textContent = count;
+            var percent = (count / 26) * 100;
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
 
+        function attachRatingHandlers() {
+            document.querySelectorAll('.rating-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var group = btn.parentElement;
+                    group.querySelectorAll('.rating-btn').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                    updateProgress();
+                    debouncedSave();
+                });
+            });
+        }
 
-HOÂÛÜÙRØY\
-NÂÚÝÕØ\Ý
-	ÔØÛÜXØ\Ü[]YÛH8 %	È
-ÈÜ[]Y
-È	ÈÙXÝ[ÛÈ\]Y	ÊNÂKML
-NÂH[ÙHÂÝ]\Ë^ÛÛ[H	ÐÛÝ[Ý\ÙHÛX\ÙXÝ[ÛËH\Ý[ÈHÚ]X[YÙXÝ[ÛÈ
-KË\ÜÛÚX[]Y\Î\]Z\[Y[ÎKÎÂÝ]\ËÝ[KXÚÙÜÝ[H	ÈÙYÙLÎÂÝ]\ËÝ[KÛÛÜH	ÈØ
-LÌIÎÂÝ]\ËÛ\ÜÓ\ÝY
-	ÜÚÝÉÊNÂBB[Ý[Û\ØØ\R[
-ÝHÂÛÛÝ]HØÝ[Y[ÜX]Q[[Y[
-	Ù]ÊNÂ]^ÛÛ[HÝÂ]\][\SÂBÜØÜ\ØÙOÚ[
+        function downloadPDF() {
+            var element = document.querySelector('.page');
+            var actionBar = document.querySelector('.action-bar');
+            var tabBar = document.querySelector('.tab-bar');
+
+            actionBar.classList.add('pdf-mode');
+            tabBar.style.display = 'none';
+
+            var opt = {
+                margin: 10,
+                filename: 'CertifID-Scorecard.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(function() {
+                actionBar.classList.remove('pdf-mode');
+                tabBar.style.display = 'flex';
+            });
+        }
+
+        function openJDModal() {
+            document.getElementById('jdModal').classList.add('show');
+        }
+
+        function closeJDModal() {
+            document.getElementById('jdModal').classList.remove('show');
+            document.getElementById('jdTextarea').value = '';
+        }
+
+        function parseAndLoadJD() {
+            var jdText = document.getElementById('jdTextarea').value.trim();
+            if (!jdText) {
+                alert('Please paste a job description');
+                return;
+            }
+
+            // Extract role title (assume first line or first non-empty line)
+            var lines = jdText.split('\n');
+            var title = '';
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (line.length > 0 && line.length < 100) {
+                    title = line;
+                    break;
+                }
+            }
+
+            document.getElementById('roleTitle').innerHTML = title || 'New Role';
+
+            // Simple keyword extraction for outcomes
+            var outcomes = [];
+            var outcomeKeywords = ['responsibility', 'deliver', 'manage', 'drive', 'build', 'ensure'];
+            outcomeKeywords.forEach(function(keyword) {
+                var regex = new RegExp('[^.!?]*\\b' + keyword + '\\b[^.!?]*[.!?]', 'gi');
+                var matches = jdText.match(regex);
+                if (matches) {
+                    matches.forEach(function(match) {
+                        if (outcomes.length < 6 && match.trim().length > 20) {
+                            outcomes.push(match.trim());
+                        }
+                    });
+                }
+            });
+
+            // Populate outcomes
+            for (var i = 0; i < Math.min(outcomes.length, 6); i++) {
+                var outcomeEl = document.getElementById('outcome-text-' + (i + 1));
+                if (outcomeEl) {
+                    outcomeEl.innerHTML = outcomes[i].substring(0, 120);
+                }
+            }
+
+            closeJDModal();
+            debouncedSave();
+            alert('Job description loaded. Review and adjust as needed.');
+        }
+
+        function clearAndReset() {
+            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                return;
+            }
+            silentReset();
+            var s = getTabStore();
+            s[currentTab] = {};
+            saveTabStore(s);
+            updateTabIndicators();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', function() {
+            var savedTab = localStorage.getItem('certifid_scorecard_activeTab');
+            if (savedTab) {
+                currentTab = parseInt(savedTab, 10);
+                var tabs = document.querySelectorAll('.tab-bar .tab');
+                tabs.forEach(function(t, i) {
+                    t.classList.toggle('active', i === currentTab);
+                });
+            }
+
+            var s = getTabStore();
+            if (s[currentTab] && Object.keys(s[currentTab]).length > 0) {
+                populateScorecard(s[currentTab]);
+            }
+
+            updateTabIndicators();
+            attachRatingHandlers();
+
+            // Auto-save on changes
+            document.addEventListener('input', debouncedSave);
+            document.addEventListener('change', debouncedSave);
+            document.querySelectorAll('[contenteditable]').forEach(function(el) {
+                el.addEventListener('blur', debouncedSave);
+            });
+
+            // Modal close on background click
+            document.getElementById('jdModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeJDModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
