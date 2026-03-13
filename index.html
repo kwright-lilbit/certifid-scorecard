@@ -539,6 +539,24 @@
             background: white;
         }
 
+        /* Interview Plan Table */
+        .interview-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+        .interview-table th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-low); padding: 8px 12px; border-bottom: 2px solid var(--border); }
+        .interview-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+        .interview-table tr:last-child td { border-bottom: none; }
+        .stage-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; color: white; white-space: nowrap; }
+        .stage-screening { background: #E74C3C; }
+        .stage-hiring-manager { background: #2E86C1; }
+        .stage-collaboration { background: #F0A500; }
+        .stage-assessment { background: #27AE60; }
+        .stage-exec-sponsor { background: #166EBE; }
+        .stage-huddle { background: #C2185B; }
+        .interview-table .editable-cell { outline: none; min-height: 20px; font-family: Oxygen, sans-serif; line-height: 1.4; }
+        .interview-table .editable-cell:empty:before { content: attr(data-placeholder); color: var(--text-low); font-style: italic; }
+        .interview-table .editable-cell:focus { background: var(--blue-ice); border-radius: 3px; }
+        .interview-table th:first-child { width: 160px; }
+        .interview-table th:nth-child(2) { width: 140px; }
+
         /* Footer */
         .footer {
             display: grid;
@@ -1073,7 +1091,43 @@
                 <div class="section-subtitle">Notes & observations</div>
             </div>
         </div>
-        <div contenteditable="true" id="interviewNotes" class="notes-block"></div>
+        <table class="interview-table">
+            <thead>
+                <tr><th>Stage</th><th>Owner</th><th>Focus Area</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="stage-badge stage-screening">Screening</span></td>
+                    <td><div contenteditable="true" id="ip-owner-1" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-1" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-hiring-manager">Hiring Manager</span></td>
+                    <td><div contenteditable="true" id="ip-owner-2" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-2" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-collaboration">Collaboration</span></td>
+                    <td><div contenteditable="true" id="ip-owner-3" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-3" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-assessment">Assessment / Panel</span></td>
+                    <td><div contenteditable="true" id="ip-owner-4" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-4" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-exec-sponsor">Executive Sponsor</span></td>
+                    <td><div contenteditable="true" id="ip-owner-5" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-5" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-huddle">Huddle to Decide</span></td>
+                    <td><div contenteditable="true" id="ip-owner-6" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-6" class="editable-cell" data-placeholder="Focus areas for this stage"></div></td>
+                </tr>
+            </tbody>
+        </table>
 
         <!-- Footer -->
         <div class="footer">
@@ -1141,6 +1195,9 @@
                 var key = 'select_' + id;
                 if (data[key] !== undefined) sel.value = data[key];
             });
+            document.querySelectorAll('.editable-cell').forEach(function(cell) {
+                if (cell.id) data['ipcell_' + cell.id] = cell.innerHTML;
+            });
             document.querySelectorAll('input').forEach(function(inp, i) {
                 var id = inp.id || 'input_' + i;
                 data['input_' + id] = inp.value;
@@ -1161,6 +1218,12 @@
                     g.querySelectorAll('.rating-btn').forEach(function(btn) {
                         btn.classList.toggle('active', btn.dataset.val === data[key]);
                     });
+                }
+            });
+            document.querySelectorAll('.editable-cell').forEach(function(cell) {
+                if (cell.id) {
+                    var key = 'ipcell_' + cell.id;
+                    if (data[key] !== undefined) cell.innerHTML = data[key];
                 }
             });
             document.querySelectorAll('input').forEach(function(inp, i) {
@@ -1253,24 +1316,35 @@
         }
 
         function downloadPDF() {
-            var element = document.querySelector('.page');
+            var element = document.querySelector('.page-container');
             var actionBar = document.querySelector('.action-bar');
             var tabBar = document.querySelector('.tab-bar');
-
-            actionBar.classList.add('pdf-mode');
+            var jdModal = document.getElementById('jdModal');
+            actionBar.style.display = 'none';
             tabBar.style.display = 'none';
-
+            if (jdModal) jdModal.style.display = 'none';
+            var roleEl = document.getElementById('roleTitle');
+            var roleName = (roleEl && roleEl.innerText.trim()) || 'Scorecard';
+            var safeName = roleName.replace(/[^a-zA-Z0-9 ]/g, '').replace(/\\s+/g, '-');
+            var filename = 'CertifID-Scorecard-' + safeName + '.pdf';
             var opt = {
-                margin: 10,
-                filename: 'CertifID-Scorecard.pdf',
+                margin: [8, 8, 8, 8],
+                filename: filename,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { format: 'a4', orientation: 'portrait' }
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
             };
-
             html2pdf().set(opt).from(element).save().then(function() {
-                actionBar.classList.remove('pdf-mode');
-                tabBar.style.display = 'flex';
+                actionBar.style.display = '';
+                tabBar.style.display = '';
+                if (jdModal) jdModal.style.display = '';
+            }).catch(function(err) {
+                console.error('PDF generation error:', err);
+                actionBar.style.display = '';
+                tabBar.style.display = '';
+                if (jdModal) jdModal.style.display = '';
+                alert('PDF download failed. Please try again.');
             });
         }
 
