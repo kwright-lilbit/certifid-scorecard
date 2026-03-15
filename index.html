@@ -1226,8 +1226,15 @@
     <div id="jdModal" class="modal">
         <div class="modal-content">
             <div class="modal-title">Load Job Description</div>
-            <div class="modal-text">Paste the job description below. We'll extract the role title, mission, and outcomes to get you started.</div>
-            <textarea id="jdTextarea" class="modal-textarea" placeholder="Paste job description here..."></textarea>
+            <div class="modal-text">Paste the full job description below. The parser will extract and populate:<br>
+                <span style="display:inline-block;margin-top:6px;font-size:12px;color:var(--text-medium);line-height:1.6;">
+                    <strong>Role Title</strong> &amp; <strong>Department</strong> &middot;
+                    <strong>Mission</strong> statement &middot;
+                    <strong>6 Outcomes</strong> from responsibilities &middot;
+                    <strong>20 Competencies</strong> across Priorities, Who, Values &amp; Technical
+                </span>
+            </div>
+            <textarea id="jdTextarea" class="modal-textarea" style="height:280px;" placeholder="Paste the full job description text here..."></textarea>
             <div class="modal-buttons">
                 <button class="btn" onclick="closeJDModal()">Cancel</button>
                 <button class="btn primary" onclick="parseAndLoadJD()">Parse & Load</button>
@@ -1455,52 +1462,173 @@
             document.getElementById('jdTextarea').value = '';
         }
 
+        /* ========== JD PARSER ========== */
+
+        function splitJDSections(text) {
+            text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            var sections = {};
+            var headerPatterns = [
+                { key: 'title',    re: /^(?:job\s*opening|position|role\s*title)\s*[:\-]/im },
+                { key: 'about',    re: /^(?:about\s+(?:us|certifid|the\s+company))\s*[:\n]/im },
+                { key: 'impact',   re: /^(?:how\s+you\s+will\s+make\s+an?\s+impact|about\s+the\s+role|role\s+summary|the\s+role|overview)\s*[:\n]/im },
+                { key: 'do',       re: /^(?:what\s+you(?:'ll|.will)\s+do|responsibilities|key\s+responsibilities|your\s+responsibilities)\s*[:\n]/im },
+                { key: 'looking',  re: /^(?:what\s+we(?:'re|.are)\s+looking\s+for|requirements|qualifications|what\s+you(?:'ll|.will)\s+bring|who\s+you\s+are)\s*[:\n]/im },
+                { key: 'offer',    re: /^(?:what\s+we\s+offer|benefits|perks|compensation)\s*[:\n]/im }
+            ];
+            var found = [];
+            headerPatterns.forEach(function(hp) {
+                var m = text.match(hp.re);
+                if (m) found.push({ key: hp.key, start: m.index, headerEnd: m.index + m[0].length });
+            });
+            found.sort(function(a, b) { return a.start - b.start; });
+            for (var i = 0; i < found.length; i++) {
+                var contentStart = found[i].headerEnd;
+                var contentEnd = (i + 1 < found.length) ? found[i + 1].start : text.length;
+                sections[found[i].key] = text.substring(contentStart, contentEnd).trim();
+            }
+            sections._full = text;
+            if (found.length > 0) sections._preamble = text.substring(0, found[0].start).trim();
+            else sections._preamble = text;
+            return sections;
+        }
+
+        function extractRoleTitle(text, sections) {
+            var m = text.match(/(?:job\s*opening|position|role\s*title)\s*[:\-]\s*(.+)/i);
+            if (m) { var t = m[1].replace(/\*+/g, '').trim(); t = t.replace(/[\\\|].*$/, '').trim(); return t; }
+            var lines = text.split('\n');
+            for (var i = 0; i < Math.min(lines.length, 10); i++) {
+                var line = lines[i].replace(/\*+/g, '').trim();
+                if (line.length > 5 && line.length < 80 && !/^(about|how|what|location|team|type)/i.test(line)) return line;
+            }
+            return 'New Role';
+        }
+
+        function detectDepartment(text) {
+            var lower = text.toLowerCase();
+            var deptMap = [
+                { value: 'Customer Success', keywords: ['customer success', 'csm', 'cs team', 'cs |', '| cs'] },
+                { value: 'Engineering',      keywords: ['engineering', 'software engineer', 'developer', 'sre', 'devops'] },
+                { value: 'Sales',            keywords: ['sales', 'account executive', 'sdr', 'bdr', 'business development'] },
+                { value: 'Product',          keywords: ['product manager', 'product design', 'product team', '| product'] },
+                { value: 'Finance',          keywords: ['finance', 'accounting', 'financial analyst', 'controller'] },
+                { value: 'Operations',       keywords: ['operations', 'rev ops', 'revenue operations', 'biz ops'] },
+                { value: 'Partnerships',     keywords: ['partnerships', 'partner manager', 'channel'] }
+            ];
+            for (var i = 0; i < deptMap.length; i++) {
+                for (var j = 0; j < deptMap[i].keywords.length; j++) {
+                    if (lower.indexOf(deptMap[i].keywords[j]) >= 0) return deptMap[i].value;
+                }
+            }
+            return '';
+        }
+
+        function buildMission(sections) {
+            var src = sections.impact || '';
+            if (!src && sections._preamble) src = sections._preamble;
+            if (!src) return '';
+            var paragraphs = src.split(/\n\s*\n/).map(function(p) { return p.trim(); }).filter(function(p) { return p.length > 30; });
+            var mission = paragraphs.slice(0, 2).join(' ');
+            mission = mission.replace(/\s+/g, ' ').replace(/\*+/g, '').trim();
+            if (mission.length > 500) { var cut = mission.lastIndexOf('.', 500); if (cut > 200) mission = mission.substring(0, cut + 1); else mission = mission.substring(0, 500) + '...'; }
+            return mission;
+        }
+
+        function extractBullets(text) {
+            if (!text) return [];
+            var items = text.split(/\n\s*(?:[-\u2022\u25CF*]|\d+[.)]\s)/);
+            if (items.length <= 1) items = text.split(/\n/).filter(function(l) { return l.trim().length > 15; });
+            return items.map(function(item) { return item.replace(/\s+/g, ' ').replace(/\*+/g, '').trim(); }).filter(function(item) { return item.length > 15; });
+        }
+
+        function condenseOutcome(bullet) {
+            var s = bullet.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+            if (s.length > 130) { var dashIdx = s.indexOf(' \u2014 '); if (dashIdx < 0) dashIdx = s.indexOf(' - '); if (dashIdx > 40 && dashIdx < 100) s = s.substring(0, dashIdx); }
+            if (s.length > 130) { var commaIdx = s.indexOf(',', 60); if (commaIdx > 0 && commaIdx < 120) s = s.substring(0, commaIdx); }
+            if (s.length > 140) s = s.substring(0, 137) + '...';
+            return s;
+        }
+
+        function extractOutcomes(sections) {
+            var bullets = extractBullets(sections['do'] || '');
+            if (bullets.length === 0) return [];
+            var actionVerbs = ['own', 'manage', 'design', 'execute', 'build', 'drive', 'lead', 'coordinate', 'leverage', 'monitor', 'navigate', 'serve', 'identify', 'engage', 'deliver', 'ensure'];
+            if (bullets.length > 6) {
+                bullets.sort(function(a, b) { var aScore = 0, bScore = 0; var aLow = a.toLowerCase(), bLow = b.toLowerCase(); actionVerbs.forEach(function(v) { if (aLow.indexOf(v) >= 0) aScore++; if (bLow.indexOf(v) >= 0) bScore++; }); return bScore - aScore; });
+                bullets = bullets.slice(0, 6);
+            }
+            return bullets.map(condenseOutcome);
+        }
+
+        function categorizeCompetencies(sections) {
+            var bullets = extractBullets(sections.looking || '');
+            if (bullets.length === 0) return { priorities: [], who: [], values: [], technical: [] };
+            var classifiers = {
+                technical: { weight: 3, keywords: ['gainsight', 'salesforce', 'crm', 'csp', 'data', 'analytics', 'reporting', 'proficiency', 'tool', 'platform', 'software', 'system', 'ai ', 'artificial intelligence', 'industry', 'familiarity', 'leveraging ai', 'title industry'] },
+                priorities: { weight: 2, keywords: ['strategic', 'enterprise', 'lifecycle', 'adoption', 'retention', 'expansion', 'renewal', 'commercial', 'forecast', 'displacement', 'competitive', 'executive', 'business review', 'ebr', 'change management', 'multi-stakeholder', 'portfolio', 'value selling', 'post-implementation', 'roi', 'budget'] },
+                who: { weight: 2, keywords: ['organizational skills', 'manage time', 'willingness to travel', 'travel', 'availability', 'simultaneously', 'multiple accounts', 'self-starter', 'urgency', 'pressure', 'proactive', 'cross-functional', 'standards'] },
+                values: { weight: 2, keywords: ['communication', 'presentation', 'written', 'verbal', 'integrity', 'honest', 'respect', 'listen', 'feedback', 'growth', 'adapt', 'empathy', 'team', 'collaborative'] }
+            };
+            var buckets = { priorities: [], who: [], values: [], technical: [] };
+            bullets.forEach(function(bullet) {
+                var lower = bullet.toLowerCase();
+                var scores = {};
+                Object.keys(classifiers).forEach(function(cat) { scores[cat] = 0; classifiers[cat].keywords.forEach(function(kw) { if (lower.indexOf(kw) >= 0) scores[cat] += classifiers[cat].weight; }); });
+                var bestCat = 'priorities', bestScore = 0;
+                Object.keys(scores).forEach(function(cat) { if (scores[cat] > bestScore) { bestScore = scores[cat]; bestCat = cat; } });
+                var label = condenseCompetency(bullet);
+                buckets[bestCat].push(label);
+            });
+            Object.keys(buckets).forEach(function(cat) { while (buckets[cat].length > 5) buckets[cat].pop(); });
+            return buckets;
+        }
+
+        function condenseCompetency(bullet) {
+            var s = bullet.replace(/\*+/g, '').trim();
+            s = s.replace(/^(?:demonstrated|proven|strong|exceptional|track record of|proficiency in|willingness to)\s+(?:ability\s+to\s+)?/i, '');
+            s = s.replace(/^(?:\d+\+?\s*years?\s+(?:of\s+)?experience\s+(?:in\s+)?)/i, '');
+            s = s.replace(/^(?:a\s+strong\s+background\s+in\s+)/i, '');
+            var dashIdx = s.indexOf(' \u2014 '); if (dashIdx < 0) dashIdx = s.indexOf(' --- '); if (dashIdx > 15 && dashIdx < 80) s = s.substring(0, dashIdx);
+            if (s.length > 70) { var incIdx = s.toLowerCase().indexOf(', including'); if (incIdx > 20) s = s.substring(0, incIdx); var withIdx = s.toLowerCase().indexOf(', with'); if (withIdx > 20 && s.length > 60) s = s.substring(0, withIdx); }
+            s = s.charAt(0).toUpperCase() + s.slice(1);
+            s = s.replace(/\.\s*$/, '');
+            if (s.length > 70) s = s.substring(0, 67) + '...';
+            return s;
+        }
+
+        function populateCompetencyDimension(dimCode, items) {
+            for (var i = 0; i < 5; i++) {
+                var el = document.getElementById('comp-' + dimCode + (i + 1) + '-label');
+                if (el && items[i]) el.innerHTML = items[i];
+            }
+        }
+
         function parseAndLoadJD() {
             var jdText = document.getElementById('jdTextarea').value.trim();
-            if (!jdText) {
-                alert('Please paste a job description');
-                return;
-            }
-
-            // Extract role title (assume first line or first non-empty line)
-            var lines = jdText.split('\n');
-            var title = '';
-            for (var i = 0; i < lines.length; i++) {
-                var line = lines[i].trim();
-                if (line.length > 0 && line.length < 100) {
-                    title = line;
-                    break;
-                }
-            }
-
-            document.getElementById('roleTitle').innerHTML = title || 'New Role';
-
-            // Simple keyword extraction for outcomes
-            var outcomes = [];
-            var outcomeKeywords = ['responsibility', 'deliver', 'manage', 'drive', 'build', 'ensure'];
-            outcomeKeywords.forEach(function(keyword) {
-                var regex = new RegExp('[^.!?]*\\b' + keyword + '\\b[^.!?]*[.!?]', 'gi');
-                var matches = jdText.match(regex);
-                if (matches) {
-                    matches.forEach(function(match) {
-                        if (outcomes.length < 6 && match.trim().length > 20) {
-                            outcomes.push(match.trim());
-                        }
-                    });
-                }
-            });
-
-            // Populate outcomes
-            for (var i = 0; i < Math.min(outcomes.length, 6); i++) {
-                var outcomeEl = document.getElementById('outcome-text-' + (i + 1));
-                if (outcomeEl) {
-                    outcomeEl.innerHTML = outcomes[i].substring(0, 120);
-                }
-            }
-
+            if (!jdText) { alert('Please paste a job description'); return; }
+            var sections = splitJDSections(jdText);
+            var roleTitle = extractRoleTitle(jdText, sections);
+            document.getElementById('roleTitle').innerHTML = roleTitle;
+            var dept = detectDepartment(jdText);
+            if (dept) document.getElementById('department').value = dept;
+            var mission = buildMission(sections);
+            document.getElementById('mission').innerHTML = mission;
+            var outcomes = extractOutcomes(sections);
+            for (var i = 0; i < 6; i++) { var el = document.getElementById('outcome-text-' + (i + 1)); if (el) el.innerHTML = outcomes[i] || ''; }
+            var competencies = categorizeCompetencies(sections);
+            populateCompetencyDimension('p', competencies.priorities);
+            populateCompetencyDimension('w', competencies.who);
+            populateCompetencyDimension('v', competencies.values);
+            populateCompetencyDimension('t', competencies.technical);
+            var summary = [];
+            if (roleTitle !== 'New Role') summary.push('Role: ' + roleTitle);
+            if (dept) summary.push('Dept: ' + dept);
+            if (mission) summary.push('Mission');
+            if (outcomes.length > 0) summary.push(outcomes.length + ' outcomes');
+            var compCount = competencies.priorities.length + competencies.who.length + competencies.values.length + competencies.technical.length;
+            if (compCount > 0) summary.push(compCount + ' competencies');
             closeJDModal();
             debouncedSave();
-            alert('Job description loaded. Review and adjust as needed.');
+            alert('Parsed & loaded: ' + summary.join(' \u00B7 ') + '\n\nReview each section and adjust as needed.');
         }
 
         function clearAndReset() {
