@@ -1628,7 +1628,11 @@
             if (compCount > 0) summary.push(compCount + ' competencies');
             closeJDModal();
             debouncedSave();
-            alert('Parsed & loaded: ' + summary.join(' \u00B7 ') + '\n\nReview each section and adjust as needed.');
+            var toast = document.createElement('div');
+        toast.textContent = summary;
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a7f5a;color:#fff;padding:12px 24px;border-radius:8px;z-index:10000;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-width:600px;text-align:center;';
+        document.body.appendChild(toast);
+        setTimeout(function(){ toast.remove(); }, 5000);
         }
 
         function clearAndReset() {
