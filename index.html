@@ -1,11 +1,789 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CertifID — New Req In-Take Form</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Oxygen:wght@300;400;700&display=swap" rel="stylesheet" />
-  <script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertifID - Hiring Scorecard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #102754;
+            --blue: #166EBE;
+            --blue-medium: #2E6DA4;
+            --blue-light: #B7DEFF;
+            --blue-ice: #F4F6FA;
+            --green: #61D690;
+            --amber: #FFA624;
+            --red: #DB132C;
+            --border: #DDDDDD;
+            --border-light: #EEEEEE;
+            --muted: #555555;
+            --bg: #F7F7F7;
+            --bg-alt: #F9F9F9;
+            --text-high: #2B3034;
+            --text-medium: #555555;
+        }
+
+        body {
+            font-family: Oxygen, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-high);
+            line-height: 1.5;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            background: var(--navy);
+            padding: 8px 40px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .tab-bar .tab {
+            padding: 10px 24px 8px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .tab-bar .tab:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        .tab-bar .tab.active {
+            color: #fff;
+            background: #1a3a6b;
+        }
+
+        .tab-bar .tab .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .tab-bar .tab.active .dot {
+            background: var(--green);
+        }
+
+        .tab-bar .tab.has-data .dot {
+            background: var(--amber);
+        }
+
+        .tab-bar .tab.active.has-data .dot {
+            background: var(--green);
+        }
+
+        /* Action Bar */
+        .action-bar {
+            position: sticky;
+            top: 44px;
+            z-index: 99;
+            background: white;
+            border-bottom: 1px solid var(--border-light);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .action-bar.pdf-mode {
+            display: none;
+        }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-high);
+            white-space: nowrap;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: white;
+            color: var(--text-high);
+        }
+
+        .btn:hover {
+            background: var(--bg-alt);
+            border-color: var(--blue);
+        }
+
+        .btn.primary {
+            background: var(--blue);
+            color: white;
+            border-color: var(--blue);
+        }
+
+        .btn.primary:hover {
+            background: var(--blue-medium);
+            border-color: var(--blue-medium);
+        }
+
+        /* Page Container */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px 32px;
+        }
+
+        .page.pdf-mode {
+            margin: 0;
+            max-width: 100%;
+            padding: 20px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--navy);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .top-bar .logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .top-bar .subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        /* Header Band */
+        .header-band {
+            background: var(--blue-ice);
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-light);
+        }
+
+        .header-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .header-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-field label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .header-field input[type="text"],
+        .header-field [contenteditable] {
+            padding: 8px 12px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 14px;
+            background: white;
+        }
+
+        .header-field [contenteditable] {
+            min-height: 32px;
+            outline: none;
+        }
+
+        .header-field select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 14px;
+            background: white;
+            color: var(--text-high);
+            cursor: pointer;
+            appearance: auto;
+        }
+
+        .header-field select:focus {
+            border-color: var(--blue);
+            outline: none;
+        }
+
+        .header-field [contenteditable]:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        .legend {
+            font-size: 12px;
+            color: var(--text-medium);
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-dot.red { background: var(--red); }
+        .legend-dot.amber { background: var(--amber); }
+        .legend-dot.green { background: var(--green); }
+        .legend-dot.navy { background: var(--navy); }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--blue);
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-high);
+            flex: 1;
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-medium);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* Mission Section */
+        .mission-box {
+            background: var(--blue-ice);
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 80px;
+            outline: none;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .mission-box:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        /* Outcomes Section */
+        .outcomes-table {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .outcome-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 140px;
+            gap: 16px;
+            align-items: start;
+            padding: 16px;
+            background: var(--bg-alt);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .outcome-number {
+            font-weight: 700;
+            color: var(--blue);
+            font-size: 14px;
+            padding-top: 6px;
+        }
+
+        .outcome-text {
+            font-size: 14px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+            min-height: 32px;
+        }
+
+        .outcome-text:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        .outcome-notes {
+            font-size: 12px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+            min-height: 32px;
+            display: none;
+        }
+
+        .outcome-notes:focus {
+            border-color: var(--blue);
+        }
+
+        /* Competencies Section */
+        .competencies-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .competency-card {
+            background: var(--blue-ice);
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+
+        .competency-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-high);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .competency-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .competency-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .competency-label {
+            font-size: 13px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-family: Oxygen, sans-serif;
+            outline: none;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .competency-label:focus {
+            border-color: var(--blue);
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .rating-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-medium);
+            transition: all 0.15s ease;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .rating-btn:hover {
+            border-color: var(--blue);
+        }
+
+        .rating-btn.active {
+            color: white;
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        .rating-btn[data-val="1"].active {
+            background: var(--red);
+        }
+
+        .rating-btn[data-val="2"].active {
+            background: var(--amber);
+        }
+
+        .rating-btn[data-val="3"].active {
+            background: var(--green);
+        }
+
+        .rating-btn[data-val="4"].active {
+            background: var(--navy);
+        }
+
+        /* Interview Plan Section */
+        .notes-block {
+            background: var(--blue-ice);
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-light);
+            font-size: 13px;
+            line-height: 1.5;
+            min-height: 100px;
+            outline: none;
+            font-family: Oxygen, sans-serif;
+        }
+
+        .notes-block:focus {
+            border-color: var(--blue);
+            background: white;
+        }
+
+        /* Interview Plan Table */
+        .interview-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+        .interview-table th { text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-low); padding: 8px 12px; border-bottom: 2px solid var(--border); }
+        .interview-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+        .interview-table tr:last-child td { border-bottom: none; }
+        .stage-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; color: white; white-space: nowrap; }
+        .stage-screening { background: #E74C3C; }
+        .stage-hiring-manager { background: #2E86C1; }
+        .stage-collaboration { background: #F0A500; }
+        .stage-assessment { background: #27AE60; }
+        .stage-exec-sponsor { background: #166EBE; }
+        .stage-huddle { background: #C2185B; }
+        .interview-table .editable-cell { outline: none; min-height: 20px; font-family: Oxygen, sans-serif; line-height: 1.4; }
+        .interview-table .editable-cell:empty:before { content: attr(data-placeholder); color: var(--text-low); font-style: italic; }
+        .interview-table .editable-cell:focus { background: var(--blue-ice); border-radius: 3px; }
+        .interview-table th:first-child { width: 160px; }
+        .interview-table th:nth-child(2) { width: 140px; }
+
+        .btn-add-stage {
+            margin-top: 10px;
+            padding: 6px 16px;
+            background: white;
+            color: var(--blue);
+            border: 1px dashed var(--blue);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-add-stage:hover {
+            background: var(--blue-ice);
+            border-style: solid;
+        }
+        .btn-remove-stage {
+            background: none;
+            border: none;
+            color: var(--text-low);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            opacity: 0.5;
+        }
+        .btn-move-stage {
+            background: none;
+            border: none;
+            color: var(--text-low);
+            cursor: grab;
+            font-size: 16px;
+            padding: 0 3px;
+            line-height: 1;
+            opacity: 0.4;
+            vertical-align: middle;
+        }
+        .btn-move-stage:hover {
+            opacity: 1;
+            color: var(--blue);
+        }
+        .stage-actions {
+            display: inline-flex;
+            gap: 2px;
+            align-items: center;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .btn-remove-stage:hover {
+            opacity: 1;
+            color: var(--red);
+            background: #ffeaea;
+        }
+
+        /* Footer */
+        .footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .footer-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-medium);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .footer-field input[type="text"],
+        .footer-field input[type="date"],
+        .footer-field [contenteditable] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            background: white;
+        }
+
+        .footer-field [contenteditable] {
+            outline: none;
+        }
+
+        .footer-field [contenteditable]:focus {
+            border-color: var(--blue);
+        }
+
+        .footer-label-only {
+            padding: 8px 12px;
+            color: var(--text-medium);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-high);
+        }
+
+        .modal-text {
+            font-size: 13px;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: Oxygen, sans-serif;
+            font-size: 13px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        @media print {
+            .tab-bar, .action-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 20px;
+            }
+
+            .header-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .legend-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .competencies-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .action-buttons {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+        }
+    
+
+        /* Print Styles */
+        @media print {
+            .tab-bar, .action-bar { display: none !important; }
+            .page-container { box-shadow: none; margin: 0; max-width: 100%; }
+            body { background: white; padding: 0; }
+            .header-band { break-inside: avoid; }
+            .section-header { break-inside: avoid; }
+            .outcome-row { break-inside: avoid; }
+            .comp-card { break-inside: avoid; }
+            .interview-table tr { break-inside: avoid; }
+            .footer { break-inside: avoid; }
+            [contenteditable]:empty:before { color: transparent !important; }
+            .editable-cell:empty:before { color: transparent !important; }
+            .rating-btn { border: 1px solid #ccc !important; }
+            .rating-btn.selected { background: var(--navy) !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .stage-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .brand-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .section-number { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+
+<script>
 var docx = function(exports) {
   "use strict";var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
@@ -20122,1960 +20900,1137 @@ var __async = (__this, __arguments, generator) => {
   return exports;
 }({});
 
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    :root {
-      --primary-blue: #166EBE;
-      --primary-dark: #102754;
-      --text-high: #2B3034;
-      --text-medium: #555555;
-      --grey-light: #DDDDDD;
-      --grey-lighter: #EEEEEE;
-      --grey-100: #F0F0F0;
-      --grey-50: #F7F7F7;
-      --blue-ice: #F4F6FA;
-      --blue-medium: #2E6DA4;
-      --green: #61D690;
-      --font-headline: 'DM Serif Display', serif;
-      --font-body: 'Oxygen', sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--grey-50);
-      color: var(--text-high);
-      min-height: 100vh;
-    }
-
-    /* ── Header ── */
-    .site-header {
-      background: var(--primary-dark);
-      padding: 18px 40px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-    }
-    .logo-mark {
-      width: 36px; height: 36px;
-      background: white;
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .logo-inner {
-      width: 18px; height: 18px;
-      background: var(--primary-dark);
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-    .header-text h1 {
-      font-family: var(--font-headline);
-      font-size: 20px;
-      color: white;
-      letter-spacing: 0.3px;
-    }
-    .header-text p {
-      font-size: 10px;
-      color: rgba(255,255,255,0.55);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-top: 2px;
-    }
-    .header-actions {
-      margin-left: auto;
-      display: flex;
-      gap: 10px;
-    }
-    .btn {
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 700;
-      border: none;
-      border-radius: 6px;
-      padding: 9px 20px;
-      cursor: pointer;
-      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-      letter-spacing: 0.3px;
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary {
-      background: var(--primary-blue);
-      color: white;
-      box-shadow: 0 2px 8px rgba(22,110,190,0.35);
-    }
-    .btn-primary:hover { background: #1580da; box-shadow: 0 4px 14px rgba(22,110,190,0.45); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.12);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-    .btn-secondary:hover { background: rgba(255,255,255,0.2); }
-
-    /* ── Layout ── */
-    .page-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 32px 24px 60px;
-    }
-
-    .form-title {
-      display: flex;
-      align-items: flex-end;
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-    .form-title h2 {
-      font-family: var(--font-headline);
-      font-size: 32px;
-      color: var(--primary-dark);
-    }
-    .form-title .accent-bar {
-      height: 3px;
-      flex: 1;
-      background: linear-gradient(to right, #61D690, #2E76B5);
-      border-radius: 2px;
-      margin-bottom: 7px;
-    }
-    .form-date {
-      font-size: 12px;
-      color: var(--text-medium);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    /* ── Cards ── */
-    .card {
-      background: white;
-      border-radius: 10px;
-      border: 1px solid var(--grey-lighter);
-      margin-bottom: 20px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
-    .card-header {
-      background: var(--primary-dark);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .card-header h3 {
-      font-family: var(--font-body);
-      font-size: 11px;
-      font-weight: 700;
-      color: white;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-    .card-header-icon {
-      width: 20px; height: 20px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px;
-    }
-    .card-body { padding: 20px; }
-
-    /* ── Form Grid ── */
-    .field-grid {
-      display: grid;
-      gap: 16px;
-    }
-    .col-1 { grid-template-columns: 1fr; }
-    .col-2 { grid-template-columns: 1fr 1fr; }
-    .col-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .col-2-1 { grid-template-columns: 2fr 1fr; }
-    .col-1-2 { grid-template-columns: 1fr 2fr; }
-    .col-1-1-2 { grid-template-columns: 1fr 1fr 2fr; }
-
-    @media (max-width: 600px) {
-      .col-2, .col-3, .col-2-1, .col-1-2, .col-1-1-2 { grid-template-columns: 1fr; }
-    }
-
-    .field-group { display: flex; flex-direction: column; gap: 5px; }
-    .field-group.span-full { grid-column: 1 / -1; }
-
-    label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-medium);
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-    }
-    label .required { color: var(--primary-blue); margin-left: 2px; }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    input[type="url"],
-    select,
-    textarea {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-high);
-      background: var(--grey-50);
-      border: 1px solid var(--grey-light);
-      border-radius: 6px;
-      padding: 9px 12px;
-      width: 100%;
-      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-      outline: none;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary-blue);
-      background: white;
-      box-shadow: 0 0 0 3px rgba(22,110,190,0.12);
-    }
-    textarea { resize: vertical; min-height: 80px; line-height: 1.55; }
-    textarea.tall { min-height: 120px; }
-    textarea.short { min-height: 60px; }
-
-    select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23555' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
-
-    .hint {
-      font-size: 11px;
-      color: var(--text-medium);
-      margin-top: 3px;
-      font-style: italic;
-    }
-
-    /* ── Divider ── */
-    .section-divider {
-      border: none;
-      border-top: 1px solid var(--grey-100);
-      margin: 18px 0;
-    }
-
-    /* ── Role Title Banner ── */
-    .role-title-banner {
-      background: var(--blue-ice);
-      border: 1px solid #C8D9EE;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: end;
-    }
-    .role-title-banner input {
-      font-family: var(--font-headline);
-      font-size: 22px;
-      background: white;
-      border-color: #C8D9EE;
-      padding: 10px 14px;
-    }
-    .role-title-banner input:focus {
-      border-color: var(--primary-blue);
-    }
-    .role-title-banner label {
-      font-size: 10px;
-      letter-spacing: 1.5px;
-      color: var(--blue-medium);
-    }
-
-    /* ── Multi-Select ── */
-    .multiselect { position: relative; }
-    .multiselect-trigger {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-high);
-      background: var(--grey-50);
-      border: 1px solid var(--grey-light);
-      border-radius: 6px;
-      padding: 9px 12px;
-      cursor: pointer;
-      user-select: none;
-      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
-      min-height: 38px;
-    }
-    .multiselect.open .multiselect-trigger {
-      border-color: var(--primary-blue);
-      background: white;
-      box-shadow: 0 0 0 3px rgba(22,110,190,0.12);
-    }
-    .multiselect-display {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--text-high);
-    }
-    .multiselect-display.placeholder { color: #aaa; }
-    .multiselect-arrow {
-      color: var(--text-medium);
-      font-size: 11px;
-      margin-left: 8px;
-      transition: transform 0.2s;
-      flex-shrink: 0;
-    }
-    .multiselect.open .multiselect-arrow { transform: rotate(180deg); }
-    .multiselect-dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 0; right: 0;
-      background: white;
-      border: 1px solid var(--grey-light);
-      border-radius: 8px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
-      z-index: 50;
-      max-height: 260px;
-      overflow-y: auto;
-      padding: 6px 0;
-    }
-    .multiselect.open .multiselect-dropdown { display: block; }
-    .multiselect-group-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--primary-blue);
-      padding: 8px 12px 4px;
-    }
-    .multiselect-option {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 7px 12px;
-      cursor: pointer;
-      font-size: 13px;
-      color: var(--text-high);
-      transition: background 0.1s;
-      text-transform: none;
-      letter-spacing: 0;
-      font-weight: 400;
-    }
-    .multiselect-option:hover { background: var(--blue-ice); }
-    .multiselect-option input[type="checkbox"] {
-      width: 15px; height: 15px;
-      accent-color: var(--primary-blue);
-      flex-shrink: 0;
-      cursor: pointer;
-      margin: 0; padding: 0;
-      border: none;
-      background: none;
-      box-shadow: none;
-    }
-    .multiselect-option input[type="checkbox"]:focus { box-shadow: none; }
-    .multiselect-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      align-items: center;
-    }
-    .tag {
-      background: var(--blue-ice);
-      color: var(--primary-blue);
-      border: 1px solid #C8D9EE;
-      border-radius: 4px;
-      padding: 2px 7px;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    /* ── Rich Editor ── */
-    .rich-editor-wrapper {
-      border: 1px solid var(--grey-light);
-      border-radius: 6px;
-      overflow: hidden;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      background: var(--grey-50);
-    }
-    .rich-editor-wrapper:focus-within {
-      border-color: var(--primary-blue);
-      box-shadow: 0 0 0 3px rgba(22,110,190,0.12);
-      background: white;
-    }
-    .rich-toolbar {
-      background: var(--grey-100);
-      border-bottom: 1px solid var(--grey-light);
-      padding: 4px 8px;
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .rich-editor-wrapper:focus-within .rich-toolbar {
-      background: var(--grey-50);
-    }
-    .toolbar-btn {
-      font-family: var(--font-body);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-medium);
-      background: white;
-      border: 1px solid var(--grey-light);
-      border-radius: 4px;
-      padding: 3px 9px;
-      cursor: pointer;
-      letter-spacing: 0.3px;
-      transition: all 0.15s;
-      line-height: 1.6;
-    }
-    .toolbar-btn:hover { border-color: var(--primary-blue); color: var(--primary-blue); background: var(--blue-ice); }
-    .toolbar-btn.active { border-color: var(--primary-blue); color: white; background: var(--primary-blue); }
-    .toolbar-sep { width: 1px; height: 16px; background: var(--grey-light); margin: 0 2px; }
-    .toolbar-hint {
-      font-size: 10px;
-      color: var(--text-medium);
-      letter-spacing: 0.5px;
-      margin-left: auto;
-      opacity: 0.6;
-    }
-    .rich-editor {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-high);
-      background: transparent;
-      padding: 9px 12px;
-      min-height: 80px;
-      outline: none;
-      line-height: 1.6;
-    }
-    .rich-editor.tall { min-height: 120px; }
-    .rich-editor:focus { background: white; }
-    .rich-editor.is-empty:before {
-      content: attr(data-placeholder);
-      color: #aaa;
-      pointer-events: none;
-      display: block;
-    }
-    .rich-editor ul { padding-left: 22px; margin: 3px 0; }
-    .rich-editor ol { padding-left: 22px; margin: 3px 0; }
-    .rich-editor li { margin: 2px 0; }
-    .rich-editor p { margin: 0; }
-
-    /* ── Toggle (Y/N) ── */
-    .toggle-group {
-      display: flex;
-      gap: 8px;
-    }
-    .toggle-group label {
-      flex: 1;
-      text-transform: none;
-      letter-spacing: 0;
-      font-size: 14px;
-      font-weight: 400;
-      cursor: pointer;
-    }
-    .toggle-group input[type="radio"] { display: none; }
-    .toggle-option {
-      display: block;
-      text-align: center;
-      padding: 8px 0;
-      border-radius: 6px;
-      border: 1.5px solid var(--grey-light);
-      background: var(--grey-50);
-      color: var(--text-medium);
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .toggle-group input[type="radio"]:checked + .toggle-option {
-      border-color: var(--primary-blue);
-      background: var(--blue-ice);
-      color: var(--primary-blue);
-    }
-
-    /* ── Dynamic List (Interview Steps) ── */
-    .dynamic-list { display: flex; flex-direction: column; gap: 8px; }
-    .dynamic-item {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 8px;
-      align-items: center;
-    }
-    .dynamic-item input { margin: 0; }
-    .btn-icon {
-      width: 32px; height: 32px;
-      border-radius: 6px;
-      border: 1.5px solid var(--grey-light);
-      background: white;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-      color: var(--text-medium);
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-    .btn-icon:hover { border-color: var(--primary-blue); color: var(--primary-blue); background: var(--blue-ice); }
-    .btn-icon.danger:hover { border-color: #DB132C; color: #DB132C; background: #FFF5F6; }
-    .add-row-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--primary-blue);
-      background: none;
-      border: 1.5px dashed var(--primary-blue);
-      border-radius: 6px;
-      padding: 7px 14px;
-      cursor: pointer;
-      width: 100%;
-      justify-content: center;
-      opacity: 0.75;
-      transition: opacity 0.15s, background 0.15s;
-    }
-    .add-row-btn:hover { opacity: 1; background: var(--blue-ice); }
-
-    /* ── Bottom Actions ── */
-    .bottom-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 28px;
-      padding-top: 24px;
-      border-top: 1px solid var(--grey-light);
-    }
-    .btn-lg {
-      padding: 13px 28px;
-      font-size: 14px;
-      border-radius: 8px;
-    }
-    .btn-outline {
-      background: white;
-      color: var(--text-high);
-      border: 1.5px solid var(--grey-light);
-      font-family: var(--font-body);
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 8px;
-      padding: 13px 28px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .btn-outline:hover { border-color: var(--primary-blue); color: var(--primary-blue); }
-
-    /* ── Toast ── */
-    .toast {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      background: var(--primary-dark);
-      color: white;
-      padding: 13px 20px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 700;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      transform: translateY(80px);
-      opacity: 0;
-      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-      z-index: 999;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast-icon { font-size: 16px; }
-
-    /* ── Confirm Dialog ── */
-    .overlay {
-      position: fixed; inset: 0;
-      background: rgba(16,39,84,0.55);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .overlay.active { opacity: 1; pointer-events: all; }
-    .dialog {
-      background: white;
-      border-radius: 12px;
-      padding: 28px;
-      max-width: 380px;
-      width: 90%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      transform: scale(0.95);
-      transition: transform 0.2s;
-    }
-    .overlay.active .dialog { transform: scale(1); }
-    .dialog h4 {
-      font-family: var(--font-headline);
-      font-size: 20px;
-      color: var(--primary-dark);
-      margin-bottom: 10px;
-    }
-    .dialog p { font-size: 14px; color: var(--text-medium); line-height: 1.55; }
-    .dialog-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
-
-    /* ── Spinner ── */
-    .spinner {
-      display: inline-block;
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.35);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 6px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Print / PDF ── */
-    @media print {
-      @page { size: letter; margin: 0.65in 0.75in; }
-      body { background: white; font-size: 11pt; }
-      .site-header { position: static; box-shadow: none; padding: 12px 0; margin-bottom: 12px; }
-      .header-actions, .bottom-actions, .rich-toolbar,
-      .overlay, #confirmOverlay, .toast-container { display: none !important; }
-      .page-container { max-width: 100%; padding: 0; }
-      .form-section { page-break-inside: avoid; }
-      .section-card { border: 1px solid #ccc; margin-bottom: 10pt; page-break-inside: avoid; }
-      .section-header { background: #102754 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .field-label { color: #555 !important; }
-      input, select, textarea, [contenteditable] { border: none !important; background: transparent !important; box-shadow: none !important; }
-      .multiselect .dropdown { display: none !important; }
-      .form-date, .form-title { text-align: left; }
-      .salary-range-field { grid-column: 1 / -1 !important; }
-    }
-  </style>
+</script>
 </head>
 <body>
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <button class="tab active" onclick="switchTab(0)">
+            <span class="dot"></span>Scorecard 1
+        </button>
+        <button class="tab" onclick="switchTab(1)">
+            <span class="dot"></span>Scorecard 2
+        </button>
+        <button class="tab" onclick="switchTab(2)">
+            <span class="dot"></span>Scorecard 3
+        </button>
+    </div>
 
-<!-- ── Header ── -->
-<header class="site-header">
-  <div class="logo-mark"><div class="logo-inner"></div></div>
-  <div class="header-text">
-    <h1>CertifID</h1>
-    <p>Recruiting · Req In-Take</p>
-  </div>
-  <div class="header-actions">
-    <button class="btn btn-secondary" onclick="window.open(window.location.href,'_blank')">+ New Form</button>
-    <button class="btn btn-secondary" id="copyLinkBtn" onclick="copyShareableLink()">🔗 Copy Link</button>
-    <button class="btn btn-secondary" onclick="downloadPdf()">⬇ Download PDF</button>
-    <button class="btn btn-secondary" id="createSheetBtn" onclick="createGoogleSheet()">📊 Create Sheet</button>
-    <button class="btn btn-primary" id="downloadBtn" onclick="downloadDocx()">⬇ Download DOCX</button>
-  </div>
-</header>
-
-<!-- ── Main ── -->
-<main class="page-container">
-  <div class="form-date" id="formDate"></div>
-  <div class="form-title">
-    <h2>New Req In-Take</h2>
-    <div class="accent-bar"></div>
-  </div>
-
-  <!-- Role Title -->
-  <div class="role-title-banner" style="grid-template-columns: 1fr 200px; row-gap: 14px;">
-    <div class="field-group">
-      <label for="roleTitle">Role Title <span class="required">*</span></label>
-      <input type="text" id="roleTitle" placeholder="e.g. Senior Account Executive — Enterprise" autocomplete="off" />
-    </div>
-    <div class="field-group">
-      <label for="targetHireDate">Target Hire Date</label>
-      <input type="date" id="targetHireDate" />
-    </div>
-    <div class="field-group">
-      <label for="jdLink">Job Description Link</label>
-      <input type="url" id="jdLink" placeholder="https://…" style="font-size:11px" oninput="updateLinkPreview('jdLink','jdLinkOpen')" />
-      <a id="jdLinkOpen" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#166EBE;text-decoration:underline;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:none">Open ↗</a>
-    </div>
-    <div class="field-group">
-      <label for="scorecardLink">Scorecard Link</label>
-      <input type="url" id="scorecardLink" placeholder="https://…" style="font-size:11px" oninput="updateLinkPreview('scorecardLink','scorecardLinkOpen')" />
-      <a id="scorecardLinkOpen" href="#" target="_blank" rel="noopener" style="display:none;font-size:11px;color:#166EBE;text-decoration:underline;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:none">Open ↗</a>
-    </div>
-  </div>
-
-  <!-- ── SCHEDULING / EASYLINK ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">📅</span>
-      <h3>Scheduling &amp; EasyLink</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-3" style="margin-bottom:16px">
-        <div class="field-group">
-          <label for="blackoutDays">Days you can't interview</label>
-          <input type="text" id="blackoutDays" placeholder="e.g. Mondays, Fridays" />
-        </div>
-        <div class="field-group">
-          <label for="dailyInterviewLimit">Interview limit per day</label>
-          <input type="text" id="dailyInterviewLimit" placeholder="e.g. 3" />
-        </div>
-        <div class="field-group">
-          <label for="candidateCount">Candidates to interview</label>
-          <input type="text" id="candidateCount" placeholder="e.g. 10–15" />
-        </div>
-      </div>
-      <div class="field-grid col-2">
-        <div class="field-group">
-          <label for="weeklySyncLink">Weekly 15-min sync link</label>
-          <input type="url" id="weeklySyncLink" placeholder="https://calendly.com/…" />
-        </div>
-        <div class="field-group">
-          <label>LinkedIn Talent Review</label>
-          <div class="toggle-group">
-            <label><input type="radio" name="linkedinTalentReview" value="Yes" /><span class="toggle-option">Yes</span></label>
-            <label><input type="radio" name="linkedinTalentReview" value="No" /><span class="toggle-option">No</span></label>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ROLE DETAILS ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">📋</span>
-      <h3>Role Details</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-1" style="margin-bottom:16px">
-        <div class="field-group">
-          <label>Role Summary</label>
-          <div class="rich-editor-wrapper">
-            <div class="rich-toolbar">
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('roleSummary','insertUnorderedList')">• Bullets</button>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('roleSummary','insertOrderedList')">1. Numbered</button>
-              <div class="toolbar-sep"></div>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richCmd('roleSummary','bold')"><b>B</b></button>
-              <span class="toolbar-hint">Enter to add lines</span>
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <div class="progress-section">
+            <span class="progress-text"><span id="progress-count">0</span> / 26 rated</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
             </div>
-            <div class="rich-editor tall is-empty" id="roleSummary" contenteditable="true" data-placeholder="Describe the overall purpose and scope of the role…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
-          </div>
         </div>
-      </div>
+        <div class="action-buttons">
+            <button class="btn" onclick="openJDModal()">Load JD</button>
+            <button class="btn" onclick="clearAndReset()">Clear & Reset</button>
+            <button class="btn primary" onclick="downloadDocx()">⬇ Download DOCX</button>
+        </div>
+    </div>
 
-      <div class="field-grid col-3" style="margin-bottom:16px">
-        <div class="field-group">
-          <label>Level(s)</label>
-          <div class="multiselect" id="levelsMultiselect">
-            <div class="multiselect-trigger" onclick="toggleMultiselect('levelsMultiselect')">
-              <span class="multiselect-display" id="levelsDisplay">Select levels…</span>
-              <span class="multiselect-arrow">▾</span>
+    <!-- Main Page -->
+    <div class="page">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <span class="logo">CertifID</span>
+            <span class="subtitle">Hiring Scorecard</span>
+        </div>
+
+        <!-- Header Band -->
+        <div class="header-band">
+            <div class="header-fields">
+                <div class="header-field">
+                    <label>Role Title</label>
+                    <div contenteditable="true" id="roleTitle" class="header-field-input"></div>
+                </div>
+                <div class="header-field">
+                    <label>Department</label>
+                    <select id="department" class="header-field-input">
+                        <option value="">Select department...</option>
+                        <option value="Customer Success">Customer Success</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Partnerships">Partnerships</option>
+                        <option value="Product">Product</option>
+                        <option value="Sales">Sales</option>
+                    </select>
+                </div>
             </div>
-            <div class="multiselect-dropdown" id="levelsDropdown">
-              <div class="multiselect-group-label">Individual Contributor</div>
-              <label class="multiselect-option"><input type="checkbox" value="IC-1" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-1</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-2" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-2</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-3" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-3</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-4" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-4</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-5" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-5</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-6" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-6</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-7" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-7</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-8" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-8</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="IC-9" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>IC-9</span></label>
-              <div class="multiselect-group-label">Manager</div>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-4" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-4</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-5" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-5</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-6" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-6</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-7" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-7</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-8" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-8</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="MGR-9" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>MGR-9</span></label>
-              <div class="multiselect-group-label">Executive</div>
-              <label class="multiselect-option"><input type="checkbox" value="EX-9" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>EX-9</span></label>
-              <label class="multiselect-option"><input type="checkbox" value="EX-10" onchange="updateMultiselectDisplay('levelsMultiselect','levelsDisplay')" /><span>EX-10</span></label>
+            <div class="legend">
+                <strong>Rating Legend:</strong>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-dot red"></div>
+                        <span>1 = Strong No</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot amber"></div>
+                        <span>2 = No</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot green"></div>
+                        <span>3 = Yes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot navy"></div>
+                        <span>4 = Strong Yes</span>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="field-group">
-          <label for="department">Department</label>
-          <select id="department">
-            <option value="">Select…</option>
-            <option value="Customer Success">Customer Success</option>
-            <option value="Engineering">Engineering</option>
-            <option value="Finance">Finance</option>
-            <option value="IT">IT</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Operations">Operations</option>
-            <option value="Partnerships">Partnerships</option>
-            <option value="Product">Product</option>
-            <option value="Sales">Sales</option>
-            <option value="Support">Support</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label for="team">Team</label>
-          <input type="text" id="team" placeholder="e.g. Enterprise AE" />
-        </div>
-      </div>
 
-      <div class="field-grid col-2" style="margin-bottom:16px">
-        <div class="field-group">
-          <label for="headcount"># of Headcount</label>
-          <input type="text" id="headcount" placeholder="e.g. 2" />
-        </div>
-        <div class="field-group">
-          <label for="reportingTo">Reporting To</label>
-          <input type="text" id="reportingTo" placeholder="e.g. VP of Sales" />
-        </div>
-      </div>
-
-      <div class="field-grid col-3" style="margin-bottom:16px">
-        <div class="field-group">
-          <label for="certsRequired">Certs Required</label>
-          <input type="text" id="certsRequired" placeholder="e.g. None, AWS, PMP" />
-        </div>
-        <div class="field-group">
-          <label>College Required</label>
-          <div class="toggle-group">
-            <label><input type="radio" name="collegeRequired" value="Yes" /><span class="toggle-option">Yes</span></label>
-            <label><input type="radio" name="collegeRequired" value="No" checked /><span class="toggle-option">No</span></label>
-            <label><input type="radio" name="collegeRequired" value="Preferred" /><span class="toggle-option">Pref.</span></label>
-          </div>
-        </div>
-        <div class="field-group">
-          <label for="location">Remote or Physical Location</label>
-          <select id="location">
-            <option value="">Select…</option>
-            <option value="Remote">Remote</option>
-            <option value="Hybrid">Hybrid</option>
-            <option value="On-site">On-site</option>
-            <option value="Remote – US only">Remote – US only</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field-grid col-3" style="margin-bottom:16px">
-        <div class="field-group">
-          <label for="directReports">Direct Reports</label>
-          <input type="text" id="directReports" placeholder="e.g. None, 3–5 SDRs" />
-        </div>
-        <div class="field-group">
-          <label>Net New or Backfill</label>
-          <div class="toggle-group">
-            <label><input type="radio" name="newOrBackfill" value="Net New" onclick="document.getElementById('backfillForWrap').style.display='none'" /><span class="toggle-option">Net New</span></label>
-            <label><input type="radio" name="newOrBackfill" value="Backfill" onclick="document.getElementById('backfillForWrap').style.display='block'" /><span class="toggle-option">Backfill</span></label>
-          </div>
-          <div id="backfillForWrap" style="display:none;margin-top:8px">
-            <label for="backfillFor" style="font-size:12px;color:var(--text-medium)">Backfill for</label>
-            <input type="text" id="backfillFor" placeholder="e.g. Jane Smith" />
-          </div>
-        </div>
-        <div class="field-group">
-          <label for="yearsExperience">Years of Experience</label>
-          <input type="text" id="yearsExperience" placeholder="e.g. 3–5 years" />
-        </div>
-      </div>
-
-      <hr class="section-divider" />
-
-      <div class="field-group">
-        <label>Team Org Structure</label>
-        <div class="rich-editor-wrapper">
-          <div class="rich-toolbar">
-            <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('orgStructure','insertUnorderedList')">• Bullets</button>
-            <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('orgStructure','insertOrderedList')">1. Numbered</button>
-            <div class="toolbar-sep"></div>
-            <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richCmd('orgStructure','bold')"><b>B</b></button>
-          </div>
-          <div class="rich-editor tall is-empty" id="orgStructure" contenteditable="true" data-placeholder="Describe the reporting structure and team composition…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── FINANCIALS ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">💰</span>
-      <h3>Financials</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-1" style="margin-bottom:12px">
-        <div class="field-group">
-          <label for="salaryRange">Salary Range</label>
-          <input type="text" id="salaryRange" placeholder="e.g. $90,000 – $110,000" />
-        </div>
-      </div>
-      <div class="field-grid col-2" style="margin-bottom:16px">
-        <div class="field-group">
-          <label>Quota Carrying</label>
-          <div class="toggle-group">
-            <label><input type="radio" name="quotaCarrying" value="Yes" /><span class="toggle-option">Yes</span></label>
-            <label><input type="radio" name="quotaCarrying" value="No" /><span class="toggle-option">No</span></label>
-          </div>
-        </div>
-        <div class="field-group">
-          <label for="annualBonus">Annual Bonus %</label>
-          <input type="text" id="annualBonus" placeholder="e.g. 10%" />
-        </div>
-      </div>
-      <div class="field-grid col-2">
-        <div class="field-group">
-          <label for="equity">Equity</label>
-          <input type="text" id="equity" placeholder="e.g. 0.05% – 0.15% options" />
-        </div>
-        <div class="field-group">
-          <label for="otherComp">Other Compensation Notes</label>
-          <input type="text" id="otherComp" placeholder="e.g. commission structure, ESPP" />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── SKILLS / EXPERIENCE ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">⭐</span>
-      <h3>Skills &amp; Experience</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-1">
-        <div class="field-group">
-          <label>3–5 Most Important Skill Sets on JD</label>
-          <div class="rich-editor-wrapper">
-            <div class="rich-toolbar">
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('topSkills','insertUnorderedList')">• Bullets</button>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('topSkills','insertOrderedList')">1. Numbered</button>
-              <div class="toolbar-sep"></div>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richCmd('topSkills','bold')"><b>B</b></button>
+        <!-- Section 1: Mission -->
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <div>
+                <div class="section-title">Mission</div>
+                <div class="section-subtitle">Role purpose & strategic alignment</div>
             </div>
-            <div class="rich-editor tall is-empty" id="topSkills" contenteditable="true" data-placeholder="Add each skill as a bullet or numbered item…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
-          </div>
         </div>
-        <div class="field-grid col-2">
-          <div class="field-group">
-            <label>Nice to Have</label>
-            <div class="rich-editor-wrapper">
-              <div class="rich-toolbar">
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('niceToHave','insertUnorderedList')">• Bullets</button>
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('niceToHave','insertOrderedList')">1. Numbered</button>
-              </div>
-              <div class="rich-editor is-empty" id="niceToHave" contenteditable="true" data-placeholder="Bonus skills or experiences…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
+        <div contenteditable="true" id="mission" class="mission-box"></div>
+
+        <!-- Section 2: Outcomes -->
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <div>
+                <div class="section-title">Outcomes</div>
+                <div class="section-subtitle">Key responsibilities & success metrics</div>
             </div>
-          </div>
-          <div class="field-group">
-            <label>Pet Peeves / Disqualifiers</label>
-            <div class="rich-editor-wrapper">
-              <div class="rich-toolbar">
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('petPeeves','insertUnorderedList')">• Bullets</button>
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('petPeeves','insertOrderedList')">1. Numbered</button>
-              </div>
-              <div class="rich-editor is-empty" id="petPeeves" contenteditable="true" data-placeholder="Traits or backgrounds that are a red flag…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
+        </div>
+
+        <div class="outcomes-table">
+            <div class="outcome-row">
+                <div class="outcome-number">1</div>
+                <div contenteditable="true" id="outcome-text-1" class="outcome-text">Design and execute structured onboarding plans - delivering fast time-to-value with clear success metrics from day one</div>
+                <div class="rating-group" data-name="outcome-1">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
             </div>
-          </div>
-        </div>
-        <div class="field-grid col-2">
-          <div class="field-group">
-            <label>Skill Gaps We Can Grow</label>
-            <div class="rich-editor-wrapper">
-              <div class="rich-toolbar">
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('skillGaps','insertUnorderedList')">• Bullets</button>
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('skillGaps','insertOrderedList')">1. Numbered</button>
-              </div>
-              <div class="rich-editor is-empty" id="skillGaps" contenteditable="true" data-placeholder="Areas we'd train into…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">2</div>
+                <div contenteditable="true" id="outcome-text-2" class="outcome-text">Build multi-threaded relationships including C-suite - lead EBRs that connect CertifID's value to customer strategy</div>
+                <div class="rating-group" data-name="outcome-2">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
             </div>
-          </div>
-          <div class="field-group">
-            <label>Comparable Titles</label>
-            <div class="rich-editor-wrapper">
-              <div class="rich-toolbar">
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('comparableTitles','insertUnorderedList')">• Bullets</button>
-                <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('comparableTitles','insertOrderedList')">1. Numbered</button>
-              </div>
-              <div class="rich-editor is-empty" id="comparableTitles" contenteditable="true" data-placeholder="Other titles that map to this role…" oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">3</div>
+                <div contenteditable="true" id="outcome-text-3" class="outcome-text">Drive measurable product adoption - embed CertifID into workflows via proactive change management</div>
+                <div class="rating-group" data-name="outcome-3">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
             </div>
-          </div>
-        </div>
-        <hr class="section-divider" />
-        <div class="field-group">
-          <label for="linkedinProfiles">LinkedIn Profiles — People You'd Love</label>
-          <textarea id="linkedinProfiles" placeholder="Paste profile URLs or names, one per line…"></textarea>
-          <span class="hint">Real people whose career path / background you'd love to replicate</span>
-        </div>
-        <div class="field-group">
-          <label for="companiesToPoach">Companies to Poach From</label>
-          <textarea id="companiesToPoach">Closinglock, Qualia, CloseSimple, Socure, FileVine, Rynoh, Payload, Earnest, Zoccam</textarea>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- ── DAY IN THE LIFE ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">🗓️</span>
-      <h3>Day in the Life</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-1">
-        <div class="field-group">
-          <label for="dayInLife">What does a typical day look like?</label>
-          <textarea id="dayInLife" style="min-height:160px" placeholder="Walk through a typical day, week, or quarter in this role — the cadence, key responsibilities, tools used, and who they interact with…"></textarea>
-        </div>
-        <div class="field-grid col-2">
-          <div class="field-group">
-            <label for="trainingLooks">What Does Training Look Like?</label>
-            <textarea id="trainingLooks" placeholder="Onboarding timeline, ramp expectations, resources provided…"></textarea>
-          </div>
-          <div class="field-group">
-            <label for="successLooks">What Does Success Look Like?</label>
-            <textarea id="successLooks" placeholder="30 / 60 / 90 day milestones, KPIs, long-term goals…"></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── INTERVIEW PROCESS ── -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-header-icon">🎤</span>
-      <h3>Interview Process</h3>
-    </div>
-    <div class="card-body">
-      <div class="field-grid col-1">
-        <div class="field-group">
-          <label>3 Key Phone Screen Questions</label>
-          <div class="rich-editor-wrapper">
-            <div class="rich-toolbar">
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('phoneScreenQuestions','insertUnorderedList')">• Bullets</button>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richList('phoneScreenQuestions','insertOrderedList')">1. Numbered</button>
-              <div class="toolbar-sep"></div>
-              <button type="button" class="toolbar-btn" onmousedown="event.preventDefault();richCmd('phoneScreenQuestions','bold')"><b>B</b></button>
+            <div class="outcome-row">
+                <div class="outcome-number">4</div>
+                <div contenteditable="true" id="outcome-text-4" class="outcome-text">Proactively monitor account health - mitigate retention risks before escalation, achieve 90%+ GRR</div>
+                <div class="rating-group" data-name="outcome-4">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
             </div>
-            <div class="rich-editor tall is-empty" id="phoneScreenQuestions" contenteditable="true" data-placeholder="1. What drew you to this role?&#10;2. &#10;3. " oninput="richInput(this)" onfocus="richFocus(this)" onblur="richBlur(this)"></div>
-          </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">5</div>
+                <div contenteditable="true" id="outcome-text-5" class="outcome-text">Manage renewal cycles with commercial discipline - forecast accurately, identify expansion opportunities</div>
+                <div class="rating-group" data-name="outcome-5">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
+
+            <div class="outcome-row">
+                <div class="outcome-number">6</div>
+                <div contenteditable="true" id="outcome-text-6" class="outcome-text">Contribute cross-functionally - surface roadmap feedback and inform process improvements</div>
+                <div class="rating-group" data-name="outcome-6">
+                    <button class="rating-btn" data-val="1">1</button>
+                    <button class="rating-btn" data-val="2">2</button>
+                    <button class="rating-btn" data-val="3">3</button>
+                    <button class="rating-btn" data-val="4">4</button>
+                </div>
+            </div>
         </div>
 
-        <hr class="section-divider" />
-
-        <div class="field-group">
-          <label>Interview Process Steps</label>
-          <div class="dynamic-list" id="interviewStepsList"></div>
-          <button type="button" class="add-row-btn" onclick="addInterviewStep()" style="margin-top:8px">+ Add Interview Round</button>
+        <!-- Section 3: Competencies -->
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <div>
+                <div class="section-title">Competencies</div>
+                <div class="section-subtitle">Required capabilities across 4 dimensions</div>
+            </div>
         </div>
-      </div>
+
+        <div class="competencies-grid">
+            <!-- Priorities -->
+            <div class="competency-card" id="compPriorities">
+                <div class="competency-title">Priorities</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p1-label" class="competency-label">Strategic partner mindset</div>
+                    <div class="rating-group" data-name="comp-p1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p2-label" class="competency-label">Change mgmt in entrenched orgs</div>
+                    <div class="rating-group" data-name="comp-p2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p3-label" class="competency-label">Commercial acumen & renewal discipline</div>
+                    <div class="rating-group" data-name="comp-p3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p4-label" class="competency-label">Executive presence & credibility</div>
+                    <div class="rating-group" data-name="comp-p4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-p5-label" class="competency-label">Expansion & competitive displacement</div>
+                    <div class="rating-group" data-name="comp-p5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Who -->
+            <div class="competency-card" id="compWho">
+                <div class="competency-title">Who</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w1-label" class="competency-label">Self-starter with high urgency</div>
+                    <div class="rating-group" data-name="comp-w1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w2-label" class="competency-label">Calm under pressure; handles difficult conversations</div>
+                    <div class="rating-group" data-name="comp-w2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w3-label" class="competency-label">Sets high standards & follows through</div>
+                    <div class="rating-group" data-name="comp-w3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w4-label" class="competency-label">Collaborative & cross-functional</div>
+                    <div class="rating-group" data-name="comp-w4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-w5-label" class="competency-label">Proactive - surfaces risk early</div>
+                    <div class="rating-group" data-name="comp-w5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Values -->
+            <div class="competency-card" id="compValues">
+                <div class="competency-title">Values</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v1-label" class="competency-label">Integrity & honesty with customers</div>
+                    <div class="rating-group" data-name="comp-v1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v2-label" class="competency-label">Exceptional communication (written & verbal)</div>
+                    <div class="rating-group" data-name="comp-v2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v3-label" class="competency-label">Adaptable & organized across large BoB</div>
+                    <div class="rating-group" data-name="comp-v3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v4-label" class="competency-label">Treats people with respect; active listener</div>
+                    <div class="rating-group" data-name="comp-v4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-v5-label" class="competency-label">Open to feedback; growth mindset</div>
+                    <div class="rating-group" data-name="comp-v5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical -->
+            <div class="competency-card" id="compTechnical">
+                <div class="competency-title">Technical</div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t1-label" class="competency-label">Gainsight / CSP proficiency</div>
+                    <div class="rating-group" data-name="comp-t1">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t2-label" class="competency-label">Salesforce / CRM proficiency</div>
+                    <div class="rating-group" data-name="comp-t2">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t3-label" class="competency-label">Data-driven health & usage reporting</div>
+                    <div class="rating-group" data-name="comp-t3">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t4-label" class="competency-label">AI fluency in daily workflow</div>
+                    <div class="rating-group" data-name="comp-t4">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+                <div class="competency-item">
+                    <div contenteditable="true" id="comp-t5-label" class="competency-label">Title industry familiarity (plus)</div>
+                    <div class="rating-group" data-name="comp-t5">
+                        <button class="rating-btn" data-val="1">1</button>
+                        <button class="rating-btn" data-val="2">2</button>
+                        <button class="rating-btn" data-val="3">3</button>
+                        <button class="rating-btn" data-val="4">4</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Interview Plan -->
+        <div class="section-header">
+            <div class="section-number">4</div>
+            <div>
+                <div class="section-title">Interview Plan</div>
+                <div class="section-subtitle">Evaluation stages & focus areas</div>
+            </div>
+        </div>
+        <table class="interview-table">
+            <thead>
+                <tr><th>Stage</th><th>Owner</th><th>Focus Area</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="stage-badge stage-screening">Screening</span></td>
+                    <td><div contenteditable="true" id="ip-owner-1" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-1" class="editable-cell" data-placeholder="Focus areas for this stage">Baseline &amp; Logistics: Alignment on comp, remote/hybrid needs, career motivation, and high-level culture add.</div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-hiring-manager">Hiring Manager</span></td>
+                    <td><div contenteditable="true" id="ip-owner-2" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-2" class="editable-cell" data-placeholder="Focus areas for this stage">Technical/Role Fit: Deep dive into “can they do the job?”—reviewing past wins, specific hard skills, and day-to-day execution.</div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-collaboration">Collaboration</span></td>
+                    <td><div contenteditable="true" id="ip-owner-3" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-3" class="editable-cell" data-placeholder="Focus areas for this stage">Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific “hard skill” validation.</div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-assessment">Assessment / Panel</span></td>
+                    <td><div contenteditable="true" id="ip-owner-4" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-4" class="editable-cell" data-placeholder="Focus areas for this stage">Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific “hard skill” validation.</div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-exec-sponsor">Executive Sponsor</span></td>
+                    <td><div contenteditable="true" id="ip-owner-5" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-5" class="editable-cell" data-placeholder="Focus areas for this stage">Strategic Vision &amp; Values: Long-term trajectory, leadership potential, and alignment with the company’s 12-month scaling goals.</div></td>
+                </tr>
+                <tr>
+                    <td><span class="stage-badge stage-huddle">Huddle to Decide</span></td>
+                    <td><div contenteditable="true" id="ip-owner-6" class="editable-cell" data-placeholder="Owner name"></div></td>
+                    <td><div contenteditable="true" id="ip-focus-6" class="editable-cell" data-placeholder="Focus areas for this stage">Synthesis: Collecting all feedback scorecards to make a data-driven “Go/No-Go” decision and defining offer levers.</div></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn-add-stage" onclick="addInterviewStage()">+ Add Stage</button>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-field">
+                <label>Hiring Manager</label>
+                <div contenteditable="true" id="hiringManager" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; background: white; min-height: 32px;"></div>
+            </div>
+            <div class="footer-field">
+                <label>Date</label>
+                <input type="date" id="scoreDate">
+            </div>
+            <div class="footer-field">
+                <label>&nbsp;</label>
+                <div class="footer-label-only">Confidential</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ── BOTTOM ACTIONS ── -->
-  <div class="bottom-actions">
-    <button class="btn-outline" onclick="confirmNewForm()">Clear &amp; New Form</button>
-    <button class="btn btn-secondary btn-lg" onclick="downloadPdf()">⬇ Download PDF</button>
-    <button class="btn btn-secondary btn-lg" onclick="createGoogleSheet()">📊 Create Sheet</button>
-    <button class="btn btn-primary btn-lg" onclick="downloadDocx()">⬇ Download DOCX</button>
-  </div>
-</main>
-
-<!-- ── Confirm New Form Dialog ── -->
-<div class="overlay" id="confirmOverlay">
-  <div class="dialog">
-    <h4>Start a New Form?</h4>
-    <p>This will clear all fields. Make sure you've downloaded the current form first if you need to keep it.</p>
-    <div class="dialog-actions">
-      <button class="btn-outline" onclick="closeConfirm()" style="padding:9px 18px;font-size:13px">Cancel</button>
-      <button class="btn btn-primary" onclick="resetForm()" style="padding:9px 18px;font-size:13px">Yes, Clear Form</button>
+    <!-- JD Modal -->
+    <div id="jdModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">Load Job Description</div>
+            <div class="modal-text">Paste the full job description below. The parser will extract and populate:<br>
+                <span style="display:inline-block;margin-top:6px;font-size:12px;color:var(--text-medium);line-height:1.6;">
+                    <strong>Role Title</strong> &amp; <strong>Department</strong> &middot;
+                    <strong>Mission</strong> statement &middot;
+                    <strong>6 Outcomes</strong> from responsibilities &middot;
+                    <strong>20 Competencies</strong> across Priorities, Who, Values &amp; Technical
+                </span>
+            </div>
+            <textarea id="jdTextarea" class="modal-textarea" style="height:280px;" placeholder="Paste the full job description text here..."></textarea>
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeJDModal()">Cancel</button>
+                <button class="btn primary" onclick="parseAndLoadJD()">Parse & Load</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<!-- ── Google Sheet Setup Modal ── -->
-<div class="overlay" id="sheetSetupOverlay" style="display:none">
-  <div class="dialog" style="max-width:480px">
-    <h4 style="margin-bottom:10px">📊 Connect Google Sheets</h4>
-    <p style="margin-bottom:14px;font-size:13px;color:#555">Paste your Google Apps Script URL below. This is a one-time setup — it will be saved for future use.<br><br>
-    <a href="https://script.google.com/home" target="_blank" style="color:#166EBE">Set up your script →</a> (use the <code>intake-sheet-script.gs</code> file provided)</p>
-    <input type="url" id="appsScriptUrlInput" placeholder="https://script.google.com/macros/s/..." style="width:100%;padding:9px 12px;border:1.5px solid #ddd;border-radius:6px;font-size:13px;margin-bottom:14px;box-sizing:border-box" />
-    <div class="dialog-actions">
-      <button class="btn-outline" onclick="document.getElementById('sheetSetupOverlay').style.display='none'" style="padding:9px 18px;font-size:13px">Cancel</button>
-      <button class="btn btn-primary" onclick="saveScriptUrlAndCreate()" style="padding:9px 18px;font-size:13px">Save &amp; Create Sheet</button>
-    </div>
-  </div>
-</div>
+    <script>
+        var currentTab = 0;
+        var TAB_KEY = 'certifid_scorecard_tabs';
+        var saveDebounceTimer = null;
 
-<!-- ── Toast ── -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✅</span>
-  <span id="toastMsg">Form downloaded!</span>
-</div>
+        function getTabStore() {
+            try {
+                return JSON.parse(sessionStorage.getItem(TAB_KEY)) || [{}, {}, {}];
+            } catch (e) {
+                return [{}, {}, {}];
+            }
+        }
 
-<script>
-  // ── Date display ──
-  const today = new Date();
-  document.getElementById('formDate').textContent =
-    today.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+        function saveTabStore(s) {
+            sessionStorage.setItem(TAB_KEY, JSON.stringify(s));
+        }
 
-  // ── Interview Steps ──
-  const defaultSteps = [
-    'Kalyn — Intro Screen (25 min)',
-    'Hiring Manager Interview (45 min)',
-    'Panel / Team Interview (60 min)',
-    'Final / Executive Interview (30 min)',
-  ];
-
-  function addInterviewStep(value = '') {
-    const list = document.getElementById('interviewStepsList');
-    const idx = list.children.length;
-    const div = document.createElement('div');
-    div.className = 'dynamic-item';
-    div.innerHTML = `
-      <input type="text" placeholder="e.g. VP Interview (30 min)" value="${value}" />
-      <button type="button" class="btn-icon" title="Move up" onclick="moveStep(this,-1)">↑</button>
-      <button type="button" class="btn-icon danger" title="Remove" onclick="removeStep(this)">✕</button>
-    `;
-    list.appendChild(div);
-  }
-
-  function removeStep(btn) {
-    btn.closest('.dynamic-item').remove();
-  }
-
-  function moveStep(btn, dir) {
-    const item = btn.closest('.dynamic-item');
-    const list = item.parentElement;
-    if (dir === -1 && item.previousElementSibling) {
-      list.insertBefore(item, item.previousElementSibling);
-    } else if (dir === 1 && item.nextElementSibling) {
-      list.insertBefore(item.nextElementSibling, item);
-    }
-  }
-
-  // Populate defaults
-  defaultSteps.forEach(s => addInterviewStep(s));
-
-  // ── Helpers ──
-  function updateLinkPreview(inputId, previewId) {
-    const url = document.getElementById(inputId).value.trim();
-    const a = document.getElementById(previewId);
-    if (url) {
-      a.href = url;
-      a.textContent = url;
-      a.style.display = 'block';
-    } else {
-      a.style.display = 'none';
-    }
-  }
-
-  function val(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : '';
-  }
-  function radioVal(name) {
-    const checked = document.querySelector(`input[name="${name}"]:checked`);
-    return checked ? checked.value : '';
-  }
-  function getInterviewSteps() {
-    return Array.from(document.querySelectorAll('#interviewStepsList input'))
-      .map(i => i.value.trim()).filter(Boolean);
-  }
-
-  // ── Confirm / Reset ──
-  function confirmNewForm() {
-    document.getElementById('confirmOverlay').classList.add('active');
-  }
-  function closeConfirm() {
-    document.getElementById('confirmOverlay').classList.remove('active');
-  }
-  function resetForm() {
-    closeConfirm();
-    // Text / textarea / date / url inputs
-    document.querySelectorAll('input[type="text"], input[type="date"], input[type="url"], input[type="number"], textarea, select').forEach(el => {
-      if (el.id === 'companiesToPoach') {
-        el.value = 'Closinglock, Qualia, CloseSimple, Socure, FileVine, Rynoh, Payload, Earnest, Zoccam';
-      } else {
-        el.value = '';
-      }
-    });
-    // Rich editors
-    RICH_FIELDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) { el.innerHTML = ''; el.classList.add('is-empty'); }
-    });
-    // Multi-select checkboxes
-    document.querySelectorAll('.multiselect input[type="checkbox"]').forEach(cb => cb.checked = false);
-    document.getElementById('levelsDisplay').innerHTML = '<span class="placeholder">Select levels…</span>';
-    document.getElementById('levelsDisplay').style.overflow = '';
-    document.getElementById('levelsDisplay').style.whiteSpace = '';
-    // Radio buttons
-    document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-    document.querySelector('input[name="collegeRequired"][value="No"]').checked = true;
-    // Hide backfill field
-    document.getElementById('backfillForWrap').style.display = 'none';
-    // Hide link previews
-    ['jdLinkOpen','scorecardLinkOpen'].forEach(id => { document.getElementById(id).style.display = 'none'; });
-    // Interview steps
-    document.getElementById('interviewStepsList').innerHTML = '';
-    defaultSteps.forEach(s => addInterviewStep(s));
-
-    showToast('Form cleared — ready for a new role!', '🆕');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // ── Toast ──
-  function showToast(msg, icon = '✅') {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').textContent = msg;
-    toast.querySelector('.toast-icon').textContent = icon;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3200);
-  }
-
-  // ── DOCX Generation ──
-  function createGoogleSheet() {
-    const saved = localStorage.getItem('certifid_apps_script_url');
-    if (!saved) {
-      document.getElementById('sheetSetupOverlay').style.display = 'flex';
-      return;
-    }
-    submitToSheet(saved);
-  }
-
-  function saveScriptUrlAndCreate() {
-    const url = document.getElementById('appsScriptUrlInput').value.trim();
-    if (!url.startsWith('https://script.google.com/')) {
-      alert('Please enter a valid Google Apps Script URL.');
-      return;
-    }
-    localStorage.setItem('certifid_apps_script_url', url);
-    document.getElementById('sheetSetupOverlay').style.display = 'none';
-    submitToSheet(url);
-  }
-
-  function submitToSheet(scriptUrl) {
-    const btn = document.getElementById('createSheetBtn');
-    if (btn) btn.textContent = '⏳ Creating…';
-
-    const data = serializeForm();
-    // Flatten rich editors to plain text for the sheet
-    if (data.richEditors) {
-      Object.keys(data.richEditors).forEach(k => {
-        const el = document.getElementById(k);
-        data.richEditors[k] = el ? el.innerText.trim() : '';
-      });
-    }
-    data.roleTitle = document.getElementById('roleTitle')?.value?.trim() || '';
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = scriptUrl;
-    form.target = '_blank';
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(data);
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-    setTimeout(() => { if (btn) btn.textContent = '📊 Create Sheet'; }, 3000);
-    showToast('Opening your Google Sheet in a new tab…', '📊');
-  }
-
-  async function downloadPdf() {
-    const btn = document.querySelector('[onclick="downloadPdf()"]');
-    const origText = btn ? btn.innerHTML : '';
-    if (btn) btn.innerHTML = '<span class="spinner"></span> Generating…';
-
-    const roleTitle = document.getElementById('roleTitle')?.value?.trim() || 'New-Req-In-Take';
-    const filename = 'CertifID-' + roleTitle.replace(/[^a-z0-9]/gi, '-') + '.pdf';
-
-    try {
-      const { jsPDF } = window.jspdf;
-      const main = document.querySelector('main.page-container');
-      const canvas = await html2canvas(main, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#F7F7F7',
-        scrollY: -window.scrollY
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const margin = 12;
-      const contentW = pageW - margin * 2;
-      const imgH = (canvas.height * contentW) / canvas.width;
-
-      let yPos = margin;
-      let remaining = imgH;
-      let sourceY = 0;
-
-      while (remaining > 0) {
-        const sliceH = Math.min(remaining, pageH - margin * 2);
-        const sliceCanvas = document.createElement('canvas');
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = (sliceH / contentW) * canvas.width;
-        const ctx = sliceCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, sourceY * canvas.width / contentW, canvas.width, sliceCanvas.height, 0, 0, canvas.width, sliceCanvas.height);
-        pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.92), 'JPEG', margin, yPos, contentW, sliceH);
-        remaining -= sliceH;
-        sourceY += sliceH;
-        if (remaining > 0) { pdf.addPage(); yPos = margin; }
-      }
-
-      pdf.save(filename);
-    } catch (e) {
-      console.error(e);
-      showToast('PDF generation failed — please try again.', '❌');
-    } finally {
-      if (btn) btn.innerHTML = origText;
-    }
-  }
-
-  async function downloadDocx() {
-    if (typeof docx === 'undefined') {
-      showToast('DOCX library not loaded — please refresh the page and try again.', '❌');
-      return;
-    }
-    const btn = document.getElementById('downloadBtn');
-    btn.innerHTML = '<span class="spinner"></span> Generating…';
-    btn.disabled = true;
-
-    try {
-      const {
-        Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-        WidthType, BorderStyle, ShadingType, AlignmentType, LevelFormat
-      } = docx;
-
-      // ── 6-column grid: every row must use cells whose columnSpans sum to 6 ──
-      // This ensures Google Drive renders widths correctly with no overflow.
-      const PAGE_WIDTH  = 9360;            // US Letter, 0.75" margins (DXA)
-      const COL_UNIT    = 1560;            // PAGE_WIDTH / 6
-      const LABEL_W     = COL_UNIT * 2;    // 3120 — label col (2 units)
-      const VALUE_W     = COL_UNIT * 4;    // 6240 — value col (4 units)
-      const HALF_W      = COL_UNIT * 3;    // 4680 — each cell in 2-up row
-      const THIRD_W     = COL_UNIT * 2;    // 3120 — each cell in 3-up row
-      const COL_WIDTHS  = Array(6).fill(COL_UNIT);
-
-      const border  = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' };
-      const borders = { top: border, bottom: border, left: border, right: border };
-      const cellPad = { top: 120, bottom: 120, left: 160, right: 160 };
-
-      function labelRun(text) {
-        return new TextRun({ text, bold: true, size: 18, font: 'Calibri', color: '5A6472' });
-      }
-      function valueRun(text) {
-        return new TextRun({ text: text || '\u2014', size: 20, font: 'Calibri', color: '1E2B38' });
-      }
-
-      // Dark-navy header spanning all 6 columns
-      function sectionHeaderRow(title) {
-        return new TableRow({
-          children: [new TableCell({
-            columnSpan: 6,
-            width: { size: PAGE_WIDTH, type: WidthType.DXA },
-            shading: { fill: '102754', type: ShadingType.CLEAR },
-            margins: { top: 140, bottom: 140, left: 160, right: 160 },
-            borders,
-            children: [new Paragraph({
-              children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 22, font: 'Calibri', color: 'FFFFFF' })]
-            })]
-          })]
-        });
-      }
-
-      // label (spans 2 cols) | value (spans 4 cols) — always sums to 6
-      function fieldRow(label, value) {
-        return new TableRow({
-          children: [
-            new TableCell({
-              columnSpan: 2,
-              width: { size: LABEL_W, type: WidthType.DXA },
-              shading: { fill: 'EFF3FA', type: ShadingType.CLEAR },
-              margins: cellPad, borders,
-              children: [new Paragraph({ children: [labelRun(label)] })]
-            }),
-            new TableCell({
-              columnSpan: 4,
-              width: { size: VALUE_W, type: WidthType.DXA },
-              margins: cellPad, borders,
-              children: [new Paragraph({ children: [valueRun(value)] })]
-            })
-          ]
-        });
-      }
-
-      // 2-up (each spans 3) or 3-up (each spans 2); label stacked above value in same cell
-      function fieldRow2(pairs) {
-        const count = pairs.length;                       // 2 or 3
-        const span  = Math.floor(6 / count);              // 3 or 2
-        return new TableRow({
-          children: pairs.map((p, i) => {
-            const isLast   = i === pairs.length - 1;
-            const thisSpan = isLast ? 6 - span * (pairs.length - 1) : span;
-            return new TableCell({
-              columnSpan: thisSpan,
-              width: { size: COL_UNIT * thisSpan, type: WidthType.DXA },
-              margins: cellPad, borders,
-              children: [
-                new Paragraph({ children: [labelRun(p.label)] }),
-                new Paragraph({ children: [valueRun(p.value)] })
-              ]
+        function serializeScorecard() {
+            var data = {};
+            document.querySelectorAll('[contenteditable]:not(.editable-cell)').forEach(function(el, i) {
+                var id = el.id || 'ce_' + i;
+                data['ce_' + id] = el.innerHTML;
             });
-          })
-        });
-      }
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                var active = g.querySelector('.rating-btn.active');
+                data['rating_' + g.dataset.name] = active ? active.dataset.val : '';
+            });
+            document.querySelectorAll('select').forEach(function(sel, i) {
+                var id = sel.id || 'select_' + i;
+                data['select_' + id] = sel.value;
+            });
+            document.querySelectorAll('select').forEach(function(sel, i) {
+                var id = sel.id || 'select_' + i;
+                var key = 'select_' + id;
+                if (data[key] !== undefined) sel.value = data[key];
+            });
+            document.querySelectorAll('.editable-cell').forEach(function(cell) {
+                if (cell.id) data['ipcell_' + cell.id] = cell.innerHTML;
+            });
+            document.querySelectorAll('input').forEach(function(inp, i) {
+                var id = inp.id || 'input_' + i;
+                data['input_' + id] = inp.value;
+            });
+            return data;
+        }
 
-      // label (2 cols) | multi-line text value (4 cols)
-      function textareaRow(label, value) {
-        const lines = (value || '').split('\n').filter(l => l.trim());
-        return new TableRow({
-          children: [
-            new TableCell({
-              columnSpan: 2,
-              width: { size: LABEL_W, type: WidthType.DXA },
-              shading: { fill: 'EFF3FA', type: ShadingType.CLEAR },
-              margins: cellPad, borders,
-              children: [new Paragraph({ children: [labelRun(label)] })]
-            }),
-            new TableCell({
-              columnSpan: 4,
-              width: { size: VALUE_W, type: WidthType.DXA },
-              margins: cellPad, borders,
-              children: (lines.length ? lines : ['\u2014']).map(line =>
-                new Paragraph({ children: [valueRun(line)] })
-              )
-            })
-          ]
-        });
-      }
+        function populateScorecard(data) {
+            if (!data || Object.keys(data).length === 0) return;
+            document.querySelectorAll('[contenteditable]:not(.editable-cell)').forEach(function(el, i) {
+                var id = el.id || 'ce_' + i;
+                var key = 'ce_' + id;
+                if (data[key] !== undefined) el.innerHTML = data[key];
+            });
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                var key = 'rating_' + g.dataset.name;
+                if (data[key]) {
+                    g.querySelectorAll('.rating-btn').forEach(function(btn) {
+                        btn.classList.toggle('active', btn.dataset.val === data[key]);
+                    });
+                }
+            });
+            document.querySelectorAll('.editable-cell').forEach(function(cell) {
+                if (cell.id) {
+                    var key = 'ipcell_' + cell.id;
+                    if (data[key] !== undefined) cell.innerHTML = data[key];
+                }
+            });
+            document.querySelectorAll('input').forEach(function(inp, i) {
+                var id = inp.id || 'input_' + i;
+                var key = 'input_' + id;
+                if (data[key] !== undefined) inp.value = data[key];
+            });
+            updateProgress();
+        }
 
-      // label (2 cols) | rich content with bullets/numbered lists (4 cols)
-      function richRow(label, items) {
-        let content;
-        if (!items || items.length === 0) {
-          content = [new Paragraph({ children: [valueRun('\u2014')] })];
-        } else {
-          content = items.map(item => {
-            if (item.isBullet) {
-              return new Paragraph({
-                numbering: { reference: 'doc-bullets', level: 0 },
-                children: [new TextRun({ text: item.text, size: 20, font: 'Calibri', color: '1E2B38' })]
-              });
-            } else if (item.isOrdered) {
-              return new Paragraph({
-                numbering: { reference: 'doc-numbers', level: 0 },
-                children: [new TextRun({ text: item.text, size: 20, font: 'Calibri', color: '1E2B38' })]
-              });
-            } else {
-              return new Paragraph({ children: [valueRun(item.text)] });
+        function saveCurrentTab() {
+            var s = getTabStore();
+            s[currentTab] = serializeScorecard();
+            saveTabStore(s);
+            updateTabIndicators();
+        }
+
+        function switchTab(idx) {
+            if (idx === currentTab) return;
+            saveCurrentTab();
+            silentReset();
+            restoreInterviewDefaults();
+            currentTab = idx;
+            var s = getTabStore();
+            if (s[idx] && Object.keys(s[idx]).length > 0) {
+                populateScorecard(s[idx]);
             }
-          });
+            document.querySelectorAll('.tab-bar .tab').forEach(function(t, i) {
+                t.classList.toggle('active', i === idx);
+            });
+            updateTabIndicators();
+            sessionStorage.setItem('certifid_scorecard_activeTab', idx);
         }
-        return new TableRow({
-          children: [
-            new TableCell({
-              columnSpan: 2,
-              width: { size: LABEL_W, type: WidthType.DXA },
-              shading: { fill: 'EFF3FA', type: ShadingType.CLEAR },
-              margins: cellPad, borders,
-              children: [new Paragraph({ children: [labelRun(label)] })]
-            }),
-            new TableCell({
-              columnSpan: 4,
-              width: { size: VALUE_W, type: WidthType.DXA },
-              margins: cellPad, borders,
-              children: content
-            })
-          ]
-        });
-      }
 
-      // Wrap rows in a full-width 6-column table
-      function makeSection(rows) {
-        return new Table({
-          width: { size: PAGE_WIDTH, type: WidthType.DXA },
-          columnWidths: COL_WIDTHS,
-          rows
-        });
-      }
+        function updateTabIndicators() {
+            var s = getTabStore();
+            document.querySelectorAll('.tab-bar .tab').forEach(function(t, i) {
+                var d = s[i] || {};
+                var has = Object.values(d).some(function(v) {
+                    return v && v.toString().trim().length > 0;
+                });
+                t.classList.toggle('has-data', has);
+            });
+        }
 
-      function gap() {
-        return new Paragraph({ children: [new TextRun({ text: '', size: 10 })] });
-      }
+        function silentReset() {
+            document.querySelectorAll('[contenteditable]').forEach(function(el) {
+                el.innerHTML = '';
+            });
+            document.querySelectorAll('.rating-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('input').forEach(function(inp) {
+                inp.value = '';
+            });
+            updateProgress();
+        }
 
-      // ── Gather form values ────────────────────────────────────────────────
-      const roleTitle        = val('roleTitle') || 'Untitled Role';
-      const targetHire       = val('targetHireDate');
-      const jdLink           = val('jdLink');
-      const scorecardLink    = val('scorecardLink');
-      const blackout         = val('blackoutDays');
-      const intLimit         = val('dailyInterviewLimit');
-      const candCount        = val('candidateCount');
-      const syncLink         = val('weeklySyncLink');
-      const liTalent         = radioVal('linkedinTalentReview');
-      const roleSummary      = getRichItems('roleSummary');
-      const levels           = getMultiselectValues('levelsMultiselect').join(', ') || '';
-      const dept             = val('department');
-      const team             = val('team');
-      const headcount        = val('headcount');
-      const reportsTo        = val('reportingTo');
-      const certs            = val('certsRequired');
-      const college          = radioVal('collegeRequired');
-      const location         = val('location');
-      const directReports    = val('directReports');
-      const newOrBackfill    = radioVal('newOrBackfill');
-      const backfillFor      = val('backfillFor');
-      const yearsExp         = val('yearsExperience');
-      const orgStructure     = getRichItems('orgStructure');
-      const salary           = val('salaryRange');
-      const quota            = radioVal('quotaCarrying');
-      const bonus            = val('annualBonus');
-      const equity           = val('equity');
-      const otherComp        = val('otherComp');
-      const topSkills        = getRichItems('topSkills');
-      const niceToHave       = getRichItems('niceToHave');
-      const petPeeves        = getRichItems('petPeeves');
-      const skillGaps        = getRichItems('skillGaps');
-      const comparableTitles = getRichItems('comparableTitles');
-      const liProfiles       = val('linkedinProfiles');
-      const companiesToPoach = val('companiesToPoach');
-      const dayInLife        = val('dayInLife');
-      const training         = val('trainingLooks');
-      const success          = val('successLooks');
-      const phoneQs          = getRichItems('phoneScreenQuestions');
-      const steps            = getInterviewSteps();
+        function debouncedSave() {
+            clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(function() {
+                saveCurrentTab();
+            }, 500);
+        }
 
-      const doc = new Document({
-        numbering: {
-          config: [
-            { reference: 'doc-bullets', levels: [{ level: 0, format: LevelFormat.BULLET, text: '\u2022', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 360, hanging: 180 } } } }] },
-            { reference: 'doc-numbers', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 360, hanging: 200 } } } }] },
-          ]
-        },
-        sections: [{
-          properties: {
-            page: {
-              size: { width: 12240, height: 15840 },
-              margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 }
+        function updateProgress() {
+            var count = 0;
+            document.querySelectorAll('.rating-group').forEach(function(g) {
+                if (g.querySelector('.rating-btn.active')) {
+                    count++;
+                }
+            });
+            document.getElementById('progress-count').textContent = count;
+            var percent = (count / 26) * 100;
+            document.getElementById('progress-fill').style.width = percent + '%';
+        }
+
+        function attachRatingHandlers() {
+            document.querySelectorAll('.rating-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var group = btn.parentElement;
+                    group.querySelectorAll('.rating-btn').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                    updateProgress();
+                    debouncedSave();
+                });
+            });
+        }
+
+        var INTERVIEW_DEFAULTS = {
+            'ip-focus-1': 'Baseline &amp; Logistics: Alignment on comp, remote/hybrid needs, career motivation, and high-level culture add.',
+            'ip-focus-2': 'Technical/Role Fit: Deep dive into \u201Ccan they do the job?\u201D\u2014reviewing past wins, specific hard skills, and day-to-day execution.',
+            'ip-focus-3': 'Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific \u201Chard skill\u201D validation.',
+            'ip-focus-4': 'Peer Integration: How they work with cross-functional partners (e.g., how the BA works with Sales Ops) and specific \u201Chard skill\u201D validation.',
+            'ip-focus-5': 'Strategic Vision &amp; Values: Long-term trajectory, leadership potential, and alignment with the company\u2019s 12-month scaling goals.',
+            'ip-focus-6': 'Synthesis: Collecting all feedback scorecards to make a data-driven \u201CGo/No-Go\u201D decision and defining offer levers.'
+        };
+
+        function restoreInterviewDefaults() {
+            Object.keys(INTERVIEW_DEFAULTS).forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.innerHTML = INTERVIEW_DEFAULTS[id];
+            });
+        }
+
+        function addInterviewStage() {
+            var tbody = document.querySelector('.interview-table tbody');
+            var rowCount = tbody.querySelectorAll('tr').length + 1;
+            var tr = document.createElement('tr');
+            tr.innerHTML = '<td><div contenteditable="true" class="editable-cell stage-badge-edit" data-placeholder="Stage name" style="display:inline-block;padding:4px 12px;border-radius:4px;font-size:12px;font-weight:600;color:white;background:var(--blue-medium);min-width:80px;"></div></td>' +
+                '<td><div contenteditable="true" id="ip-owner-' + rowCount + '" class="editable-cell" data-placeholder="Owner name"></div></td>' +
+                '<td><div contenteditable="true" id="ip-focus-' + rowCount + '" class="editable-cell" data-placeholder="Focus areas for this stage"></div>' +
+                '<span class="stage-actions">' +
+                '<button class="btn-move-stage" onclick="moveStageUp(this)" title="Move up">&uarr;</button>' +
+                '<button class="btn-move-stage" onclick="moveStageDown(this)" title="Move down">&darr;</button>' +
+                '<button class="btn-remove-stage" onclick="removeInterviewStage(this)" title="Remove stage">&times;</button>' +
+                '</span></td>';
+            tbody.appendChild(tr);
+        }
+
+        function moveStageUp(btn) {
+            var tr = btn.closest('tr');
+            var prev = tr.previousElementSibling;
+            if (prev) tr.parentNode.insertBefore(tr, prev);
+        }
+
+        function moveStageDown(btn) {
+            var tr = btn.closest('tr');
+            var next = tr.nextElementSibling;
+            if (next) tr.parentNode.insertBefore(next, tr);
+        }
+
+        function removeInterviewStage(btn) {
+            var tr = btn.closest('tr');
+            if (tr && confirm('Remove this interview stage?')) {
+                tr.remove();
             }
-          },
-          children: [
-            // ── Title block ───────────────────────────────────────────────
-            new Paragraph({
-              children: [new TextRun({ text: 'NEW REQ IN-TAKE', bold: true, size: 24, font: 'Calibri', color: '102754', allCaps: true })]
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: roleTitle, bold: true, size: 44, font: 'Calibri', color: '166EBE' })]
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: `Date: ${new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })}   |   Target Hire: ${targetHire || 'TBD'}`, size: 18, font: 'Calibri', color: '666666' })]
-            }),
-            ...(jdLink        ? [new Paragraph({ children: [new TextRun({ text: `JD: ${jdLink}`,               size: 18, font: 'Calibri', color: '166EBE' })] })] : []),
-            ...(scorecardLink ? [new Paragraph({ children: [new TextRun({ text: `Scorecard: ${scorecardLink}`, size: 18, font: 'Calibri', color: '166EBE' })] })] : []),
-            gap(),
-
-            // ── Scheduling ────────────────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Scheduling & EasyLink'),
-              fieldRow2([
-                { label: 'Days unavailable for interviews', value: blackout },
-                { label: 'Daily interview limit',           value: intLimit }
-              ]),
-              fieldRow2([
-                { label: 'Candidates to interview', value: candCount },
-                { label: 'LinkedIn Talent Review',  value: liTalent }
-              ]),
-              fieldRow('Weekly 15-min sync link', syncLink),
-            ]),
-            gap(),
-
-            // ── Role Details ──────────────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Role Details'),
-              richRow('Role Summary', roleSummary),
-              fieldRow2([
-                { label: 'Level(s)',    value: levels },
-                { label: 'Department', value: dept },
-                { label: 'Team',       value: team }
-              ]),
-              fieldRow2([
-                { label: '# of Headcount', value: headcount },
-                { label: 'Reporting To',   value: reportsTo }
-              ]),
-              fieldRow2([
-                { label: 'Certs Required',   value: certs },
-                { label: 'College Required', value: college },
-                { label: 'Location',         value: location }
-              ]),
-              fieldRow2([
-                { label: 'Direct Reports',      value: directReports },
-                { label: 'Net New or Backfill', value: newOrBackfill + (backfillFor ? ` — ${backfillFor}` : '') },
-                { label: 'Years of Experience', value: yearsExp }
-              ]),
-              richRow('Team Org Structure', orgStructure),
-            ]),
-            gap(),
-
-            // ── Financials ────────────────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Financials'),
-              fieldRow('Salary Range', salary),
-              fieldRow2([
-                { label: 'Quota Carrying', value: quota },
-                { label: 'Annual Bonus %', value: bonus }
-              ]),
-              fieldRow2([
-                { label: 'Target Hire Date', value: targetHire || 'TBD' },
-                { label: 'Equity',           value: equity }
-              ]),
-              ...(otherComp ? [fieldRow('Other Compensation', otherComp)] : []),
-            ]),
-            gap(),
-
-            // ── Skills & Experience ───────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Skills & Experience'),
-              richRow('3\u20135 Key Skill Sets (JD)', topSkills),
-              richRow('Nice to Have', niceToHave),
-              richRow('Pet Peeves / Disqualifiers', petPeeves),
-              richRow('Skill Gaps We Can Grow', skillGaps),
-              richRow('Comparable Titles', comparableTitles),
-              textareaRow('LinkedIn Profiles \u2014 Would Love', liProfiles),
-              textareaRow('Companies to Poach From', companiesToPoach),
-            ]),
-            gap(),
-
-            // ── Day in the Life ───────────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Day in the Life'),
-              textareaRow('Typical day / cadence', dayInLife),
-              textareaRow('What does training look like?', training),
-              textareaRow('What does success look like?', success),
-            ]),
-            gap(),
-
-            // ── Interview Process ─────────────────────────────────────────
-            makeSection([
-              sectionHeaderRow('Interview Process'),
-              richRow('3 Key Phone Screen Questions', phoneQs),
-              new TableRow({
-                children: [
-                  new TableCell({
-                    columnSpan: 2,
-                    width: { size: LABEL_W, type: WidthType.DXA },
-                    shading: { fill: 'EFF3FA', type: ShadingType.CLEAR },
-                    margins: cellPad, borders,
-                    children: [new Paragraph({ children: [labelRun('Interview Steps')] })]
-                  }),
-                  new TableCell({
-                    columnSpan: 4,
-                    width: { size: VALUE_W, type: WidthType.DXA },
-                    margins: cellPad, borders,
-                    children: steps.length
-                      ? steps.map((s, i) => new Paragraph({ children: [valueRun(`${i + 1}. ${s}`)] }))
-                      : [new Paragraph({ children: [valueRun('\u2014')] })]
-                  })
-                ]
-              })
-            ]),
-          ]
-        }]
-      });
-
-      const blob = await Packer.toBlob(doc);
-      const safeName = roleTitle.replace(/[^a-zA-Z0-9\s\-]/g, '').replace(/\s+/g, '-');
-      saveAs(blob, `CertifID-Intake-${safeName}.docx`);
-      showToast('DOCX downloaded successfully!', '✅');
-    } catch (err) {
-      console.error(err);
-      showToast('Error generating DOCX — check console', '❌');
-    } finally {
-      btn.innerHTML = '⬇ Download DOCX';
-      btn.disabled = false;
-    }
-  }
-
-  // ── Rich Editor ──
-  const RICH_FIELDS = ['roleSummary','orgStructure','topSkills','niceToHave','petPeeves','skillGaps','comparableTitles','phoneScreenQuestions'];
-
-  function richCmd(id, cmd) {
-    const el = document.getElementById(id);
-    el.focus();
-    document.execCommand(cmd, false, null);
-    updateToolbarButtons(el);
-  }
-  // Bullet/numbered list — only applies to the line the cursor is on,
-  // never auto-bullets the whole field at once.
-  function richList(id, listCmd) {
-    const el = document.getElementById(id);
-    el.focus();
-    const sel = window.getSelection();
-    if (!sel || !sel.rangeCount) return;
-    const range = sel.getRangeAt(0);
-    // If selection spans multiple block elements, collapse to just the start
-    // so we only affect the one line the cursor is on.
-    if (!range.collapsed) {
-      let n = range.startContainer;
-      while (n && n !== el) { n = n.parentNode; }
-      const sameBlock = (function() {
-        function blockOf(node) {
-          while (node && node !== el) {
-            if (/^(DIV|P|LI|H[1-6])$/.test(node.nodeName)) return node;
-            node = node.parentNode;
-          }
-          return el;
         }
-        return blockOf(range.startContainer) === blockOf(range.endContainer);
-      })();
-      if (!sameBlock) {
-        const collapsed = range.cloneRange();
-        collapsed.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(collapsed);
-      }
-    }
-    document.execCommand(listCmd, false, null);
-    richInput(el);
-    updateToolbarButtons(el);
-  }
-  function richInput(el) {
-    el.classList.toggle('is-empty', !el.textContent.trim() && !el.querySelector('ul,ol'));
-    updateToolbarButtons(el);
-  }
-  function richFocus(el) {
-    el.classList.remove('is-empty');
-  }
-  function richBlur(el) {
-    el.classList.toggle('is-empty', !el.textContent.trim() && !el.querySelector('ul,ol'));
-  }
-  function updateToolbarButtons(el) {
-    const wrapper = el.closest('.rich-editor-wrapper');
-    if (!wrapper) return;
-    wrapper.querySelectorAll('.toolbar-btn').forEach(btn => {
-      const cmd = btn.getAttribute('data-cmd');
-      if (cmd) btn.classList.toggle('active', document.queryCommandState(cmd));
-    });
-  }
-  function getRichItems(id) {
-    // Returns array of {text, isBullet, isOrdered, bold} objects
-    const el = document.getElementById(id);
-    if (!el) return [];
-    const items = [];
-    function walk(node, inUl, inOl) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const t = node.textContent;
-        if (t.trim()) items.push({ text: t, isBullet: inUl, isOrdered: inOl, bold: false });
-      } else if (node.tagName === 'LI') {
-        const t = node.textContent.trim();
-        if (t) items.push({ text: t, isBullet: inUl, isOrdered: inOl, bold: false });
-      } else if (node.tagName === 'UL') {
-        node.childNodes.forEach(c => walk(c, true, false));
-      } else if (node.tagName === 'OL') {
-        node.childNodes.forEach(c => walk(c, false, true));
-      } else if (node.tagName === 'BR') {
-        // skip
-      } else {
-        node.childNodes.forEach(c => walk(c, inUl, inOl));
-      }
-    }
-    el.childNodes.forEach(c => walk(c, false, false));
-    // Remove empty duplicates from top-level text nodes adjacent to lists
-    return items.filter(i => i.text.trim());
-  }
-  function richVal(id) {
-    // Plain text version for simple DOCX rows
-    const el = document.getElementById(id);
-    return el ? el.innerText.trim() : '';
-  }
 
-  // ── Multi-Select ──
-  function toggleMultiselect(id) {
-    const ms = document.getElementById(id);
-    const isOpen = ms.classList.contains('open');
-    // Close all open multiselects first
-    document.querySelectorAll('.multiselect.open').forEach(el => el.classList.remove('open'));
-    if (!isOpen) ms.classList.add('open');
-  }
-  function updateMultiselectDisplay(multiselectId, displayId) {
-    const ms = document.getElementById(multiselectId);
-    const display = document.getElementById(displayId);
-    const checked = Array.from(ms.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-    if (checked.length === 0) {
-      display.innerHTML = '<span class="placeholder">Select levels…</span>';
-    } else {
-      display.innerHTML = checked.map(v => `<span class="tag">${v}</span>`).join('');
-    }
-    // Wrap display in tags layout
-    display.style.overflow = 'visible';
-    display.style.whiteSpace = 'normal';
-  }
-  function getMultiselectValues(multiselectId) {
-    const ms = document.getElementById(multiselectId);
-    return Array.from(ms.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
-  }
-  // Close multiselect when clicking outside
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.multiselect')) {
-      document.querySelectorAll('.multiselect.open').forEach(el => el.classList.remove('open'));
-    }
-  });
 
-  // ── Shareable Link ──
-  function serializeForm() {
-    const data = {};
+        function downloadDocx() {
+            if (typeof docx === 'undefined') {
+                alert('DOCX library not loaded — please refresh and try again.');
+                return;
+            }
+            var _docx = docx;
+            var Document = _docx.Document, Packer = _docx.Packer, Paragraph = _docx.Paragraph,
+                TextRun = _docx.TextRun, Table = _docx.Table, TableRow = _docx.TableRow,
+                TableCell = _docx.TableCell, WidthType = _docx.WidthType,
+                BorderStyle = _docx.BorderStyle, ShadingType = _docx.ShadingType,
+                AlignmentType = _docx.AlignmentType, VerticalAlign = _docx.VerticalAlign;
 
-    // Plain inputs (text, date, url, number)
-    data.inputs = {};
-    document.querySelectorAll('input[type="text"], input[type="date"], input[type="url"], input[type="number"]').forEach(el => {
-      if (el.id) data.inputs[el.id] = el.value;
-    });
+            var PAGE_WIDTH = 9360;
+            var COL_UNIT  = 1560;
+            var border  = { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' };
+            var borders = { top: border, bottom: border, left: border, right: border };
+            var noBorder = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+            var noBorders = { top: noBorder, bottom: noBorder, left: noBorder, right: noBorder };
+            var pad = { top: 100, bottom: 100, left: 140, right: 140 };
+            var padSm = { top: 60, bottom: 60, left: 120, right: 120 };
 
-    // Selects
-    data.selects = {};
-    document.querySelectorAll('select').forEach(el => {
-      if (el.id) data.selects[el.id] = el.value;
-    });
+            function ratingColor(r) {
+                if (r === '1') return 'DB132C';
+                if (r === '2') return 'FFA624';
+                if (r === '3') return '61D690';
+                if (r === '4') return '102754';
+                return 'CCCCCC';
+            }
 
-    // Textareas (non-rich ones)
-    data.textareas = {};
-    document.querySelectorAll('textarea').forEach(el => {
-      if (el.id) data.textareas[el.id] = el.value;
-    });
+            function ratingLabel(r) {
+                if (r === '1') return '1 – Strong No';
+                if (r === '2') return '2 – No';
+                if (r === '3') return '3 – Yes';
+                if (r === '4') return '4 – Strong Yes';
+                return '—';
+            }
 
-    // Radio buttons (one value per name)
-    data.radios = {};
-    ['collegeRequired', 'quotaCarrying', 'newOrBackfill', 'linkedinTalentReview'].forEach(name => {
-      data.radios[name] = radioVal(name);
-    });
+            function sectionHdr(title) {
+                return new TableRow({
+                    children: [new TableCell({
+                        columnSpan: 6,
+                        width: { size: PAGE_WIDTH, type: WidthType.DXA },
+                        shading: { fill: '102754', type: ShadingType.CLEAR },
+                        margins: { top: 100, bottom: 100, left: 140, right: 140 },
+                        borders,
+                        children: [new Paragraph({ children: [new TextRun({ text: title.toUpperCase(), bold: true, size: 20, font: 'Calibri', color: 'FFFFFF' })] })]
+                    })]
+                });
+            }
 
-    // Rich editors (save innerHTML)
-    data.richEditors = {};
-    RICH_FIELDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) data.richEditors[id] = el.innerHTML;
-    });
+            function labelValRow(label, value, labelSpan, valSpan) {
+                labelSpan = labelSpan || 2; valSpan = valSpan || 4;
+                return new TableRow({ children: [
+                    new TableCell({ columnSpan: labelSpan, width: { size: COL_UNIT * labelSpan, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: pad, borders, children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] }),
+                    new TableCell({ columnSpan: valSpan,   width: { size: COL_UNIT * valSpan,   type: WidthType.DXA }, margins: pad, borders, children: [new Paragraph({ children: [new TextRun({ text: value || '\u2014', size: 20, font: 'Calibri', color: '1E2B38' })] })] })
+                ]});
+            }
 
-    // Multi-select
-    data.multiselect = {};
-    data.multiselect.levels = getMultiselectValues('levelsMultiselect');
+            function ratingRow(label, rating) {
+                var col = ratingColor(rating);
+                var lbl = ratingLabel(rating);
+                return new TableRow({ children: [
+                    new TableCell({ columnSpan: 4, width: { size: COL_UNIT * 4, type: WidthType.DXA }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: label || '\u2014', size: 19, font: 'Calibri', color: '1E2B38' })] })] }),
+                    new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, shading: { fill: rating ? col : 'F5F5F5', type: ShadingType.CLEAR }, margins: padSm, borders,
+                        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: lbl, bold: true, size: 18, font: 'Calibri', color: rating ? 'FFFFFF' : '999999' })] })]
+                    })
+                ]});
+            }
 
-    // Interview steps
-    data.interviewSteps = getInterviewSteps();
+            function makeSection(rows) {
+                return new Table({ width: { size: PAGE_WIDTH, type: WidthType.DXA }, columnWidths: Array(6).fill(COL_UNIT), rows: rows });
+            }
 
-    return data;
-  }
+            function gap() { return new Paragraph({ children: [new TextRun({ text: '', size: 8 })] }); }
 
-  function populateForm(data) {
-    // Plain inputs
-    if (data.inputs) {
-      Object.entries(data.inputs).forEach(([id, value]) => {
-        const el = document.getElementById(id);
-        if (el) el.value = value;
-      });
-    }
-    // Selects
-    if (data.selects) {
-      Object.entries(data.selects).forEach(([id, value]) => {
-        const el = document.getElementById(id);
-        if (el) el.value = value;
-      });
-    }
-    // Textareas
-    if (data.textareas) {
-      Object.entries(data.textareas).forEach(([id, value]) => {
-        const el = document.getElementById(id);
-        if (el) el.value = value;
-      });
-    }
-    // Radios
-    if (data.radios) {
-      Object.entries(data.radios).forEach(([name, value]) => {
-        if (value) {
-          const r = document.querySelector(`input[name="${name}"][value="${value}"]`);
-          if (r) r.checked = true;
+            // ── Gather data ──────────────────────────────────────────────
+            var roleTitle   = (document.getElementById('roleTitle')   || {}).innerText || '';
+            var dept        = (document.getElementById('department')  || {}).value     || '';
+            var hiringMgr   = (document.getElementById('hiringManager')|| {}).innerText|| '';
+            var scoreDate   = (document.getElementById('scoreDate')   || {}).value     || '';
+            var mission     = (document.getElementById('mission')     || {}).innerText || '';
+
+            roleTitle   = roleTitle.trim()   || 'Untitled Role';
+            dept        = dept.trim()        || '';
+            hiringMgr   = hiringMgr.trim()   || '';
+            mission     = mission.trim()     || '';
+
+            var outcomes = [];
+            for (var i = 1; i <= 6; i++) {
+                var oEl = document.getElementById('outcome-text-' + i);
+                var oGrp = document.querySelector('.rating-group[data-name="outcome-' + i + '"]');
+                var oBtn = oGrp ? oGrp.querySelector('.rating-btn.active') : null;
+                outcomes.push({ text: oEl ? oEl.innerText.trim() : '', rating: oBtn ? oBtn.dataset.val : '' });
+            }
+
+            var compDims = [
+                { code: 'p', title: 'Priorities' },
+                { code: 'w', title: 'Who' },
+                { code: 'v', title: 'Values' },
+                { code: 't', title: 'Technical' }
+            ];
+            var allComps = {};
+            compDims.forEach(function(d) {
+                allComps[d.code] = [];
+                for (var i = 1; i <= 5; i++) {
+                    var lEl = document.getElementById('comp-' + d.code + i + '-label');
+                    var rGrp = document.querySelector('.rating-group[data-name="comp-' + d.code + i + '"]');
+                    var rBtn = rGrp ? rGrp.querySelector('.rating-btn.active') : null;
+                    allComps[d.code].push({ label: lEl ? lEl.innerText.trim() : '', rating: rBtn ? rBtn.dataset.val : '' });
+                }
+            });
+
+            var stages = [];
+            document.querySelectorAll('.interview-table tbody tr').forEach(function(tr) {
+                var stageBadge = tr.querySelector('.stage-badge') || tr.querySelector('.stage-badge-edit');
+                var ownerCell  = tr.querySelector('[id^="ip-owner"]');
+                var focusCell  = tr.querySelector('[id^="ip-focus"]');
+                stages.push({
+                    stage: stageBadge ? stageBadge.innerText.trim() : '',
+                    owner: ownerCell  ? ownerCell.innerText.trim()  : '',
+                    focus: focusCell  ? focusCell.innerText.trim()  : ''
+                });
+            });
+
+            var currentTabLabel = 'Scorecard ' + (currentTab + 1);
+
+            // ── Build document ───────────────────────────────────────────
+            var children = [
+                new Paragraph({ children: [new TextRun({ text: 'CertifID \u2014 Hiring Scorecard', bold: true, size: 24, font: 'Calibri', color: '102754', allCaps: true })] }),
+                new Paragraph({ children: [new TextRun({ text: roleTitle, bold: true, size: 44, font: 'Calibri', color: '166EBE' })] }),
+                new Paragraph({ children: [
+                    new TextRun({ text: (dept ? dept + '  \u00B7  ' : '') + (scoreDate ? 'Date: ' + scoreDate : '') + (hiringMgr ? '  \u00B7  HM: ' + hiringMgr : '') + '  \u00B7  ' + currentTabLabel,
+                        size: 18, font: 'Calibri', color: '666666' })
+                ]}),
+                gap(),
+
+                // Rating legend
+                makeSection([
+                    new TableRow({ children: [
+                        new TableCell({ columnSpan: 6, width: { size: PAGE_WIDTH, type: WidthType.DXA }, shading: { fill: 'F4F6FA', type: ShadingType.CLEAR }, margins: { top: 80, bottom: 80, left: 140, right: 140 }, borders,
+                            children: [new Paragraph({ children: [
+                                new TextRun({ text: 'Rating Scale:  ', bold: true, size: 18, font: 'Calibri', color: '102754' }),
+                                new TextRun({ text: '1 = Strong No  ', size: 17, font: 'Calibri', color: 'DB132C', bold: true }),
+                                new TextRun({ text: '2 = No  ', size: 17, font: 'Calibri', color: 'CC8800', bold: true }),
+                                new TextRun({ text: '3 = Yes  ', size: 17, font: 'Calibri', color: '1a7a3a', bold: true }),
+                                new TextRun({ text: '4 = Strong Yes', size: 17, font: 'Calibri', color: '102754', bold: true })
+                            ]})]
+                        })
+                    ]})
+                ]),
+                gap(),
+
+                // Mission
+                makeSection([
+                    sectionHdr('1. Mission'),
+                    new TableRow({ children: [
+                        new TableCell({ columnSpan: 6, width: { size: PAGE_WIDTH, type: WidthType.DXA }, margins: pad, borders,
+                            children: [new Paragraph({ children: [new TextRun({ text: mission || '\u2014', size: 20, font: 'Calibri', color: '1E2B38' })] })]
+                        })
+                    ]})
+                ]),
+                gap(),
+
+                // Outcomes
+                makeSection([
+                    sectionHdr('2. Outcomes'),
+                    new TableRow({ children: [
+                        new TableCell({ columnSpan: 4, width: { size: COL_UNIT * 4, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: padSm, borders,
+                            children: [new Paragraph({ children: [new TextRun({ text: 'Outcome', bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] }),
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: padSm, borders,
+                            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: 'Rating', bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] })
+                    ]}),
+                ].concat(outcomes.filter(function(o) { return o.text; }).map(function(o) { return ratingRow(o.text, o.rating); }))),
+                gap(),
+
+                // Competencies
+                makeSection(
+                    [sectionHdr('3. Competencies')].concat(
+                        compDims.reduce(function(rows, d) {
+                            if (allComps[d.code].some(function(c) { return c.label; })) {
+                                rows.push(new TableRow({ children: [
+                                    new TableCell({ columnSpan: 6, width: { size: PAGE_WIDTH, type: WidthType.DXA }, shading: { fill: 'DCE8F5', type: ShadingType.CLEAR }, margins: { top: 70, bottom: 70, left: 140, right: 140 }, borders,
+                                        children: [new Paragraph({ children: [new TextRun({ text: d.title, bold: true, size: 19, font: 'Calibri', color: '102754' })] })]
+                                    })
+                                ]}));
+                                allComps[d.code].forEach(function(c) {
+                                    if (c.label) rows.push(ratingRow(c.label, c.rating));
+                                });
+                            }
+                            return rows;
+                        }, [])
+                    )
+                ),
+                gap(),
+
+                // Interview Plan
+                makeSection([
+                    sectionHdr('4. Interview Plan'),
+                    new TableRow({ children: [
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: 'Stage', bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] }),
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: 'Owner', bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] }),
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, shading: { fill: 'EFF3FA', type: ShadingType.CLEAR }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: 'Focus Area', bold: true, size: 18, font: 'Calibri', color: '5A6472' })] })] })
+                    ]})
+                ].concat(stages.map(function(s) {
+                    return new TableRow({ children: [
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: s.stage || '\u2014', size: 19, font: 'Calibri', color: '1E2B38', bold: true })] })] }),
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: s.owner || '\u2014', size: 19, font: 'Calibri', color: '1E2B38' })] })] }),
+                        new TableCell({ columnSpan: 2, width: { size: COL_UNIT * 2, type: WidthType.DXA }, margins: padSm, borders, children: [new Paragraph({ children: [new TextRun({ text: s.focus || '\u2014', size: 19, font: 'Calibri', color: '1E2B38' })] })] })
+                    ]});
+                })))
+            ];
+
+            var doc = new Document({
+                sections: [{ properties: { page: { size: { width: 12240, height: 15840 }, margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children: children }]
+            });
+
+            Packer.toBlob(doc).then(function(blob) {
+                var safe = roleTitle.replace(/[^a-zA-Z0-9\s\-]/g, '').replace(/\s+/g, '-');
+                var filename = 'CertifID-Scorecard-' + safe + '-' + currentTabLabel.replace(' ', '') + '.docx';
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url; a.download = filename;
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+            }).catch(function(e) {
+                console.error(e);
+                alert('DOCX generation failed — see console for details.');
+            });
         }
-      });
-    }
-    // Rich editors
-    if (data.richEditors) {
-      Object.entries(data.richEditors).forEach(([id, html]) => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.innerHTML = html;
-          el.classList.toggle('is-empty', !el.textContent.trim() && !el.querySelector('ul,ol'));
+
+
+        function openJDModal() {
+            document.getElementById('jdModal').classList.add('show');
         }
-      });
-    }
-    // Multi-select levels
-    if (data.multiselect && data.multiselect.levels) {
-      data.multiselect.levels.forEach(v => {
-        const cb = document.querySelector(`#levelsMultiselect input[value="${v}"]`);
-        if (cb) cb.checked = true;
-      });
-      updateMultiselectDisplay('levelsMultiselect', 'levelsDisplay');
-    }
-    // Interview steps
-    if (data.interviewSteps) {
-      document.getElementById('interviewStepsList').innerHTML = '';
-      data.interviewSteps.forEach(s => addInterviewStep(s));
-    }
-  }
 
-  function copyShareableLink() {
-    try {
-      const data = serializeForm();
-      const json = JSON.stringify(data);
-      const encoded = btoa(unescape(encodeURIComponent(json)));
-      const base = window.location.href.split('#')[0];
-      const url = base + '#formData=' + encoded;
+        function closeJDModal() {
+            document.getElementById('jdModal').classList.remove('show');
+            document.getElementById('jdTextarea').value = '';
+        }
 
-      navigator.clipboard.writeText(url).then(() => {
-        const btn = document.getElementById('copyLinkBtn');
-        btn.textContent = '✓ Copied!';
-        btn.style.borderColor = 'var(--green)';
-        btn.style.color = '#1a7a3a';
-        setTimeout(() => {
-          btn.textContent = '🔗 Copy Link';
-          btn.style.borderColor = '';
-          btn.style.color = '';
-        }, 2500);
-        showToast('Link copied! Share it or paste it in a new tab to restore this form.', '🔗');
-      }).catch(() => {
-        // Fallback for browsers that block clipboard without HTTPS
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast('Link copied! Open it in any browser to restore this form.', '🔗');
-      });
-    } catch (e) {
-      showToast('Could not generate link — please try again.', '❌');
-    }
-  }
+        /* ========== JD PARSER ========== */
 
-  function loadFromHash() {
-    const hash = window.location.hash;
-    if (!hash.startsWith('#formData=')) return;
-    try {
-      const encoded = hash.slice('#formData='.length);
-      const json = decodeURIComponent(escape(atob(encoded)));
-      const data = JSON.parse(json);
-      populateForm(data);
-      showToast('Form restored from shared link!', '✅');
-    } catch (e) {
-      console.warn('Could not restore form from URL:', e);
-    }
-  }
+        function splitJDSections(text) {
+            text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            var sections = {};
+            var headerPatterns = [
+                { key: 'title',    re: /^(?:job\s*opening|position|role\s*title)\s*[:\-]/im },
+                { key: 'about',    re: /^(?:about\s+(?:us|certifid|the\s+company))\s*[:\n]/im },
+                { key: 'impact',   re: /^(?:how\s+you\s+will\s+make\s+an?\s+impact|about\s+the\s+role|role\s+summary|the\s+role|overview)\s*[:\n]/im },
+                { key: 'do',       re: /^(?:what\s+you(?:[\u2019']ll|.will)\s+do|responsibilities|key\s+responsibilities|your\s+responsibilities)\s*[:\n]/im },
+                { key: 'looking',  re: /^(?:what\s+we(?:[\u2019']re|.are)\s+looking\s+for|requirements|qualifications|what\s+you(?:[\u2019']ll|.will)\s+bring|who\s+you\s+are)\s*[:\n]/im },
+                { key: 'offer',    re: /^(?:what\s+we\s+offer|benefits|perks|compensation)\s*[:\n]/im }
+            ];
+            var found = [];
+            headerPatterns.forEach(function(hp) {
+                var m = text.match(hp.re);
+                if (m) found.push({ key: hp.key, start: m.index, headerEnd: m.index + m[0].length });
+            });
+            found.sort(function(a, b) { return a.start - b.start; });
+            for (var i = 0; i < found.length; i++) {
+                var contentStart = found[i].headerEnd;
+                var contentEnd = (i + 1 < found.length) ? found[i + 1].start : text.length;
+                sections[found[i].key] = text.substring(contentStart, contentEnd).trim();
+            }
+            sections._full = text;
+            if (found.length > 0) sections._preamble = text.substring(0, found[0].start).trim();
+            else sections._preamble = text;
+            return sections;
+        }
 
-  // Load from hash after a brief delay to ensure DOM is ready
-  setTimeout(loadFromHash, 100);
+        function extractRoleTitle(text, sections) {
+            var m = text.match(/(?:job\s*opening|position|role\s*title)\s*[:\-]\s*(.+)/i);
+            if (m) { var t = m[1].replace(/\*+/g, '').trim(); t = t.replace(/[\\\|].*$/, '').trim(); return t; }
+            var lines = text.split('\n');
+            for (var i = 0; i < Math.min(lines.length, 10); i++) {
+                var line = lines[i].replace(/\*+/g, '').trim();
+                if (line.length > 5 && line.length < 80 && !/^(about|how|what|location|team|type)/i.test(line)) return line;
+            }
+            return 'New Role';
+        }
 
-  // Close confirm overlay on background click
-  document.getElementById('confirmOverlay').addEventListener('click', function(e) {
-    if (e.target === this) closeConfirm();
-  });
-</script>
+        function detectDepartment(text) {
+            var lower = text.toLowerCase();
+            var deptMap = [
+                { value: 'Customer Success', keywords: ['customer success', 'csm', 'cs team', 'cs |', '| cs'] },
+                { value: 'Engineering',      keywords: ['engineering', 'software engineer', 'developer', 'sre', 'devops'] },
+                { value: 'Sales',            keywords: ['sales', 'account executive', 'sdr', 'bdr', 'business development'] },
+                { value: 'Product',          keywords: ['product manager', 'product design', 'product team', '| product'] },
+                { value: 'Finance',          keywords: ['finance', 'accounting', 'financial analyst', 'controller'] },
+                { value: 'Operations',       keywords: ['operations', 'rev ops', 'revenue operations', 'biz ops'] },
+                { value: 'Partnerships',     keywords: ['partnerships', 'partner manager', 'channel'] }
+            ];
+            for (var i = 0; i < deptMap.length; i++) {
+                for (var j = 0; j < deptMap[i].keywords.length; j++) {
+                    if (lower.indexOf(deptMap[i].keywords[j]) >= 0) return deptMap[i].value;
+                }
+            }
+            return '';
+        }
+
+        function buildMission(sections) {
+            var src = sections.impact || '';
+            if (!src && sections._preamble) src = sections._preamble;
+            if (!src) return '';
+            var paragraphs = src.split(/\n\s*\n/).map(function(p) { return p.trim(); }).filter(function(p) { return p.length > 30; });
+            var mission = paragraphs.slice(0, 2).join(' ');
+            mission = mission.replace(/\s+/g, ' ').replace(/\*+/g, '').trim();
+            if (mission.length > 500) { var cut = mission.lastIndexOf('.', 500); if (cut > 200) mission = mission.substring(0, cut + 1); else mission = mission.substring(0, 500) + '...'; }
+            return mission;
+        }
+
+        function extractBullets(text) {
+            if (!text) return [];
+            var items = text.split(/\n\s*(?:[-\u2022\u25CF*]|\d+[.)]\s)/);
+            if (items.length <= 1) items = text.split(/\n/).filter(function(l) { return l.trim().length > 15; });
+            return items.map(function(item) { return item.replace(/\s+/g, ' ').replace(/\*+/g, '').trim(); }).filter(function(item) { return item.length > 15; });
+        }
+
+        function condenseOutcome(bullet) {
+            var s = bullet.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+            if (s.length > 130) { var dashIdx = s.indexOf(' \u2014 '); if (dashIdx < 0) dashIdx = s.indexOf(' - '); if (dashIdx > 40 && dashIdx < 100) s = s.substring(0, dashIdx); }
+            if (s.length > 130) { var commaIdx = s.indexOf(',', 60); if (commaIdx > 0 && commaIdx < 120) s = s.substring(0, commaIdx); }
+            if (s.length > 140) s = s.substring(0, 137) + '...';
+            return s;
+        }
+
+        function extractOutcomes(sections) {
+            var bullets = extractBullets(sections['do'] || '');
+            if (bullets.length === 0) return [];
+            var actionVerbs = ['own', 'manage', 'design', 'execute', 'build', 'drive', 'lead', 'coordinate', 'leverage', 'monitor', 'navigate', 'serve', 'identify', 'engage', 'deliver', 'ensure'];
+            if (bullets.length > 6) {
+                bullets.sort(function(a, b) { var aScore = 0, bScore = 0; var aLow = a.toLowerCase(), bLow = b.toLowerCase(); actionVerbs.forEach(function(v) { if (aLow.indexOf(v) >= 0) aScore++; if (bLow.indexOf(v) >= 0) bScore++; }); return bScore - aScore; });
+                bullets = bullets.slice(0, 6);
+            }
+            return bullets.map(condenseOutcome);
+        }
+
+        function categorizeCompetencies(sections) {
+            var bullets = extractBullets(sections.looking || '');
+            if (bullets.length === 0) return { priorities: [], who: [], values: [], technical: [] };
+            var classifiers = {
+                technical: { weight: 3, keywords: ['gainsight', 'salesforce', 'crm', 'csp', 'data', 'analytics', 'reporting', 'proficiency', 'tool', 'platform', 'software', 'system', 'ai ', 'artificial intelligence', 'industry', 'familiarity', 'leveraging ai', 'title industry'] },
+                priorities: { weight: 2, keywords: ['strategic', 'enterprise', 'lifecycle', 'adoption', 'retention', 'expansion', 'renewal', 'commercial', 'forecast', 'displacement', 'competitive', 'executive', 'business review', 'ebr', 'change management', 'multi-stakeholder', 'portfolio', 'value selling', 'post-implementation', 'roi', 'budget'] },
+                who: { weight: 2, keywords: ['organizational skills', 'manage time', 'willingness to travel', 'travel', 'availability', 'simultaneously', 'multiple accounts', 'self-starter', 'urgency', 'pressure', 'proactive', 'cross-functional', 'standards'] },
+                values: { weight: 2, keywords: ['communication', 'presentation', 'written', 'verbal', 'integrity', 'honest', 'respect', 'listen', 'feedback', 'growth', 'adapt', 'empathy', 'team', 'collaborative'] }
+            };
+            var buckets = { priorities: [], who: [], values: [], technical: [] };
+            bullets.forEach(function(bullet) {
+                var lower = bullet.toLowerCase();
+                var scores = {};
+                Object.keys(classifiers).forEach(function(cat) { scores[cat] = 0; classifiers[cat].keywords.forEach(function(kw) { if (lower.indexOf(kw) >= 0) scores[cat] += classifiers[cat].weight; }); });
+                var bestCat = 'priorities', bestScore = 0;
+                Object.keys(scores).forEach(function(cat) { if (scores[cat] > bestScore) { bestScore = scores[cat]; bestCat = cat; } });
+                var label = condenseCompetency(bullet);
+                buckets[bestCat].push(label);
+            });
+            Object.keys(buckets).forEach(function(cat) { while (buckets[cat].length > 5) buckets[cat].pop(); });
+            return buckets;
+        }
+
+        function condenseCompetency(bullet) {
+            var s = bullet.replace(/\*+/g, '').trim();
+            s = s.replace(/^(?:demonstrated|proven|strong|exceptional|track record of|proficiency in|willingness to)\s+(?:ability\s+to\s+)?/i, '');
+            s = s.replace(/^(?:\d+\+?\s*years?\s+(?:of\s+)?experience\s+(?:in\s+)?)/i, '');
+            s = s.replace(/^(?:a\s+strong\s+background\s+in\s+)/i, '');
+            var dashIdx = s.indexOf(' \u2014 '); if (dashIdx < 0) dashIdx = s.indexOf(' --- '); if (dashIdx > 15 && dashIdx < 80) s = s.substring(0, dashIdx);
+            if (s.length > 70) { var incIdx = s.toLowerCase().indexOf(', including'); if (incIdx > 20) s = s.substring(0, incIdx); var withIdx = s.toLowerCase().indexOf(', with'); if (withIdx > 20 && s.length > 60) s = s.substring(0, withIdx); }
+            s = s.charAt(0).toUpperCase() + s.slice(1);
+            s = s.replace(/\.\s*$/, '');
+            if (s.length > 70) s = s.substring(0, 67) + '...';
+            return s;
+        }
+
+        function populateCompetencyDimension(dimCode, items) {
+            for (var i = 0; i < 5; i++) {
+                var el = document.getElementById('comp-' + dimCode + (i + 1) + '-label');
+                if (el && items[i]) el.innerHTML = items[i];
+            }
+        }
+
+        function parseAndLoadJD() {
+            var jdText = document.getElementById('jdTextarea').value.trim();
+            if (!jdText) { alert('Please paste a job description'); return; }
+            var sections = splitJDSections(jdText);
+            var roleTitle = extractRoleTitle(jdText, sections);
+            document.getElementById('roleTitle').innerHTML = roleTitle;
+            var dept = detectDepartment(jdText);
+            if (dept) document.getElementById('department').value = dept;
+            var mission = buildMission(sections);
+            document.getElementById('mission').innerHTML = mission;
+            var outcomes = extractOutcomes(sections);
+            for (var i = 0; i < 6; i++) { var el = document.getElementById('outcome-text-' + (i + 1)); if (el) el.innerHTML = outcomes[i] || ''; }
+            var competencies = categorizeCompetencies(sections);
+            populateCompetencyDimension('p', competencies.priorities);
+            populateCompetencyDimension('w', competencies.who);
+            populateCompetencyDimension('v', competencies.values);
+            populateCompetencyDimension('t', competencies.technical);
+            var summary = [];
+            if (roleTitle !== 'New Role') summary.push('Role: ' + roleTitle);
+            if (dept) summary.push('Dept: ' + dept);
+            if (mission) summary.push('Mission');
+            if (outcomes.length > 0) summary.push(outcomes.length + ' outcomes');
+            var compCount = competencies.priorities.length + competencies.who.length + competencies.values.length + competencies.technical.length;
+            if (compCount > 0) summary.push(compCount + ' competencies');
+            closeJDModal();
+            debouncedSave();
+            var toast = document.createElement('div');
+        toast.textContent = summary;
+        toast.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a7f5a;color:#fff;padding:12px 24px;border-radius:8px;z-index:10000;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);max-width:600px;text-align:center;';
+        document.body.appendChild(toast);
+        setTimeout(function(){ toast.remove(); }, 5000);
+        }
+
+        function clearAndReset() {
+            if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                return;
+            }
+            silentReset();
+            restoreInterviewDefaults();
+            var s = getTabStore();
+            s[currentTab] = {};
+            saveTabStore(s);
+            updateTabIndicators();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', function() {
+            var savedTab = sessionStorage.getItem('certifid_scorecard_activeTab');
+            if (savedTab) {
+                currentTab = parseInt(savedTab, 10);
+                var tabs = document.querySelectorAll('.tab-bar .tab');
+                tabs.forEach(function(t, i) {
+                    t.classList.toggle('active', i === currentTab);
+                });
+            }
+
+            var s = getTabStore();
+            if (s[currentTab] && Object.keys(s[currentTab]).length > 0) {
+                populateScorecard(s[currentTab]);
+            }
+
+            updateTabIndicators();
+            attachRatingHandlers();
+
+            // Auto-save on changes
+            document.addEventListener('input', debouncedSave);
+            document.addEventListener('change', debouncedSave);
+            document.querySelectorAll('[contenteditable]').forEach(function(el) {
+                el.addEventListener('blur', debouncedSave);
+            });
+
+            // Modal close on background click
+            document.getElementById('jdModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeJDModal();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
